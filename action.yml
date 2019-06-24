@@ -1,0 +1,11 @@
+name: ‘Upload artifact'
+description: 'Publish files as workflow artifacts'
+author: 'GitHub'
+inputs: 
+  name:
+    description: 'Artifact name'
+    required: true
+  path:
+    description: 'Directory containing files to upload’
+runs:
+  plugin: 'publish'
