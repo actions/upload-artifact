@@ -1,4 +1,4 @@
-name: ‘Upload artifact'
+name: 'Upload artifact'
 description: 'Publish files as workflow artifacts'
 author: 'GitHub'
 inputs: 
