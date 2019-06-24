@@ -6,6 +6,6 @@ inputs:
     description: 'Artifact name'
     required: true
   path:
-    description: 'Directory containing files to upload’
+    description: 'Directory containing files to upload'
 runs:
   plugin: 'publish'
