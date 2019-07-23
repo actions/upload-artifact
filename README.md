@@ -6,19 +6,7 @@ This uploads artifacts from your build.
 
 See [action.yml](action.yml)
 
-Basic (upload current working directory):
-```yaml
-actions:
-- uses: actions/checkout@master
-
-# Do stuff
-
-- uses: actions/upload-artifact@master
-  with:
-    name: my-artifact
-```
-
-Upload specific directory:
+Basic:
 ```yaml
 actions:
 - uses: actions/checkout@master
