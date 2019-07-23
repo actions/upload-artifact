@@ -7,5 +7,6 @@ inputs:
     required: true
   path:
     description: 'Directory containing files to upload'
+    required: true
 runs:
   plugin: 'publish'
