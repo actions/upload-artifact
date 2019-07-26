@@ -8,7 +8,7 @@ See [action.yml](action.yml)
 
 Basic:
 ```yaml
-actions:
+steps:
 - uses: actions/checkout@master
 
 - run: mkdir -p path/to/artifact
