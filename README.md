@@ -1,6 +1,6 @@
 # upload-artifact
 
-This uploads artifacts from your build.
+This uploads artifacts from your workflow.
 
 # Usage
 
