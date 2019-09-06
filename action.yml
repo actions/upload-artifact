@@ -9,4 +9,5 @@ inputs:
     description: 'Directory containing files to upload'
     required: true
 runs:
+  # Plugins live on the runner and are only available to a certain set of first party actions.
   plugin: 'publish'
