@@ -2,6 +2,8 @@
 
 This uploads artifacts from your workflow.
 
+See also [download-artifact](https://github.com/actions/download-artifact).
+
 # Usage
 
 See [action.yml](action.yml)
