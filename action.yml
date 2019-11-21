@@ -1,5 +1,5 @@
-name: 'Upload artifact'
-description: 'Publish files as workflow artifacts'
+name: 'Upload a Build Artifact'
+description: 'Upload a build artifact that can be used by subsequent workflow steps'
 author: 'GitHub'
 inputs: 
   name:
