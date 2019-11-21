@@ -17,7 +17,7 @@ steps:
 
 - run: echo hello > path/to/artifact/world.txt
 
-- uses: actions/upload-artifact@master
+- uses: actions/upload-artifact@v1
   with:
     name: my-artifact
     path: path/to/artifact
