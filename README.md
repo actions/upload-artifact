@@ -26,7 +26,7 @@ steps:
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
 
 ```yaml
-- uses: actions/upload-artifact@master
+- uses: actions/upload-artifact@v1
   if: failure()
   with:
     name: my-artifact
