@@ -5,6 +5,7 @@ inputs:
   name:
     description: 'Artifact name'
     required: true
+    deprecationMessage: 'Potential breaking changes if master is used. See: https://github.com/actions/upload-artifact/issues/41'
   path:
     description: 'Directory containing files to upload'
     required: true
