@@ -19,6 +19,9 @@ steps:
 
 - uses: actions/upload-artifact@v1
   with:
+    # A directory will be created with this name and populated with the items in the path below.
+    # Then it will be compressed into a zip file.
+    # if you later use download-artifact, this zip file will be downloaded and automatically expanded.
     name: my-artifact
     path: path/to/artifact
 ```
