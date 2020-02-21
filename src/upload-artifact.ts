@@ -14,6 +14,14 @@ async function run(): Promise<void> {
         `No files were found for the provided path: ${path}. No artifacts will be uploaded.`
       )
     } else {
+      core.info(
+        `With the provided path, there will be ${searchResult.filesToUpload.length} files uploaded`
+      )
+      for (const file of searchResult.filesToUpload) {
+        core.debug(`Upload file: ${file}`)
+      }
+      core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
+
       const artifactClient = artifact.create()
       const options = {
         continueOnError: true
