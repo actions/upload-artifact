@@ -2406,18 +2406,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const artifact = __importStar(__webpack_require__(214));
-const constants_1 = __webpack_require__(694); //eslint-disable-line @typescript-eslint/no-unused-vars
+const constants_1 = __webpack_require__(694);
 const search_1 = __webpack_require__(575);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const name = core.getInput(constants_1.Inputs.Name, { required: false }); //eslint-disable-line @typescript-eslint/no-unused-vars
+            const name = core.getInput(constants_1.Inputs.Name, { required: false });
             const path = core.getInput(constants_1.Inputs.Path, { required: true });
             const searchResult = yield search_1.findFilesToUpload(path);
             if (searchResult.filesToUpload.length === 0) {
                 core.warning(`No files were found for the provided path: ${path}. No artifacts will be uploaded.`);
             }
             else {
+                core.info(`With the provided path, there will be ${searchResult.filesToUpload.length} files uploaded`);
+                for (const file of searchResult.filesToUpload) {
+                    core.debug(`Upload file: ${file}`);
+                }
+                core.debug(`Root artifact directory is ${searchResult.rootDirectory}`);
                 const artifactClient = artifact.create();
                 const options = {
                     continueOnError: true
