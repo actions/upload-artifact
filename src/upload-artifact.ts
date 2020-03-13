@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import * as artifact from '@actions/artifact'
+import {create, UploadOptions} from '@actions/artifact'
 import {Inputs, getDefaultArtifactName} from './constants'
 import {findFilesToUpload} from './search'
 
@@ -17,13 +17,10 @@ async function run(): Promise<void> {
       core.info(
         `With the provided path, there will be ${searchResult.filesToUpload.length} files uploaded`
       )
-      for (const file of searchResult.filesToUpload) {
-        core.debug(`Upload file: ${file}`)
-      }
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
-      const artifactClient = artifact.create()
-      const options = {
+      const artifactClient = create()
+      const options: UploadOptions = {
         continueOnError: true
       }
       await artifactClient.uploadArtifact(
@@ -33,7 +30,7 @@ async function run(): Promise<void> {
         options
       )
 
-      core.info('Artifact upload has finished successfully')
+      core.info('Artifact upload has finished successfully!')
     }
   } catch (err) {
     core.setFailed(err.message)

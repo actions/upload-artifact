@@ -69,6 +69,7 @@ jobs:
         path: path/**/dir*/
 
     # Download Artifact #1 and verify the correctness of the content
+    # Switch to download-artifact@v2 once it's out of preview
     - name: 'Download artifact #1'
       uses: actions/download-artifact@v1
       with:
