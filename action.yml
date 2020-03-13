@@ -4,10 +4,10 @@ author: 'GitHub'
 inputs: 
   name:
     description: 'Artifact name'
-    required: true
+    required: false
   path:
-    description: 'Directory containing files to upload'
+    description: 'A file, directory or wildcard pattern that describes what to upload'
     required: true
 runs:
-  # Plugins live on the runner and are only available to a certain set of first party actions.
-  plugin: 'publish'
+  using: 'node12'
+  main: 'dist/index.js'
