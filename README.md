@@ -44,6 +44,8 @@ For supported wildcards along with behavior and documentation, see [@actions/glo
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory.
 
+The [@actions/artifact](https://github.com/actions/toolkit/tree/master/packages/artifact) package is also used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
+
 ### Conditional Artifact Upload
 
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
@@ -87,7 +89,36 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
   with:
     path: world.txt
 ```
-With the following example, the available artifact (named `artifact`) would contain both `world.txt` (`hello`) and `extra-file.txt` (`howdy`).
+With the following example, the available artifact (named `artifact` which is the default if no name is provided) would contain both `world.txt` (`hello`) and `extra-file.txt` (`howdy`).
+
+### Environment Variables and Tilde Expansion
+
+You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expansion is supported.
+
+```yaml
+  - run: |	
+      mkdir -p ~/new/artifact
+      echo hello > ~/new/artifact/world.txt
+  - uses: actions/upload-artifact@v2-preview
+    with:	
+      name: 'Artifacts-V2'	
+      path: '~/new/**/*'
+```
+
+Environment variables along with context expressions can also be used for input. For documentation see [context and expression syntax](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions).
+
+```yaml
+    env:
+      name: my-artifact
+    steps:
+    - run: |	
+        mkdir -p ${{ github.workspace }}/artifact
+        echo hello > ${{ github.workspace }}/artifact/world.txt
+    - uses: actions/upload-artifact@v2-preview
+      with:	
+        name: ${{ env.name }}-name	
+        path: ${{ github.workspace }}/artifact/**/*
+```
 
 ## Where does the upload go?
 In the top right corner of a workflow run, once the run is over, if you used this action, there will be a `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
@@ -97,8 +128,9 @@ There is a trash can icon that can be used to delete the artifact. This icon wil
 
 ## Additional Documentation
 
-See [persisting workflow data using artifacts](https://help.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts) for additional examples and tips. 
+See [persisting workflow data using artifacts](https://help.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts) for additional examples and tips.
 
+See extra documentation for the [@actions/artifact](https://github.com/actions/toolkit/blob/master/packages/artifact/docs/additional-information.md) package that is used internally regarding certain behaviors and limitations.
 
 # License
 
