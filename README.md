@@ -38,7 +38,7 @@ To upload artifacts only when the previous step of a job failed, use [`if: failu
 In the top right corner of a workflow run, once the run is over, if you used this action, there will be a `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
 <img src="https://user-images.githubusercontent.com/16109154/72556687-20235a80-386d-11ea-9e2a-b534faa77083.png" width="375" height="140">
 
-There is a trash can icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository. 
+There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository. 
 
 
 # License
