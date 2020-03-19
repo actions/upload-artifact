@@ -42,7 +42,7 @@ steps:
 
 For supported wildcards along with behavior and documentation, see [@actions/glob](https://github.com/actions/toolkit/tree/master/packages/glob) which is used internally to search for files.
 
-Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory.
+Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
 The [@actions/artifact](https://github.com/actions/toolkit/tree/master/packages/artifact) package is also used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
 
