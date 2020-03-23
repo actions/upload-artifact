@@ -4,6 +4,19 @@ This uploads artifacts from your workflow allowing you to share data between job
 
 See also [download-artifact](https://github.com/actions/download-artifact).
 
+# What's new
+
+- Easier upload 
+  - Specify a wildcard pattern
+  - Specify an individual file
+  - Specify a directory (previously you were limited to only this option)
+- Upload an artifact without providing a name
+- Fix for artifact uploads sometimes not working with containers
+- Proxy support out of the box
+- Port entire action to typescript from a runner plugin so it is easier to collaborate and accept contributions
+
+Refer [here](https://github.com/actions/upload-artifact/tree/releases/v1) for the previous version
+
 # Usage
 
 See [action.yml](action.yml)
