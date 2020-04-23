@@ -2493,7 +2493,7 @@ class StatusReporter {
             for (const value of Array.from(this.largeFiles.values())) {
                 core_1.info(value);
             }
-            // delete all entires in the map after displaying the information so it will not be displayed again unless explicitly added
+            // delete all entries in the map after displaying the information so it will not be displayed again unless explicitly added
             this.largeFiles.clear();
         }, 1000);
     }
@@ -6658,61 +6658,55 @@ class UploadHttpClient {
             }
             else {
                 // the file that is being uploaded is greater than 64k in size, a temporary file gets created on disk using the
-                // npm tmp-promise package and this file gets used during compression for the GZip file that gets created
-                return tmp
-                    .file()
-                    .then((tmpFile) => __awaiter(this, void 0, void 0, function* () {
-                    // create a GZip file of the original file being uploaded, the original file should not be modified in any way
-                    uploadFileSize = yield upload_gzip_1.createGZipFileOnDisk(parameters.file, tmpFile.path);
-                    let uploadFilePath = tmpFile.path;
-                    // compression did not help with size reduction, use the original file for upload and delete the temp GZip file
-                    if (totalFileSize < uploadFileSize) {
-                        uploadFileSize = totalFileSize;
-                        uploadFilePath = parameters.file;
-                        isGzip = false;
-                        tmpFile.cleanup();
+                // npm tmp-promise package and this file gets used to create a GZipped file
+                const tempFile = yield tmp.file();
+                // create a GZip file of the original file being uploaded, the original file should not be modified in any way
+                uploadFileSize = yield upload_gzip_1.createGZipFileOnDisk(parameters.file, tempFile.path);
+                let uploadFilePath = tempFile.path;
+                // compression did not help with size reduction, use the original file for upload and delete the temp GZip file
+                if (totalFileSize < uploadFileSize) {
+                    uploadFileSize = totalFileSize;
+                    uploadFilePath = parameters.file;
+                    isGzip = false;
+                }
+                let abortFileUpload = false;
+                // upload only a single chunk at a time
+                while (offset < uploadFileSize) {
+                    const chunkSize = Math.min(uploadFileSize - offset, parameters.maxChunkSize);
+                    // if an individual file is greater than 100MB (1024*1024*100) in size, display extra information about the upload status
+                    if (uploadFileSize > 104857600) {
+                        this.statusReporter.updateLargeFileStatus(parameters.file, offset, uploadFileSize);
                     }
-                    let abortFileUpload = false;
-                    // upload only a single chunk at a time
-                    while (offset < uploadFileSize) {
-                        const chunkSize = Math.min(uploadFileSize - offset, parameters.maxChunkSize);
-                        // if an individual file is greater than 100MB (1024*1024*100) in size, display extra information about the upload status
-                        if (uploadFileSize > 104857600) {
-                            this.statusReporter.updateLargeFileStatus(parameters.file, offset, uploadFileSize);
-                        }
-                        const start = offset;
-                        const end = offset + chunkSize - 1;
-                        offset += parameters.maxChunkSize;
-                        if (abortFileUpload) {
-                            // if we don't want to continue in the event of an error, any pending upload chunks will be marked as failed
-                            failedChunkSizes += chunkSize;
-                            continue;
-                        }
-                        const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, fs.createReadStream(uploadFilePath, {
-                            start,
-                            end,
-                            autoClose: false
-                        }), start, end, uploadFileSize, isGzip, totalFileSize);
-                        if (!result) {
-                            // Chunk failed to upload, report as failed and do not continue uploading any more chunks for the file. It is possible that part of a chunk was
-                            // successfully uploaded so the server may report a different size for what was uploaded
-                            isUploadSuccessful = false;
-                            failedChunkSizes += chunkSize;
-                            core.warning(`Aborting upload for ${parameters.file} due to failure`);
-                            abortFileUpload = true;
-                        }
+                    const start = offset;
+                    const end = offset + chunkSize - 1;
+                    offset += parameters.maxChunkSize;
+                    if (abortFileUpload) {
+                        // if we don't want to continue in the event of an error, any pending upload chunks will be marked as failed
+                        failedChunkSizes += chunkSize;
+                        continue;
                     }
-                }))
-                    .then(() => __awaiter(this, void 0, void 0, function* () {
-                    // only after the file upload is complete and the temporary file is deleted, return the UploadResult
-                    return new Promise(resolve => {
-                        resolve({
-                            isSuccess: isUploadSuccessful,
-                            successfulUploadSize: uploadFileSize - failedChunkSizes,
-                            totalSize: totalFileSize
-                        });
-                    });
-                }));
+                    const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, fs.createReadStream(uploadFilePath, {
+                        start,
+                        end,
+                        autoClose: false
+                    }), start, end, uploadFileSize, isGzip, totalFileSize);
+                    if (!result) {
+                        // Chunk failed to upload, report as failed and do not continue uploading any more chunks for the file. It is possible that part of a chunk was
+                        // successfully uploaded so the server may report a different size for what was uploaded
+                        isUploadSuccessful = false;
+                        failedChunkSizes += chunkSize;
+                        core.warning(`Aborting upload for ${parameters.file} due to failure`);
+                        abortFileUpload = true;
+                    }
+                }
+                // Delete the temporary file that was created as part of the upload. If the temp file does not get manually deleted by
+                // calling cleanup, it gets removed when the node process exits. For more info see: https://www.npmjs.com/package/tmp-promise#about
+                yield tempFile.cleanup();
+                return {
+                    isSuccess: isUploadSuccessful,
+                    successfulUploadSize: uploadFileSize - failedChunkSizes,
+                    totalSize: totalFileSize
+                };
             }
         });
     }
@@ -7913,16 +7907,7 @@ exports.displayHttpDiagnostics = displayHttpDiagnostics;
  *
  * FilePaths can include characters such as \ and / which are not permitted in the artifact name alone
  */
-const invalidArtifactFilePathCharacters = [
-    '"',
-    ':',
-    '<',
-    '>',
-    '|',
-    '*',
-    '?',
-    ' '
-];
+const invalidArtifactFilePathCharacters = ['"', ':', '<', '>', '|', '*', '?'];
 const invalidArtifactNameCharacters = [
     ...invalidArtifactFilePathCharacters,
     '\\',
