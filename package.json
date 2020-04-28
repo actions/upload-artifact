@@ -1,0 +1,51 @@
+{
+  "name": "upload-artifact",
+  "version": "2.0.0",
+  "description": "Upload a build artifact that can be used by subsequent workflow steps",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "release": "ncc build src/upload-artifact.ts && git add -f dist/",
+    "check-all": "concurrently \"npm:format-check\" \"npm:lint\" \"npm:test\" \"npm:build\"",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "lint": "eslint **/*.ts",
+    "test": "jest --testTimeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/actions/upload-artifact.git"
+  },
+  "keywords": [
+    "Actions",
+    "GitHub",
+    "Artifacts",
+    "Upload"
+  ],
+  "author": "GitHub",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/actions/upload-artifact/issues"
+  },
+  "homepage": "https://github.com/actions/upload-artifact#readme",
+  "devDependencies": {
+    "@actions/artifact": "^0.3.1",
+    "@actions/core": "^1.2.3",
+    "@actions/glob": "^0.1.0",
+    "@actions/io": "^1.0.2",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.1",
+    "@typescript-eslint/parser": "^2.27.0",
+    "@zeit/ncc": "^0.22.1",
+    "concurrently": "^5.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-github": "^3.4.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "glob": "^7.1.6",
+    "jest": "^25.3.0",
+    "jest-circus": "^25.3.0",
+    "prettier": "^2.0.4",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.8.3"
+  }
+}

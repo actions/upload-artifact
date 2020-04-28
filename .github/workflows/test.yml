@@ -1,0 +1,140 @@
+name: Test
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: npm install
+      run: npm install
+
+    - name: Compile
+      run: npm run build
+
+    - name: npm test
+      run: npm test
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Format
+      run: npm run format-check
+
+    # Test end-to-end by uploading two artifacts and then downloading them
+    - name: Create artifact files
+      run: |
+        mkdir -p path/to/dir-1
+        mkdir -p path/to/dir-2
+        mkdir -p path/to/dir-3    
+        echo "Lorem ipsum dolor sit amet" > path/to/dir-1/file1.txt
+        echo "Hello world from file #2" > path/to/dir-2/file2.txt
+        echo "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip" > path/to/dir-3/gzip.txt
+
+    # Upload a single file artifact
+    - name: 'Upload artifact #1'
+      uses: ./
+      with:
+        name: 'Artifact-A'
+        path: path/to/dir-1/file1.txt
+
+    # Upload using a wildcard pattern, name should default to 'artifact' if not provided
+    - name: 'Upload artifact #2'
+      uses: ./
+      with:
+        path: path/**/dir*/
+
+    # Upload a directory that contains a file that will be uploaded with GZip
+    - name: 'Upload artifact #3'
+      uses: ./
+      with:
+        name: 'GZip-Artifact'
+        path: path/to/dir-3/
+
+    # Verify artifacts. Switch to download-artifact@v2 once it's out of preview
+
+    # Download Artifact #1 and verify the correctness of the content
+    - name: 'Download artifact #1'
+      uses: actions/download-artifact@v1
+      with:
+        name: 'Artifact-A'
+        path: some/new/path
+
+    - name: 'Verify Artifact #1'
+      run: |
+        $file = "some/new/path/file1.txt"
+        if(!(Test-Path -path $file))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $file) -ceq "Lorem ipsum dolor sit amet"))
+        {
+            Write-Error "File contents of downloaded artifact are incorrect"
+        }
+      shell: pwsh
+
+    # Download Artifact #2 and verify the correctness of the content
+    - name: 'Download artifact #2'
+      uses: actions/download-artifact@v1
+      with:
+        name: 'artifact'
+        path: some/other/path
+
+    - name: 'Verify Artifact #2'
+      run: |
+        $file1 = "some/other/path/to/dir-1/file1.txt"
+        $file2 = "some/other/path/to/dir-2/file2.txt"
+        if(!(Test-Path -path $file1) -or !(Test-Path -path $file2))
+        {
+            Write-Error "Expected files do not exist"
+        }
+        if(!((Get-Content $file1) -ceq "Lorem ipsum dolor sit amet") -or !((Get-Content $file2) -ceq "Hello world from file #2"))
+        {
+            Write-Error "File contents of downloaded artifacts are incorrect"
+        }
+      shell: pwsh
+    
+    # Download Artifact #3 and verify the correctness of the content
+    - name: 'Download artifact #3'
+      uses: actions/download-artifact@v1
+      with:
+        name: 'GZip-Artifact'
+        path: gzip/artifact/path
+
+    # Because a directory was used as input during the upload the parent directories, path/to/dir-3/, should not be included in the uploaded artifact
+    - name: 'Verify Artifact #3'
+      run: |
+        $gzipFile = "gzip/artifact/path/gzip.txt"
+        if(!(Test-Path -path $gzipFile))
+        {
+            Write-Error "Expected file do not exist"
+        }
+        if(!((Get-Content $gzipFile) -ceq "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip"))
+        {
+            Write-Error "File contents of downloaded artifact is incorrect"
+        }
+      shell: pwsh
