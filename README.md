@@ -30,7 +30,7 @@ steps:
 
 - run: echo hello > path/to/artifact/world.txt
 
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     name: my-artifact
     path: path/to/artifact/world.txt
@@ -39,7 +39,7 @@ steps:
 ### Upload an Entire Directory
 
 ```yaml
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     name: my-artifact
     path: path/to/artifact/ # or path/to/artifact
@@ -47,7 +47,7 @@ steps:
 
 ### Upload using a Wildcard Pattern:
 ```yaml
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     name: my-artifact
     path: path/**/[abc]rtifac?/*
@@ -64,7 +64,7 @@ The [@actions/artifact](https://github.com/actions/toolkit/tree/master/packages/
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
 
 ```yaml
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   if: failure()
   with:
     name: my-artifact
@@ -75,7 +75,7 @@ To upload artifacts only when the previous step of a job failed, use [`if: failu
 
 You can upload an artifact without specifying a name
 ```yaml
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     path: path/to/artifact/world.txt
 ```
@@ -88,17 +88,17 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
 
 ```yaml
 - run: echo hi > world.txt
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     path: world.txt
 
 - run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     path: extra-file.txt
 
 - run: echo hello > world.txt
-- uses: actions/upload-artifact@v2-preview
+- uses: actions/upload-artifact@v2
   with:
     path: world.txt
 ```
@@ -112,7 +112,7 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
   - run: |	
       mkdir -p ~/new/artifact
       echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v2-preview
+  - uses: actions/upload-artifact@v2
     with:	
       name: 'Artifacts-V2'	
       path: '~/new/**/*'
@@ -127,7 +127,7 @@ Environment variables along with context expressions can also be used for input.
     - run: |	
         mkdir -p ${{ github.workspace }}/artifact
         echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v2-preview
+    - uses: actions/upload-artifact@v2
       with:	
         name: ${{ env.name }}-name	
         path: ${{ github.workspace }}/artifact/**/*
