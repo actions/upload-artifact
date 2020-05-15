@@ -1,6 +1,6 @@
 {
   "name": "upload-artifact",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Upload a build artifact that can be used by subsequent workflow steps",
   "main": "dist/index.js",
   "scripts": {
