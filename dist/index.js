@@ -2563,7 +2563,9 @@ class BasicCredentialHandler {
         this.password = password;
     }
     prepareRequest(options) {
-        options.headers['Authorization'] = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64');
+        options.headers['Authorization'] =
+            'Basic ' +
+                Buffer.from(this.username + ':' + this.password).toString('base64');
     }
     // This handler cannot handle 401
     canHandleAuthentication(response) {
@@ -2599,7 +2601,8 @@ class PersonalAccessTokenCredentialHandler {
     // currently implements pre-authorization
     // TODO: support preAuth = false where it hooks on 401
     prepareRequest(options) {
-        options.headers['Authorization'] = 'Basic ' + Buffer.from('PAT:' + this.token).toString('base64');
+        options.headers['Authorization'] =
+            'Basic ' + Buffer.from('PAT:' + this.token).toString('base64');
     }
     // This handler cannot handle 401
     canHandleAuthentication(response) {
@@ -3784,7 +3787,6 @@ class DefaultArtifactClient {
         });
     }
     downloadArtifact(name, path, options) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const downloadHttpClient = new download_http_client_1.DownloadHttpClient();
             const artifacts = yield downloadHttpClient.listArtifacts();
@@ -3804,7 +3806,7 @@ class DefaultArtifactClient {
             path = path_1.normalize(path);
             path = path_1.resolve(path);
             // During upload, empty directories are rejected by the remote server so there should be no artifacts that consist of only empty directories
-            const downloadSpecification = download_specification_1.getDownloadSpecification(name, items.value, path, ((_a = options) === null || _a === void 0 ? void 0 : _a.createArtifactFolder) || false);
+            const downloadSpecification = download_specification_1.getDownloadSpecification(name, items.value, path, (options === null || options === void 0 ? void 0 : options.createArtifactFolder) || false);
             if (downloadSpecification.filesToDownload.length === 0) {
                 core.info(`No downloadable files were found for the artifact: ${artifactToDownload.name}`);
             }
@@ -4001,7 +4003,7 @@ function run() {
                 core.debug(`Root artifact directory is ${searchResult.rootDirectory}`);
                 const artifactClient = artifact_1.create();
                 const options = {
-                    continueOnError: true
+                    continueOnError: false
                 };
                 yield artifactClient.uploadArtifact(name || constants_1.getDefaultArtifactName(), searchResult.filesToUpload, searchResult.rootDirectory, options);
                 core.info('Artifact upload has finished successfully!');
@@ -5340,8 +5342,18 @@ function getProxyUrl(serverUrl) {
     return proxyUrl ? proxyUrl.href : '';
 }
 exports.getProxyUrl = getProxyUrl;
-const HttpRedirectCodes = [HttpCodes.MovedPermanently, HttpCodes.ResourceMoved, HttpCodes.SeeOther, HttpCodes.TemporaryRedirect, HttpCodes.PermanentRedirect];
-const HttpResponseRetryCodes = [HttpCodes.BadGateway, HttpCodes.ServiceUnavailable, HttpCodes.GatewayTimeout];
+const HttpRedirectCodes = [
+    HttpCodes.MovedPermanently,
+    HttpCodes.ResourceMoved,
+    HttpCodes.SeeOther,
+    HttpCodes.TemporaryRedirect,
+    HttpCodes.PermanentRedirect
+];
+const HttpResponseRetryCodes = [
+    HttpCodes.BadGateway,
+    HttpCodes.ServiceUnavailable,
+    HttpCodes.GatewayTimeout
+];
 const RetryableHttpVerbs = ['OPTIONS', 'GET', 'DELETE', 'HEAD'];
 const ExponentialBackoffCeiling = 10;
 const ExponentialBackoffTimeSlice = 5;
@@ -5466,18 +5478,22 @@ class HttpClient {
      */
     async request(verb, requestUrl, data, headers) {
         if (this._disposed) {
-            throw new Error("Client has already been disposed.");
+            throw new Error('Client has already been disposed.');
         }
         let parsedUrl = url.parse(requestUrl);
         let info = this._prepareRequest(verb, parsedUrl, headers);
         // Only perform retries on reads since writes may not be idempotent.
-        let maxTries = (this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1) ? this._maxRetries + 1 : 1;
+        let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1
+            ? this._maxRetries + 1
+            : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
             response = await this.requestRaw(info, data);
             // Check if it's an authentication challenge
-            if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
+            if (response &&
+                response.message &&
+                response.message.statusCode === HttpCodes.Unauthorized) {
                 let authenticationHandler;
                 for (let i = 0; i < this.handlers.length; i++) {
                     if (this.handlers[i].canHandleAuthentication(response)) {
@@ -5495,21 +5511,32 @@ class HttpClient {
                 }
             }
             let redirectsRemaining = this._maxRedirects;
-            while (HttpRedirectCodes.indexOf(response.message.statusCode) != -1
-                && this._allowRedirects
-                && redirectsRemaining > 0) {
-                const redirectUrl = response.message.headers["location"];
+            while (HttpRedirectCodes.indexOf(response.message.statusCode) != -1 &&
+                this._allowRedirects &&
+                redirectsRemaining > 0) {
+                const redirectUrl = response.message.headers['location'];
                 if (!redirectUrl) {
                     // if there's no location to redirect to, we won't
                     break;
                 }
                 let parsedRedirectUrl = url.parse(redirectUrl);
-                if (parsedUrl.protocol == 'https:' && parsedUrl.protocol != parsedRedirectUrl.protocol && !this._allowRedirectDowngrade) {
-                    throw new Error("Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.");
+                if (parsedUrl.protocol == 'https:' &&
+                    parsedUrl.protocol != parsedRedirectUrl.protocol &&
+                    !this._allowRedirectDowngrade) {
+                    throw new Error('Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.');
                 }
                 // we need to finish reading the response before reassigning response
                 // which will leak the open socket.
                 await response.readBody();
+                // strip authorization header if redirected to a different hostname
+                if (parsedRedirectUrl.hostname !== parsedUrl.hostname) {
+                    for (let header in headers) {
+                        // header names are case insensitive
+                        if (header.toLowerCase() === 'authorization') {
+                            delete headers[header];
+                        }
+                    }
+                }
                 // let's make the request with the new redirectUrl
                 info = this._prepareRequest(verb, parsedRedirectUrl, headers);
                 response = await this.requestRaw(info, data);
@@ -5560,8 +5587,8 @@ class HttpClient {
      */
     requestRawWithCallback(info, data, onResult) {
         let socket;
-        if (typeof (data) === 'string') {
-            info.options.headers["Content-Length"] = Buffer.byteLength(data, 'utf8');
+        if (typeof data === 'string') {
+            info.options.headers['Content-Length'] = Buffer.byteLength(data, 'utf8');
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -5574,7 +5601,7 @@ class HttpClient {
             let res = new HttpClientResponse(msg);
             handleResult(null, res);
         });
-        req.on('socket', (sock) => {
+        req.on('socket', sock => {
             socket = sock;
         });
         // If we ever get disconnected, we want the socket to timeout eventually
@@ -5589,10 +5616,10 @@ class HttpClient {
             // res should have headers
             handleResult(err, null);
         });
-        if (data && typeof (data) === 'string') {
+        if (data && typeof data === 'string') {
             req.write(data, 'utf8');
         }
-        if (data && typeof (data) !== 'string') {
+        if (data && typeof data !== 'string') {
             data.on('close', function () {
                 req.end();
             });
@@ -5619,31 +5646,34 @@ class HttpClient {
         const defaultPort = usingSsl ? 443 : 80;
         info.options = {};
         info.options.host = info.parsedUrl.hostname;
-        info.options.port = info.parsedUrl.port ? parseInt(info.parsedUrl.port) : defaultPort;
-        info.options.path = (info.parsedUrl.pathname || '') + (info.parsedUrl.search || '');
+        info.options.port = info.parsedUrl.port
+            ? parseInt(info.parsedUrl.port)
+            : defaultPort;
+        info.options.path =
+            (info.parsedUrl.pathname || '') + (info.parsedUrl.search || '');
         info.options.method = method;
         info.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-            info.options.headers["user-agent"] = this.userAgent;
+            info.options.headers['user-agent'] = this.userAgent;
         }
         info.options.agent = this._getAgent(info.parsedUrl);
         // gives handlers an opportunity to participate
         if (this.handlers) {
-            this.handlers.forEach((handler) => {
+            this.handlers.forEach(handler => {
                 handler.prepareRequest(info.options);
             });
         }
         return info;
     }
     _mergeHeaders(headers) {
-        const lowercaseKeys = obj => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
+        const lowercaseKeys = obj => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {});
         if (this.requestOptions && this.requestOptions.headers) {
             return Object.assign({}, lowercaseKeys(this.requestOptions.headers), lowercaseKeys(headers));
         }
         return lowercaseKeys(headers || {});
     }
     _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
-        const lowercaseKeys = obj => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
+        const lowercaseKeys = obj => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {});
         let clientHeader;
         if (this.requestOptions && this.requestOptions.headers) {
             clientHeader = lowercaseKeys(this.requestOptions.headers)[header];
@@ -5681,7 +5711,7 @@ class HttpClient {
                     proxyAuth: proxyUrl.auth,
                     host: proxyUrl.hostname,
                     port: proxyUrl.port
-                },
+                }
             };
             let tunnelAgent;
             const overHttps = proxyUrl.protocol === 'https:';
@@ -5708,7 +5738,9 @@ class HttpClient {
             // we don't want to set NODE_TLS_REJECT_UNAUTHORIZED=0 since that will affect request for entire process
             // http.RequestOptions doesn't expose a way to modify RequestOptions.agent.options
             // we have to cast it to any and change it directly
-            agent.options = Object.assign(agent.options || {}, { rejectUnauthorized: false });
+            agent.options = Object.assign(agent.options || {}, {
+                rejectUnauthorized: false
+            });
         }
         return agent;
     }
@@ -5769,7 +5801,7 @@ class HttpClient {
                     msg = contents;
                 }
                 else {
-                    msg = "Failed request: (" + statusCode + ")";
+                    msg = 'Failed request: (' + statusCode + ')';
                 }
                 let err = new Error(msg);
                 // attach statusCode and body obj (if available) to the error object
@@ -6516,8 +6548,8 @@ class UploadHttpClient {
             const artifactUrl = utils_1.getArtifactUrl();
             // use the first client from the httpManager, `keep-alive` is not used so the connection will close immediately
             const client = this.uploadHttpManager.getClient(0);
-            const requestOptions = utils_1.getUploadRequestOptions('application/json', false);
-            const rawResponse = yield client.post(artifactUrl, data, requestOptions);
+            const headers = utils_1.getUploadHeaders('application/json', false);
+            const rawResponse = yield client.post(artifactUrl, data, headers);
             const body = yield rawResponse.readBody();
             if (utils_1.isSuccessStatusCode(rawResponse.message.statusCode) && body) {
                 return JSON.parse(body);
@@ -6629,21 +6661,25 @@ class UploadHttpClient {
             // for creating a new GZip file, an in-memory buffer is used for compression
             if (totalFileSize < 65536) {
                 const buffer = yield upload_gzip_1.createGZipFileInBuffer(parameters.file);
-                let uploadStream;
+                //An open stream is needed in the event of a failure and we need to retry. If a NodeJS.ReadableStream is directly passed in,
+                // it will not properly get reset to the start of the stream if a chunk upload needs to be retried
+                let openUploadStream;
                 if (totalFileSize < buffer.byteLength) {
                     // compression did not help with reducing the size, use a readable stream from the original file for upload
-                    uploadStream = fs.createReadStream(parameters.file);
+                    openUploadStream = () => fs.createReadStream(parameters.file);
                     isGzip = false;
                     uploadFileSize = totalFileSize;
                 }
                 else {
                     // create a readable stream using a PassThrough stream that is both readable and writable
-                    const passThrough = new stream.PassThrough();
-                    passThrough.end(buffer);
-                    uploadStream = passThrough;
+                    openUploadStream = () => {
+                        const passThrough = new stream.PassThrough();
+                        passThrough.end(buffer);
+                        return passThrough;
+                    };
                     uploadFileSize = buffer.byteLength;
                 }
-                const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, uploadStream, 0, uploadFileSize - 1, uploadFileSize, isGzip, totalFileSize);
+                const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, openUploadStream, 0, uploadFileSize - 1, uploadFileSize, isGzip, totalFileSize);
                 if (!result) {
                     // chunk failed to upload
                     isUploadSuccessful = false;
@@ -6685,7 +6721,7 @@ class UploadHttpClient {
                         failedChunkSizes += chunkSize;
                         continue;
                     }
-                    const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, fs.createReadStream(uploadFilePath, {
+                    const result = yield this.uploadChunk(httpClientIndex, parameters.resourceUrl, () => fs.createReadStream(uploadFilePath, {
                         start,
                         end,
                         autoClose: false
@@ -6715,7 +6751,7 @@ class UploadHttpClient {
      * indicates a retryable status, we try to upload the chunk as well
      * @param {number} httpClientIndex The index of the httpClient being used to make all the necessary calls
      * @param {string} resourceUrl Url of the resource that the chunk will be uploaded to
-     * @param {NodeJS.ReadableStream} data Stream of the file that will be uploaded
+     * @param {NodeJS.ReadableStream} openStream Stream of the file that will be uploaded
      * @param {number} start Starting byte index of file that the chunk belongs to
      * @param {number} end Ending byte index of file that the chunk belongs to
      * @param {number} uploadFileSize Total size of the file in bytes that is being uploaded
@@ -6723,13 +6759,13 @@ class UploadHttpClient {
      * @param {number} totalFileSize Original total size of the file that is being uploaded
      * @returns if the chunk was successfully uploaded
      */
-    uploadChunk(httpClientIndex, resourceUrl, data, start, end, uploadFileSize, isGzip, totalFileSize) {
+    uploadChunk(httpClientIndex, resourceUrl, openStream, start, end, uploadFileSize, isGzip, totalFileSize) {
         return __awaiter(this, void 0, void 0, function* () {
             // prepare all the necessary headers before making any http call
-            const requestOptions = utils_1.getUploadRequestOptions('application/octet-stream', true, isGzip, totalFileSize, end - start + 1, utils_1.getContentRange(start, end, uploadFileSize));
+            const headers = utils_1.getUploadHeaders('application/octet-stream', true, isGzip, totalFileSize, end - start + 1, utils_1.getContentRange(start, end, uploadFileSize));
             const uploadChunkRequest = () => __awaiter(this, void 0, void 0, function* () {
                 const client = this.uploadHttpManager.getClient(httpClientIndex);
-                return yield client.sendStream('PUT', resourceUrl, data, requestOptions);
+                return yield client.sendStream('PUT', resourceUrl, openStream(), headers);
             });
             let retryCount = 0;
             const retryLimit = config_variables_1.getRetryLimit();
@@ -6807,7 +6843,7 @@ class UploadHttpClient {
      */
     patchArtifactSize(size, artifactName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const requestOptions = utils_1.getUploadRequestOptions('application/json', false);
+            const headers = utils_1.getUploadHeaders('application/json', false);
             const resourceUrl = new url_1.URL(utils_1.getArtifactUrl());
             resourceUrl.searchParams.append('artifactName', artifactName);
             const parameters = { Size: size };
@@ -6815,7 +6851,7 @@ class UploadHttpClient {
             core.debug(`URL is ${resourceUrl.toString()}`);
             // use the first client from the httpManager, `keep-alive` is not used so the connection will close immediately
             const client = this.uploadHttpManager.getClient(0);
-            const response = yield client.patch(resourceUrl.toString(), data, requestOptions);
+            const response = yield client.patch(resourceUrl.toString(), data, headers);
             const body = yield response.readBody();
             if (utils_1.isSuccessStatusCode(response.message.statusCode)) {
                 core.debug(`Artifact ${artifactName} has been successfully uploaded, total size in bytes: ${size}`);
@@ -7248,8 +7284,8 @@ class DownloadHttpClient {
             const artifactUrl = utils_1.getArtifactUrl();
             // use the first client from the httpManager, `keep-alive` is not used so the connection will close immediately
             const client = this.downloadHttpManager.getClient(0);
-            const requestOptions = utils_1.getDownloadRequestOptions('application/json');
-            const response = yield client.get(artifactUrl, requestOptions);
+            const headers = utils_1.getDownloadHeaders('application/json');
+            const response = yield client.get(artifactUrl, headers);
             const body = yield response.readBody();
             if (utils_1.isSuccessStatusCode(response.message.statusCode) && body) {
                 return JSON.parse(body);
@@ -7270,8 +7306,8 @@ class DownloadHttpClient {
             resourceUrl.searchParams.append('itemPath', artifactName);
             // use the first client from the httpManager, `keep-alive` is not used so the connection will close immediately
             const client = this.downloadHttpManager.getClient(0);
-            const requestOptions = utils_1.getDownloadRequestOptions('application/json');
-            const response = yield client.get(resourceUrl.toString(), requestOptions);
+            const headers = utils_1.getDownloadHeaders('application/json');
+            const response = yield client.get(resourceUrl.toString(), headers);
             const body = yield response.readBody();
             if (utils_1.isSuccessStatusCode(response.message.statusCode) && body) {
                 return JSON.parse(body);
@@ -7328,15 +7364,16 @@ class DownloadHttpClient {
             let retryCount = 0;
             const retryLimit = config_variables_1.getRetryLimit();
             const destinationStream = fs.createWriteStream(downloadPath);
-            const requestOptions = utils_1.getDownloadRequestOptions('application/json', true, true);
+            const headers = utils_1.getDownloadHeaders('application/json', true, true);
             // a single GET request is used to download a file
             const makeDownloadRequest = () => __awaiter(this, void 0, void 0, function* () {
                 const client = this.downloadHttpManager.getClient(httpClientIndex);
-                return yield client.get(artifactLocation, requestOptions);
+                return yield client.get(artifactLocation, headers);
             });
             // check the response headers to determine if the file was compressed using gzip
-            const isGzip = (headers) => {
-                return ('content-encoding' in headers && headers['content-encoding'] === 'gzip');
+            const isGzip = (incomingHeaders) => {
+                return ('content-encoding' in incomingHeaders &&
+                    incomingHeaders['content-encoding'] === 'gzip');
             };
             // Increments the current retry count and then checks if the retry limit has been reached
             // If there have been too many retries, fail so the download stops. If there is a retryAfterValue value provided,
@@ -7812,9 +7849,9 @@ exports.getContentRange = getContentRange;
  * @param {boolean} isKeepAlive is the same connection being used to make multiple calls
  * @param {boolean} acceptGzip can we accept a gzip encoded response
  * @param {string} acceptType the type of content that we can accept
- * @returns appropriate request options to make a specific http call during artifact download
+ * @returns appropriate headers to make a specific http call during artifact download
  */
-function getDownloadRequestOptions(contentType, isKeepAlive, acceptGzip) {
+function getDownloadHeaders(contentType, isKeepAlive, acceptGzip) {
     const requestOptions = {};
     if (contentType) {
         requestOptions['Content-Type'] = contentType;
@@ -7835,7 +7872,7 @@ function getDownloadRequestOptions(contentType, isKeepAlive, acceptGzip) {
     }
     return requestOptions;
 }
-exports.getDownloadRequestOptions = getDownloadRequestOptions;
+exports.getDownloadHeaders = getDownloadHeaders;
 /**
  * Sets all the necessary headers when uploading an artifact
  * @param {string} contentType the type of content being uploaded
@@ -7844,9 +7881,9 @@ exports.getDownloadRequestOptions = getDownloadRequestOptions;
  * @param {number} uncompressedLength the original size of the content if something is being uploaded that has been compressed
  * @param {number} contentLength the length of the content that is being uploaded
  * @param {string} contentRange the range of the content that is being uploaded
- * @returns appropriate request options to make a specific http call during artifact upload
+ * @returns appropriate headers to make a specific http call during artifact upload
  */
-function getUploadRequestOptions(contentType, isKeepAlive, isGzip, uncompressedLength, contentLength, contentRange) {
+function getUploadHeaders(contentType, isKeepAlive, isGzip, uncompressedLength, contentLength, contentRange) {
     const requestOptions = {};
     requestOptions['Accept'] = `application/json;api-version=${getApiVersion()}`;
     if (contentType) {
@@ -7869,9 +7906,9 @@ function getUploadRequestOptions(contentType, isKeepAlive, isGzip, uncompressedL
     }
     return requestOptions;
 }
-exports.getUploadRequestOptions = getUploadRequestOptions;
+exports.getUploadHeaders = getUploadHeaders;
 function createHttpClient() {
-    return new http_client_1.HttpClient('action/artifact', [
+    return new http_client_1.HttpClient('actions/artifact', [
         new auth_1.BearerCredentialHandler(config_variables_1.getRuntimeToken())
     ]);
 }
@@ -8291,12 +8328,10 @@ function getProxyUrl(reqUrl) {
     }
     let proxyVar;
     if (usingSsl) {
-        proxyVar = process.env["https_proxy"] ||
-            process.env["HTTPS_PROXY"];
+        proxyVar = process.env['https_proxy'] || process.env['HTTPS_PROXY'];
     }
     else {
-        proxyVar = process.env["http_proxy"] ||
-            process.env["HTTP_PROXY"];
+        proxyVar = process.env['http_proxy'] || process.env['HTTP_PROXY'];
     }
     if (proxyVar) {
         proxyUrl = url.parse(proxyVar);
@@ -8308,7 +8343,7 @@ function checkBypass(reqUrl) {
     if (!reqUrl.hostname) {
         return false;
     }
-    let noProxy = process.env["no_proxy"] || process.env["NO_PROXY"] || '';
+    let noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || '';
     if (!noProxy) {
         return false;
     }
@@ -8329,7 +8364,10 @@ function checkBypass(reqUrl) {
         upperReqHosts.push(`${upperReqHosts[0]}:${reqPort}`);
     }
     // Compare request host against noproxy
-    for (let upperNoProxyItem of noProxy.split(',').map(x => x.trim().toUpperCase()).filter(x => x)) {
+    for (let upperNoProxyItem of noProxy
+        .split(',')
+        .map(x => x.trim().toUpperCase())
+        .filter(x => x)) {
         if (upperReqHosts.some(x => x === upperNoProxyItem)) {
             return true;
         }

@@ -21,7 +21,7 @@ async function run(): Promise<void> {
 
       const artifactClient = create()
       const options: UploadOptions = {
-        continueOnError: true
+        continueOnError: false
       }
       await artifactClient.uploadArtifact(
         name || getDefaultArtifactName(),
