@@ -4005,8 +4005,13 @@ function run() {
                 const options = {
                     continueOnError: false
                 };
-                yield artifactClient.uploadArtifact(name || constants_1.getDefaultArtifactName(), searchResult.filesToUpload, searchResult.rootDirectory, options);
-                core.info('Artifact upload has finished successfully!');
+                const uploadResponse = yield artifactClient.uploadArtifact(name || constants_1.getDefaultArtifactName(), searchResult.filesToUpload, searchResult.rootDirectory, options);
+                if (uploadResponse.failedItems.length > 0) {
+                    core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                }
+                else {
+                    core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                }
             }
         }
         catch (err) {
