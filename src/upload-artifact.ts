@@ -21,16 +21,24 @@ async function run(): Promise<void> {
 
       const artifactClient = create()
       const options: UploadOptions = {
-        continueOnError: true
+        continueOnError: false
       }
-      await artifactClient.uploadArtifact(
+      const uploadResponse = await artifactClient.uploadArtifact(
         name || getDefaultArtifactName(),
         searchResult.filesToUpload,
         searchResult.rootDirectory,
         options
       )
 
-      core.info('Artifact upload has finished successfully!')
+      if (uploadResponse.failedItems.length > 0) {
+        core.setFailed(
+          `An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`
+        )
+      } else {
+        core.info(
+          `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
+        )
+      }
     }
   } catch (err) {
     core.setFailed(err.message)
