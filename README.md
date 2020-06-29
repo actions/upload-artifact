@@ -104,6 +104,31 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
 ```
 With the following example, the available artifact (named `artifact` which is the default if no name is provided) would contain both `world.txt` (`hello`) and `extra-file.txt` (`howdy`).
 
+> **_Warning:_**  Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted 
+
+```yaml
+    strategy:
+      matrix:
+          node-version: [8.x, 10.x, 12.x, 13.x]
+    steps:
+        - name: 'Create a file'
+          run: echo ${{ matrix.node-version }} > my_file.txt
+        - name: 'Accidently upload to the same artifact via multiple jobs'
+          uses: 'actions/upload-artifact@v2'
+          with:
+              name: my-artifact
+              path: ${{ github.workspace }}
+```
+
+In the above example, four jobs will upload four different files to the same artifact but there will only be one file available when `my-artifact` is downloaded. Each job overwrites what was previously uploaded. To ensure that jobs don't overwrite existing artifacts, use a different name per job.
+
+```yaml
+          uses: 'actions/upload-artifact@v2'
+          with:
+              name: my-artifact ${{ matrix.node-version }}
+              path: ${{ github.workspace }}
+```
+
 ### Environment Variables and Tilde Expansion
 
 You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expansion is supported.
