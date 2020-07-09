@@ -153,7 +153,7 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: 'Multi-Path-Artifact'
-        path: multi/artifact/path
+        path: multi/artifact
 
     - name: 'Verify Artifact #4'
       run: |
