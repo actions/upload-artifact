@@ -6221,6 +6221,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const glob = __importStar(__webpack_require__(281));
+const path = __importStar(__webpack_require__(622));
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
@@ -6230,6 +6231,57 @@ function getDefaultGlobOptions() {
         implicitDescendants: true,
         omitBrokenSymbolicLinks: true
     };
+}
+/**
+ * If multiple paths are specific, the least common ancestor (LCA) of the search paths is used as
+ * the delimiter to control the directory structure for the artifact. This function returns the LCA
+ * when given an array of search paths
+ *
+ * Example 1: The patterns `/foo/` and `/bar/` returns `/`
+ *
+ * Example 2: The patterns `~/foo/bar/*` and `~/foo/voo/two/*` and `~/foo/mo/` returns `~/foo`
+ */
+function getMultiPathLCA(searchPaths) {
+    if (searchPaths.length < 2) {
+        throw new Error('At least two search paths must be provided');
+    }
+    const commonPaths = new Array();
+    const splitPaths = new Array();
+    let smallestPathLength = Number.MAX_SAFE_INTEGER;
+    // split each of the search paths using the platform specific separator
+    for (const searchPath of searchPaths) {
+        core_1.debug(`Using search path ${searchPath}`);
+        const splitSearchPath = searchPath.split(path.sep);
+        // keep track of the smallest path length so that we don't accidentally later go out of bounds
+        smallestPathLength = Math.min(smallestPathLength, splitSearchPath.length);
+        splitPaths.push(splitSearchPath);
+    }
+    // on Unix-like file systems, the file separator exists at the beginning of the file path, make sure to preserve it
+    if (searchPaths[0].startsWith(path.sep)) {
+        commonPaths.push(path.sep);
+    }
+    let splitIndex = 0;
+    // function to check if the paths are the same at a specific index
+    function isPathTheSame() {
+        const common = splitPaths[0][splitIndex];
+        for (let i = 1; i < splitPaths.length; i++) {
+            if (common !== splitPaths[i][splitIndex]) {
+                // a non-common index has been reached
+                return false;
+            }
+        }
+        // if all are the same, add to the end result & increment the index
+        commonPaths.push(common);
+        splitIndex++;
+        return true;
+    }
+    // Loop over all the search paths until there is a non-common ancestor or we go out of bounds
+    while (splitIndex < smallestPathLength) {
+        if (!isPathTheSame()) {
+            break;
+        }
+    }
+    return path.join(...commonPaths);
 }
 function findFilesToUpload(searchPath, globOptions) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -6249,13 +6301,16 @@ function findFilesToUpload(searchPath, globOptions) {
                 core_1.debug(`Removing ${searchResult} from rawSearchResults because it is a directory`);
             }
         }
-        /*
-          Only a single search pattern is being included so only 1 searchResult is expected. In the future if multiple search patterns are
-          simultaneously supported this will change
-        */
+        // Calculate the root directory for the artifact using the search paths that were utilized
         const searchPaths = globber.getSearchPaths();
         if (searchPaths.length > 1) {
-            throw new Error('Only 1 search path should be returned');
+            core_1.info(`Multiple search paths detected. Calculating the least common ancestor of all paths`);
+            const lcaSearchPath = getMultiPathLCA(searchPaths);
+            core_1.info(`The least common ancestor is ${lcaSearchPath} This will be the root directory of the artifact`);
+            return {
+                filesToUpload: searchResults,
+                rootDirectory: lcaSearchPath
+            };
         }
         /*
           Special case for a single file artifact that is uploaded without a directory or wildcard pattern. The directory structure is
