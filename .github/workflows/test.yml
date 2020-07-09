@@ -157,8 +157,8 @@ jobs:
 
     - name: 'Verify Artifact #4'
       run: |
-        $file1 = "multi/artifact/path/to/dir-1/file1.txt"
-        $file2 = "multi/artifact/path/to/dir-2/file2.txt"
+        $file1 = "multi/artifact/dir-1/file1.txt"
+        $file2 = "multi/artifact/dir-2/file2.txt"
         if(!(Test-Path -path $file1) -or !(Test-Path -path $file2))
         {
             Write-Error "Expected files do not exist"
