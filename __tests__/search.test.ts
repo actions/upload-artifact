@@ -298,7 +298,6 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.length).toEqual(7)
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
       true
@@ -324,7 +323,6 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.length).toEqual(5)
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem2Path)).toEqual(
       true
@@ -336,7 +334,7 @@ describe('Search', () => {
     const searchPath2 = path.join(root, 'folder-h', 'folder-j', 'folder-k')
     const searchPath3 = amazingFileInFolderHPath
 
-    const searchPaths = searchPath1 + '\n' + searchPath2 + '\n' + searchPath3
+    const searchPaths = [searchPath1, searchPath2, searchPath3].join('\n')
     const searchResult = await findFilesToUpload(searchPaths)
 
     expect(searchResult.rootDirectory).toEqual(path.join(root, 'folder-h'))
