@@ -38,7 +38,8 @@ function getMultiPathLCA(searchPaths: string[]): string {
   // split each of the search paths using the platform specific separator
   for (const searchPath of searchPaths) {
     debug(`Using search path ${searchPath}`)
-    const splitSearchPath = searchPath.split(path.sep)
+
+    const splitSearchPath = path.normalize(searchPath).split(path.sep)
 
     // keep track of the smallest path length so that we don't accidentally later go out of bounds
     smallestPathLength = Math.min(smallestPathLength, splitSearchPath.length)
@@ -53,26 +54,25 @@ function getMultiPathLCA(searchPaths: string[]): string {
   let splitIndex = 0
   // function to check if the paths are the same at a specific index
   function isPathTheSame(): boolean {
-    const common = splitPaths[0][splitIndex]
+    const compare = splitPaths[0][splitIndex]
     for (let i = 1; i < splitPaths.length; i++) {
-      if (common !== splitPaths[i][splitIndex]) {
+      if (compare !== splitPaths[i][splitIndex]) {
         // a non-common index has been reached
         return false
       }
     }
-    // if all are the same, add to the end result & increment the index
-    commonPaths.push(common)
-    splitIndex++
     return true
   }
 
   // Loop over all the search paths until there is a non-common ancestor or we go out of bounds
   while (splitIndex < smallestPathLength) {
     if (!isPathTheSame()) {
+      // if all are the same, add to the end result & increment the index
+      commonPaths.push(splitPaths[0][splitIndex])
+      splitIndex++
       break
     }
   }
-
   return path.join(...commonPaths)
 }
 
@@ -111,7 +111,7 @@ export async function findFilesToUpload(
     )
     const lcaSearchPath = getMultiPathLCA(searchPaths)
     info(
-      `The least common ancestor is ${lcaSearchPath} This will be the root directory of the artifact`
+      `The least common ancestor is ${lcaSearchPath}. This will be the root directory of the artifact`
     )
 
     return {
