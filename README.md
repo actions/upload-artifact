@@ -10,6 +10,9 @@ See also [download-artifact](https://github.com/actions/download-artifact).
   - Specify a wildcard pattern
   - Specify an individual file
   - Specify a directory (previously you were limited to only this option)
+  - Multi path upload
+    - Use a combination of individual files, wildcards or directories
+    - Support for excluding certain files
 - Upload an artifact without providing a name
 - Fix for artifact uploads sometimes not working with containers
 - Proxy support out of the box
@@ -45,7 +48,7 @@ steps:
     path: path/to/artifact/ # or path/to/artifact
 ```
 
-### Upload using a Wildcard Pattern:
+### Upload using a Wildcard Pattern
 ```yaml
 - uses: actions/upload-artifact@v2
   with:
@@ -53,11 +56,37 @@ steps:
     path: path/**/[abc]rtifac?/*
 ```
 
+### Upload using Multiple Paths and Exclusions
+```yaml
+- uses: actions/upload-artifact@v2
+  with:
+    name: my-artifact
+    path: |
+      path/output/bin/
+      path/output/test-results
+      !path/**/*.tmp
+```
+
 For supported wildcards along with behavior and documentation, see [@actions/glob](https://github.com/actions/toolkit/tree/master/packages/glob) which is used internally to search for files.
+
+If a wildcard pattern is used, the path hierarchy will be preserved after the first wildcard pattern. 
+
+```
+    path/to/*/directory/foo?.txt =>
+        ∟ path/to/some/directory/foo1.txt
+        ∟ path/to/some/directory/foo2.txt
+        ∟ path/to/other/directory/foo1.txt
+
+    would be flattened and uploaded as =>
+        ∟ some/directory/foo1.txt
+        ∟ some/directory/foo2.txt
+        ∟ other/directory/foo1.txt
+```
+If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude characters do not effect the directory structure.
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
-The [@actions/artifact](https://github.com/actions/toolkit/tree/master/packages/artifact) package is also used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
+The [@actions/artifact](https://github.com/actions/toolkit/tree/master/packages/artifact) package is used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
 
 ### Conditional Artifact Upload
 
