@@ -43,7 +43,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "glob": "^7.1.6",
     "jest": "^26.1.0",
-    "jest-circus": "^25.3.0",
+    "jest-circus": "^26.1.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"
