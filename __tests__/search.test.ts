@@ -231,7 +231,7 @@ describe('Search', () => {
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem5Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
@@ -265,7 +265,7 @@ describe('Search', () => {
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem5Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
@@ -298,6 +298,7 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.length).toEqual(7)
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
       true
@@ -323,6 +324,7 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.length).toEqual(5)
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem2Path)).toEqual(
       true
