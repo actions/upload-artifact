@@ -231,7 +231,7 @@ describe('Search', () => {
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem5Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
@@ -265,7 +265,7 @@ describe('Search', () => {
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
-    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem5Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
@@ -285,5 +285,71 @@ describe('Search', () => {
     )
 
     expect(searchResult.rootDirectory).toEqual(root)
+  })
+
+  it('Multi path search - root directory', async () => {
+    const searchPath1 = path.join(root, 'folder-a')
+    const searchPath2 = path.join(root, 'folder-d')
+
+    const searchPaths = searchPath1 + '\n' + searchPath2
+    const searchResult = await findFilesToUpload(searchPaths)
+
+    expect(searchResult.rootDirectory).toEqual(root)
+    expect(searchResult.filesToUpload.length).toEqual(7)
+    expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(extraSearchItem1Path)).toEqual(
+      true
+    )
+    expect(searchResult.filesToUpload.includes(extraSearchItem2Path)).toEqual(
+      true
+    )
+    expect(searchResult.filesToUpload.includes(extraFileInFolderCPath)).toEqual(
+      true
+    )
+  })
+
+  it('Multi path search - with exclude character', async () => {
+    const searchPath1 = path.join(root, 'folder-a')
+    const searchPath2 = path.join(root, 'folder-d')
+    const searchPath3 = path.join(root, 'folder-a', 'folder-b', '**/extra*.txt')
+
+    // negating the third search path
+    const searchPaths = searchPath1 + '\n' + searchPath2 + '\n!' + searchPath3
+    const searchResult = await findFilesToUpload(searchPaths)
+
+    expect(searchResult.rootDirectory).toEqual(root)
+    expect(searchResult.filesToUpload.length).toEqual(5)
+    expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem3Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(searchItem4Path)).toEqual(true)
+    expect(searchResult.filesToUpload.includes(extraSearchItem2Path)).toEqual(
+      true
+    )
+  })
+
+  it('Multi path search - non root directory', async () => {
+    const searchPath1 = path.join(root, 'folder-h', 'folder-i')
+    const searchPath2 = path.join(root, 'folder-h', 'folder-j', 'folder-k')
+    const searchPath3 = amazingFileInFolderHPath
+
+    const searchPaths = [searchPath1, searchPath2, searchPath3].join('\n')
+    const searchResult = await findFilesToUpload(searchPaths)
+
+    expect(searchResult.rootDirectory).toEqual(path.join(root, 'folder-h'))
+    expect(searchResult.filesToUpload.length).toEqual(4)
+    expect(
+      searchResult.filesToUpload.includes(amazingFileInFolderHPath)
+    ).toEqual(true)
+    expect(searchResult.filesToUpload.includes(extraSearchItem4Path)).toEqual(
+      true
+    )
+    expect(searchResult.filesToUpload.includes(extraSearchItem5Path)).toEqual(
+      true
+    )
+    expect(searchResult.filesToUpload.includes(lonelyFilePath)).toEqual(true)
   })
 })
