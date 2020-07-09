@@ -6275,11 +6275,11 @@ function getMultiPathLCA(searchPaths) {
     // Loop over all the search paths until there is a non-common ancestor or we go out of bounds
     while (splitIndex < smallestPathLength) {
         if (!isPathTheSame()) {
-            // if all are the same, add to the end result & increment the index
-            commonPaths.push(splitPaths[0][splitIndex]);
-            splitIndex++;
             break;
         }
+        // if all are the same, add to the end result & increment the index
+        commonPaths.push(splitPaths[0][splitIndex]);
+        splitIndex++;
     }
     return path.join(...commonPaths);
 }
