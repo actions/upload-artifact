@@ -8,6 +8,9 @@ inputs:
   path:
     description: 'A file, directory or wildcard pattern that describes what to upload'
     required: true
+  skipArchive:
+    description: 'Skip archiving of multiple files, prefers to create multiple artifacts'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
