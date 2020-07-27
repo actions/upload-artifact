@@ -6225,6 +6225,8 @@ const path = __importStar(__webpack_require__(622));
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
+const util_1 = __webpack_require__(669);
+const stats = util_1.promisify(fs_1.stat);
 function getDefaultGlobOptions() {
     return {
         followSymbolicLinks: true,
@@ -6293,7 +6295,9 @@ function findFilesToUpload(searchPath, globOptions) {
           directories so filter any directories out from the raw search results
         */
         for (const searchResult of rawSearchResults) {
-            if (!fs_1.lstatSync(searchResult).isDirectory()) {
+            const fileStats = yield stats(searchResult);
+            // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+            if (!fileStats.isDirectory()) {
                 core_1.debug(`File:${searchResult} was found using the provided searchPath`);
                 searchResults.push(searchResult);
             }
