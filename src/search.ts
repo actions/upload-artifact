@@ -1,8 +1,10 @@
 import * as glob from '@actions/glob'
 import * as path from 'path'
 import {debug, info} from '@actions/core'
-import {lstatSync} from 'fs'
+import {stat} from 'fs'
 import {dirname} from 'path'
+import {promisify} from 'util'
+const stats = promisify(stat)
 
 export interface SearchResult {
   filesToUpload: string[]
@@ -92,7 +94,9 @@ export async function findFilesToUpload(
     directories so filter any directories out from the raw search results
   */
   for (const searchResult of rawSearchResults) {
-    if (!lstatSync(searchResult).isDirectory()) {
+    const fileStats = await stats(searchResult)
+    // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+    if (!fileStats.isDirectory()) {
       debug(`File:${searchResult} was found using the provided searchPath`)
       searchResults.push(searchResult)
     } else {
