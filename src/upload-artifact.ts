@@ -1,12 +1,14 @@
 import * as core from '@actions/core'
-import {create, UploadOptions} from '@actions/artifact'
+import {create, UploadOptions, ArtifactClient} from '@actions/artifact'
 import {Inputs, getDefaultArtifactName} from './constants'
 import {findFilesToUpload} from './search'
+import { basename } from 'path';
 
 async function run(): Promise<void> {
   try {
     const name = core.getInput(Inputs.Name, {required: false})
     const path = core.getInput(Inputs.Path, {required: true})
+    const skipArchive = core.getInput(Inputs.SkipArchive, {required: false})
 
     const searchResult = await findFilesToUpload(path)
     if (searchResult.filesToUpload.length === 0) {
@@ -23,25 +25,43 @@ async function run(): Promise<void> {
       const options: UploadOptions = {
         continueOnError: false
       }
-      const uploadResponse = await artifactClient.uploadArtifact(
-        name || getDefaultArtifactName(),
-        searchResult.filesToUpload,
-        searchResult.rootDirectory,
-        options
-      )
 
-      if (uploadResponse.failedItems.length > 0) {
-        core.setFailed(
-          `An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`
-        )
+      const uploadedArtifacts: string[] = [];
+
+      if (skipArchive) {
+        for (const file of searchResult.filesToUpload) {
+          const resultName = await uploadArtifacts(artifactClient, [file], searchResult.rootDirectory, options, basename(file));
+          resultName && uploadedArtifacts.push(resultName);
+        }
       } else {
-        core.info(
-          `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
-        )
+        const resultName = await uploadArtifacts(artifactClient, searchResult.filesToUpload, searchResult.rootDirectory, options, name);
+        resultName && uploadedArtifacts.push(resultName);
       }
+    
     }
   } catch (err) {
     core.setFailed(err.message)
+  }
+}
+
+async function uploadArtifacts(artifactClient: ArtifactClient, files: string[], rootDirectory: string, options: UploadOptions, name = getDefaultArtifactName()): Promise<string | undefined> {
+  const uploadResponse = await artifactClient.uploadArtifact(
+    name,
+    files,
+    rootDirectory,
+    options
+  )
+
+  if (uploadResponse.failedItems.length > 0) {
+    core.setFailed(
+      `An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`
+    )
+  } else {
+    core.info(
+      `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
+    )
+
+    return uploadResponse.artifactName;
   }
 }
 
