@@ -1,7 +1,7 @@
 export enum Inputs {
   Name = 'name',
   Path = 'path',
-  SkipArchive = 'skipArchive',
+  SkipArchive = 'skipArchive'
 }
 
 export function getDefaultArtifactName(): string {

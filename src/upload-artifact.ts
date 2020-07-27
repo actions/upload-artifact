@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {create, UploadOptions, ArtifactClient} from '@actions/artifact'
 import {Inputs, getDefaultArtifactName} from './constants'
 import {findFilesToUpload} from './search'
-import { basename } from 'path';
+import {basename} from 'path'
 
 async function run(): Promise<void> {
   try {
@@ -26,16 +26,28 @@ async function run(): Promise<void> {
         continueOnError: false
       }
 
-      const uploadedArtifacts: string[] = [];
+      const uploadedArtifacts: string[] = []
 
       if (skipArchive) {
         for (const file of searchResult.filesToUpload) {
-          const resultName = await uploadArtifacts(artifactClient, [file], searchResult.rootDirectory, options, basename(file));
-          resultName && uploadedArtifacts.push(resultName);
+          const resultName = await uploadArtifacts(
+            artifactClient,
+            [file],
+            searchResult.rootDirectory,
+            options,
+            basename(file)
+          )
+          resultName && uploadedArtifacts.push(resultName)
         }
       } else {
-        const resultName = await uploadArtifacts(artifactClient, searchResult.filesToUpload, searchResult.rootDirectory, options, name);
-        resultName && uploadedArtifacts.push(resultName);
+        const resultName = await uploadArtifacts(
+          artifactClient,
+          searchResult.filesToUpload,
+          searchResult.rootDirectory,
+          options,
+          name
+        )
+        resultName && uploadedArtifacts.push(resultName)
       }
 
       core.setOutput('uploaded_artifacts', uploadedArtifacts.join(','))
@@ -45,7 +57,13 @@ async function run(): Promise<void> {
   }
 }
 
-async function uploadArtifacts(artifactClient: ArtifactClient, files: string[], rootDirectory: string, options: UploadOptions, name = getDefaultArtifactName()): Promise<string | undefined> {
+async function uploadArtifacts(
+  artifactClient: ArtifactClient,
+  files: string[],
+  rootDirectory: string,
+  options: UploadOptions,
+  name = getDefaultArtifactName()
+): Promise<string | undefined> {
   const uploadResponse = await artifactClient.uploadArtifact(
     name,
     files,
@@ -62,7 +80,7 @@ async function uploadArtifacts(artifactClient: ArtifactClient, files: string[], 
       `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
     )
 
-    return uploadResponse.artifactName;
+    return uploadResponse.artifactName
   }
 }
 
