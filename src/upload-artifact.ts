@@ -37,7 +37,8 @@ async function run(): Promise<void> {
         const resultName = await uploadArtifacts(artifactClient, searchResult.filesToUpload, searchResult.rootDirectory, options, name);
         resultName && uploadedArtifacts.push(resultName);
       }
-    
+
+      core.setOutput('uploaded_artifacts', uploadedArtifacts.join(','))
     }
   } catch (err) {
     core.setFailed(err.message)

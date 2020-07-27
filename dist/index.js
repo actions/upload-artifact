@@ -4008,6 +4008,7 @@ function run() {
                     const resultName = yield uploadArtifacts(artifactClient, searchResult.filesToUpload, searchResult.rootDirectory, options, name);
                     resultName && uploadedArtifacts.push(resultName);
                 }
+                core.setOutput('uploaded_artifacts', uploadedArtifacts.join(','));
             }
         }
         catch (err) {
