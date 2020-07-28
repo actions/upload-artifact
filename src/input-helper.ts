@@ -14,7 +14,9 @@ export function getInputs(): UploadInputs {
 
   if (!noFileBehavior) {
     core.setFailed(
-      `Unrecognized if-no-files-found input. Provided ${ifNoFilesFound}. Available options: ${Object.keys(
+      `Unrecognized ${
+        Inputs.IfNoFilesFound
+      } input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(
         NoFileOptions
       )}`
     )

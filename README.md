@@ -88,6 +88,18 @@ Relative and absolute file paths are both allowed. Relative paths are rooted aga
 
 The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package is used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
 
+### Customization if no files are found
+
+If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found.
+
+```yaml
+- uses: actions/upload-artifact@v2
+  with:
+    name: my-artifact
+    path: path/to/artifact/
+    if-no-files-found: error # 'warn' or 'suppress' are also available, defaults to `warn` 
+```
+
 ### Conditional Artifact Upload
 
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
