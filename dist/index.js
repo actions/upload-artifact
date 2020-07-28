@@ -3997,7 +3997,6 @@ function run() {
             const searchResult = yield search_1.findFilesToUpload(inputs.searchPath);
             if (searchResult.filesToUpload.length === 0) {
                 // No files were found, different use cases warrant different types of behavior if nothing is found
-                console.log(inputs.ifNoFilesFound);
                 switch (inputs.ifNoFilesFound) {
                     case constants_1.NoFileOptions.warn: {
                         core.warning(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
