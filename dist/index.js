@@ -3987,25 +3987,40 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const artifact_1 = __webpack_require__(214);
-const constants_1 = __webpack_require__(694);
 const search_1 = __webpack_require__(575);
+const input_helper_1 = __webpack_require__(583);
+const constants_1 = __webpack_require__(694);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const name = core.getInput(constants_1.Inputs.Name, { required: false });
-            const path = core.getInput(constants_1.Inputs.Path, { required: true });
-            const searchResult = yield search_1.findFilesToUpload(path);
+            const inputs = input_helper_1.getInputs();
+            const searchResult = yield search_1.findFilesToUpload(inputs.searchPath);
             if (searchResult.filesToUpload.length === 0) {
-                core.warning(`No files were found for the provided path: ${path}. No artifacts will be uploaded.`);
+                // No files were found, different use cases warrant different types of behavior if nothing is found
+                console.log(inputs.ifNoFilesFound);
+                switch (inputs.ifNoFilesFound) {
+                    case constants_1.NoFileOptions.warn: {
+                        core.warning(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
+                        break;
+                    }
+                    case constants_1.NoFileOptions.error: {
+                        core.setFailed(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
+                        break;
+                    }
+                    case constants_1.NoFileOptions.suppress: {
+                        core.info(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
+                        break;
+                    }
+                }
             }
             else {
-                core.info(`With the provided path, there will be ${searchResult.filesToUpload.length} files uploaded`);
+                core.info(`With the provided path, there will be ${searchResult.filesToUpload.length} file(s) uploaded`);
                 core.debug(`Root artifact directory is ${searchResult.rootDirectory}`);
                 const artifactClient = artifact_1.create();
                 const options = {
                     continueOnError: false
                 };
-                const uploadResponse = yield artifactClient.uploadArtifact(name || constants_1.getDefaultArtifactName(), searchResult.filesToUpload, searchResult.rootDirectory, options);
+                const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
                 if (uploadResponse.failedItems.length > 0) {
                     core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
                 }
@@ -6337,6 +6352,40 @@ exports.findFilesToUpload = findFilesToUpload;
 
 /***/ }),
 
+/***/ 583:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const constants_1 = __webpack_require__(694);
+/**
+ * Helper to get all the inputs for the action
+ */
+function getInputs() {
+    const name = core.getInput(constants_1.Inputs.Name);
+    const path = core.getInput(constants_1.Inputs.Path, { required: true });
+    const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
+    const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
+    return {
+        artifactName: name,
+        searchPath: path,
+        ifNoFilesFound: noFileBehavior
+    };
+}
+exports.getInputs = getInputs;
+
+
+/***/ }),
+
 /***/ 590:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -7249,11 +7298,23 @@ var Inputs;
 (function (Inputs) {
     Inputs["Name"] = "name";
     Inputs["Path"] = "path";
+    Inputs["IfNoFilesFound"] = "if-no-files-found";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
-function getDefaultArtifactName() {
-    return 'artifact';
-}
-exports.getDefaultArtifactName = getDefaultArtifactName;
+var NoFileOptions;
+(function (NoFileOptions) {
+    /**
+     * Default. Output a warning but do not fail the action
+     */
+    NoFileOptions[NoFileOptions["warn"] = 0] = "warn";
+    /**
+     * Fail the action with an error message
+     */
+    NoFileOptions[NoFileOptions["error"] = 1] = "error";
+    /**
+     * Do not output any warnings or errors, the action does not fail
+     */
+    NoFileOptions[NoFileOptions["suppress"] = 2] = "suppress";
+})(NoFileOptions = exports.NoFileOptions || (exports.NoFileOptions = {}));
 
 
 /***/ }),
