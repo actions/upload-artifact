@@ -12,6 +12,14 @@ export function getInputs(): UploadInputs {
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
 
+  if (!noFileBehavior) {
+    core.setFailed(
+      `Unrecognized if-no-files-found input. Provided ${ifNoFilesFound}. Available options include ${Object.keys(
+        NoFileOptions
+      ).map(k => NoFileOptions[k as string])}`
+    )
+  }
+
   return {
     artifactName: name,
     searchPath: path,

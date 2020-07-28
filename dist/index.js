@@ -6374,6 +6374,9 @@ function getInputs() {
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
+    if (!noFileBehavior) {
+        core.setFailed(`Unrecognized if-no-files-found input. Provided ${ifNoFilesFound}. Available options include ${Object.keys(constants_1.NoFileOptions).map(k => constants_1.NoFileOptions[k])}`);
+    }
     return {
         artifactName: name,
         searchPath: path,
