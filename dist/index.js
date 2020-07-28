@@ -6375,7 +6375,7 @@ function getInputs() {
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
-        core.setFailed(`Unrecognized if-no-files-found input. Provided ${ifNoFilesFound}. Available options include ${Object.keys(constants_1.NoFileOptions).map(k => constants_1.NoFileOptions[k])}`);
+        core.setFailed(`Unrecognized if-no-files-found input. Provided ${ifNoFilesFound}. Available options include ${Object.keys(constants_1.NoFileOptions)}`);
     }
     return {
         artifactName: name,
@@ -7307,15 +7307,15 @@ var NoFileOptions;
     /**
      * Default. Output a warning but do not fail the action
      */
-    NoFileOptions[NoFileOptions["warn"] = 0] = "warn";
+    NoFileOptions["warn"] = "warn";
     /**
      * Fail the action with an error message
      */
-    NoFileOptions[NoFileOptions["error"] = 1] = "error";
+    NoFileOptions["error"] = "error";
     /**
      * Do not output any warnings or errors, the action does not fail
      */
-    NoFileOptions[NoFileOptions["suppress"] = 2] = "suppress";
+    NoFileOptions["suppress"] = "suppress";
 })(NoFileOptions = exports.NoFileOptions || (exports.NoFileOptions = {}));
 
 
