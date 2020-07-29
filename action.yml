@@ -15,7 +15,7 @@ inputs:
       Available Options:
         warn: Output a warning but do not fail the action
         error: Fail the action with an error message
-        suppress: Do not output any warnings or errors, the action does not fail
+        ignore: Do not output any warnings or errors, the action does not fail
     default: 'warn'
 runs:
   using: 'node12'

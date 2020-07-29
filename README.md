@@ -97,7 +97,7 @@ If a path (or paths), result in no files being found for the artifact, the actio
   with:
     name: my-artifact
     path: path/to/artifact/
-    if-no-files-found: error # 'warn' or 'suppress' are also available, defaults to `warn` 
+    if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
 ```
 
 ### Conditional Artifact Upload

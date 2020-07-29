@@ -18,5 +18,5 @@ export enum NoFileOptions {
   /**
    * Do not output any warnings or errors, the action does not fail
    */
-  suppress = 'suppress'
+  ignore = 'ignore'
 }

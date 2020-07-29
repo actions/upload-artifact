@@ -4006,7 +4006,7 @@ function run() {
                         core.setFailed(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
                         break;
                     }
-                    case constants_1.NoFileOptions.suppress: {
+                    case constants_1.NoFileOptions.ignore: {
                         core.info(`No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`);
                         break;
                     }
@@ -7315,7 +7315,7 @@ var NoFileOptions;
     /**
      * Do not output any warnings or errors, the action does not fail
      */
-    NoFileOptions["suppress"] = "suppress";
+    NoFileOptions["ignore"] = "ignore";
 })(NoFileOptions = exports.NoFileOptions || (exports.NoFileOptions = {}));
 
 

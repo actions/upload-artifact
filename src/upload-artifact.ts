@@ -23,7 +23,7 @@ async function run(): Promise<void> {
           )
           break
         }
-        case NoFileOptions.suppress: {
+        case NoFileOptions.ignore: {
           core.info(
             `No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`
           )
