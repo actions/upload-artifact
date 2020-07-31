@@ -1,21 +1,38 @@
 import * as core from '@actions/core'
 import {create, UploadOptions} from '@actions/artifact'
-import {Inputs, getDefaultArtifactName} from './constants'
 import {findFilesToUpload} from './search'
+import {getInputs} from './input-helper'
+import {NoFileOptions} from './constants'
 
 async function run(): Promise<void> {
   try {
-    const name = core.getInput(Inputs.Name, {required: false})
-    const path = core.getInput(Inputs.Path, {required: true})
-
-    const searchResult = await findFilesToUpload(path)
+    const inputs = getInputs()
+    const searchResult = await findFilesToUpload(inputs.searchPath)
     if (searchResult.filesToUpload.length === 0) {
-      core.warning(
-        `No files were found for the provided path: ${path}. No artifacts will be uploaded.`
-      )
+      // No files were found, different use cases warrant different types of behavior if nothing is found
+      switch (inputs.ifNoFilesFound) {
+        case NoFileOptions.warn: {
+          core.warning(
+            `No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`
+          )
+          break
+        }
+        case NoFileOptions.error: {
+          core.setFailed(
+            `No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`
+          )
+          break
+        }
+        case NoFileOptions.ignore: {
+          core.info(
+            `No files were found with the provided path: ${inputs.searchPath}. No artifacts will be uploaded.`
+          )
+          break
+        }
+      }
     } else {
       core.info(
-        `With the provided path, there will be ${searchResult.filesToUpload.length} files uploaded`
+        `With the provided path, there will be ${searchResult.filesToUpload.length} file(s) uploaded`
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
@@ -24,7 +41,7 @@ async function run(): Promise<void> {
         continueOnError: false
       }
       const uploadResponse = await artifactClient.uploadArtifact(
-        name || getDefaultArtifactName(),
+        inputs.artifactName,
         searchResult.filesToUpload,
         searchResult.rootDirectory,
         options
