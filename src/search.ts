@@ -107,13 +107,12 @@ export async function findFilesToUpload(
       searchResults.push(searchResult)
 
       // detect any files that would be overwritten because of case insensitivity
-      const currentSetSize = set.size
-      set.add(searchResult.toLowerCase())
-      if (currentSetSize === set.size) {
-        // set size has not changed which means paths can be overwritten
+      if (set.has(searchResult.toLowerCase())) {
         info(
           `Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`
         )
+      } else {
+        set.add(searchResult.toLowerCase())
       }
     } else {
       debug(
