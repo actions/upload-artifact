@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/actions/upload-artifact#readme",
   "devDependencies": {
-    "@actions/artifact": "^0.3.2",
+    "@actions/artifact": "^0.3.3",
     "@actions/core": "^1.2.3",
     "@actions/glob": "^0.1.0",
     "@actions/io": "^1.0.2",

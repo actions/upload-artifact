@@ -203,7 +203,32 @@ Environment variables along with context expressions can also be used for input.
 In the top right corner of a workflow run, once the run is over, if you used this action, there will be a `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
 <img src="https://user-images.githubusercontent.com/16109154/72556687-20235a80-386d-11ea-9e2a-b534faa77083.png" width="375" height="140">
 
-There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository. 
+There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
+
+# Limitations
+
+### Permission Loss
+
+:exclamation: File permissions are not maintained during artifact upload :exclamation: For example, if you make a file executable using `chmod` and then upload that file, post-download the file is no longer guaranteed to be set as an executable.
+
+### Case Insensitive Uploads
+
+:exclamation: File uploads are case insensitive :exclamation: If you upload `A.txt` and `a.txt` with the same root path, only a single file will be saved and available during download.
+
+### Maintaining file permissions and case sensitive files
+
+If file permissions and case sensitivity are required, you can `tar` all of your files together before artifact upload. Post download, the `tar` file will maintain file permissions and case sensitivity.
+
+```yaml
+  - name: 'Tar files'
+    run: tar -cvf my_files.tar /path/to/my/directory
+
+  - name: 'Upload Artifact'
+    uses: actions/upload-artifact@v2
+    with:
+      name: my-artifact
+      path: my_files.tar    
+```
 
 ## Additional Documentation
 

@@ -66,7 +66,7 @@ function getMultiPathLCA(searchPaths: string[]): string {
     return true
   }
 
-  // Loop over all the search paths until there is a non-common ancestor or we go out of bounds
+  // loop over all the search paths until there is a non-common ancestor or we go out of bounds
   while (splitIndex < smallestPathLength) {
     if (!isPathTheSame()) {
       break
@@ -90,6 +90,12 @@ export async function findFilesToUpload(
   const rawSearchResults: string[] = await globber.glob()
 
   /*
+    Files are saved with case insensitivity. Uploading both a.txt and A.txt will files to be overwritten
+    Detect any files that could be overwritten for user awareness
+  */
+  const set = new Set<string>()
+
+  /*
     Directories will be rejected if attempted to be uploaded. This includes just empty
     directories so filter any directories out from the raw search results
   */
@@ -99,6 +105,15 @@ export async function findFilesToUpload(
     if (!fileStats.isDirectory()) {
       debug(`File:${searchResult} was found using the provided searchPath`)
       searchResults.push(searchResult)
+
+      // detect any files that would be overwritten because of case insensitivity
+      if (set.has(searchResult.toLowerCase())) {
+        info(
+          `Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`
+        )
+      } else {
+        set.add(searchResult.toLowerCase())
+      }
     } else {
       debug(
         `Removing ${searchResult} from rawSearchResults because it is a directory`
