@@ -4978,11 +4978,12 @@ const utils_1 = __webpack_require__(870);
  * Used for managing http clients during either upload or download
  */
 class HttpManager {
-    constructor(clientCount) {
+    constructor(clientCount, userAgent) {
         if (clientCount < 1) {
             throw new Error('There must be at least one client');
         }
-        this.clients = new Array(clientCount).fill(utils_1.createHttpClient());
+        this.userAgent = userAgent;
+        this.clients = new Array(clientCount).fill(utils_1.createHttpClient(userAgent));
     }
     getClient(index) {
         return this.clients[index];
@@ -4991,7 +4992,7 @@ class HttpManager {
     // for more information see: https://github.com/actions/http-client/blob/04e5ad73cd3fd1f5610a32116b0759eddf6570d2/index.ts#L292
     disposeAndReplaceClient(index) {
         this.clients[index].dispose();
-        this.clients[index] = utils_1.createHttpClient();
+        this.clients[index] = utils_1.createHttpClient(this.userAgent);
     }
     disposeAndReplaceAllClients() {
         for (const [index] of this.clients.entries()) {
@@ -6274,7 +6275,7 @@ function getMultiPathLCA(searchPaths) {
         }
         return true;
     }
-    // Loop over all the search paths until there is a non-common ancestor or we go out of bounds
+    // loop over all the search paths until there is a non-common ancestor or we go out of bounds
     while (splitIndex < smallestPathLength) {
         if (!isPathTheSame()) {
             break;
@@ -6291,6 +6292,11 @@ function findFilesToUpload(searchPath, globOptions) {
         const globber = yield glob.create(searchPath, globOptions || getDefaultGlobOptions());
         const rawSearchResults = yield globber.glob();
         /*
+          Files are saved with case insensitivity. Uploading both a.txt and A.txt will files to be overwritten
+          Detect any files that could be overwritten for user awareness
+        */
+        const set = new Set();
+        /*
           Directories will be rejected if attempted to be uploaded. This includes just empty
           directories so filter any directories out from the raw search results
         */
@@ -6300,6 +6306,13 @@ function findFilesToUpload(searchPath, globOptions) {
             if (!fileStats.isDirectory()) {
                 core_1.debug(`File:${searchResult} was found using the provided searchPath`);
                 searchResults.push(searchResult);
+                // detect any files that would be overwritten because of case insensitivity
+                const currentSetSize = set.size;
+                set.add(searchResult.toLowerCase());
+                if (currentSetSize === set.size) {
+                    // set size has not changed which means paths can be overwritten
+                    core_1.info(`Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`);
+                }
             }
             else {
                 core_1.debug(`Removing ${searchResult} from rawSearchResults because it is a directory`);
@@ -6594,7 +6607,7 @@ const upload_gzip_1 = __webpack_require__(647);
 const stat = util_1.promisify(fs.stat);
 class UploadHttpClient {
     constructor() {
-        this.uploadHttpManager = new http_manager_1.HttpManager(config_variables_1.getUploadFileConcurrency());
+        this.uploadHttpManager = new http_manager_1.HttpManager(config_variables_1.getUploadFileConcurrency(), 'actions/upload-artifact');
         this.statusReporter = new status_reporter_1.StatusReporter(10000);
     }
     /**
@@ -7336,7 +7349,7 @@ const http_manager_1 = __webpack_require__(452);
 const config_variables_1 = __webpack_require__(401);
 class DownloadHttpClient {
     constructor() {
-        this.downloadHttpManager = new http_manager_1.HttpManager(config_variables_1.getDownloadFileConcurrency());
+        this.downloadHttpManager = new http_manager_1.HttpManager(config_variables_1.getDownloadFileConcurrency(), 'actions/download-artifact');
         // downloads are usually significantly faster than uploads so display status information every second
         this.statusReporter = new status_reporter_1.StatusReporter(1000);
     }
@@ -7971,8 +7984,8 @@ function getUploadHeaders(contentType, isKeepAlive, isGzip, uncompressedLength, 
     return requestOptions;
 }
 exports.getUploadHeaders = getUploadHeaders;
-function createHttpClient() {
-    return new http_client_1.HttpClient('actions/artifact', [
+function createHttpClient(userAgent) {
+    return new http_client_1.HttpClient(userAgent, [
         new auth_1.BearerCredentialHandler(config_variables_1.getRuntimeToken())
     ]);
 }
