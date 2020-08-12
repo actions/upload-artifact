@@ -12,3 +12,4 @@ allowed:
 
 reviewed:
   npm:
+  - fs.realpath
