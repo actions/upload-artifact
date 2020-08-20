@@ -200,7 +200,7 @@ Environment variables along with context expressions can also be used for input.
 ```
 
 ## Where does the upload go?
-In the top right corner of a workflow run, once the run is over, if you used this action, there will be a `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
+In the top right corner of a workflow run, once the run is over, if you used this action, there will be an `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
 <img src="https://user-images.githubusercontent.com/16109154/72556687-20235a80-386d-11ea-9e2a-b534faa77083.png" width="375" height="140">
 
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
@@ -209,7 +209,7 @@ There is a trashcan icon that can be used to delete the artifact. This icon will
 
 ### Zipped Artifact Downloads
 
-During a workflow run, files are uploaded and downloaded indivdually using the `upload-artifact` and `download-artifact` actions. However, when a workflow run finishes and an artifact is downloaded from either the UI or through the [download api](https://developer.github.com/v3/actions/artifacts/#download-an-artifact), a zip is dynamically created with all the file contents that were uploaded. There is currently no way to download artifacts after a workflow run finishes in a format other than a zip or to download artifact contents individually. One of the consequences of this limitation is that if a zip is uploaded during a workflow run and then downloaded from the UI, there will be a double zip created. 
+During a workflow run, files are uploaded and downloaded individually using the `upload-artifact` and `download-artifact` actions. However, when a workflow run finishes and an artifact is downloaded from either the UI or through the [download api](https://developer.github.com/v3/actions/artifacts/#download-an-artifact), a zip is dynamically created with all the file contents that were uploaded. There is currently no way to download artifacts after a workflow run finishes in a format other than a zip or to download artifact contents individually. One of the consequences of this limitation is that if a zip is uploaded during a workflow run and then downloaded from the UI, there will be a double zip created. 
 
 ### Permission Loss
 
