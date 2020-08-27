@@ -1,7 +1,8 @@
 export enum Inputs {
   Name = 'name',
   Path = 'path',
-  IfNoFilesFound = 'if-no-files-found'
+  IfNoFilesFound = 'if-no-files-found',
+  RetentionDays = 'retention-days'
 }
 
 export enum NoFileOptions {
