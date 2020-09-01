@@ -4019,12 +4019,14 @@ function run() {
                 const options = {
                     continueOnError: false
                 };
-                const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
-                if (uploadResponse.failedItems.length > 0) {
-                    core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
-                }
-                else {
-                    core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                for (const file of searchResult.filesToUpload) {
+                    const uploadResponse = yield artifactClient.uploadArtifact(file, [file], searchResult.rootDirectory, options);
+                    if (uploadResponse.failedItems.length > 0) {
+                        core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                    }
+                    else {
+                        core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                    }
                 }
             }
         }
@@ -6383,7 +6385,6 @@ const constants_1 = __webpack_require__(694);
  * Helper to get all the inputs for the action
  */
 function getInputs() {
-    const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
@@ -6391,7 +6392,6 @@ function getInputs() {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
     }
     return {
-        artifactName: name,
         searchPath: path,
         ifNoFilesFound: noFileBehavior
     };

@@ -2,11 +2,6 @@ import {NoFileOptions} from './constants'
 
 export interface UploadInputs {
   /**
-   * The name of the artifact that will be uploaded
-   */
-  artifactName: string
-
-  /**
    * The search path used to describe what to upload as part of the artifact
    */
   searchPath: string
