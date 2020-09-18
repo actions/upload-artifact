@@ -6405,6 +6405,9 @@ function getInputs() {
     const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
     if (retentionDaysStr) {
         inputs.retentionDays = parseInt(retentionDaysStr);
+        if (isNaN(inputs.retentionDays)) {
+            core.setFailed('Invalid retention-days');
+        }
     }
     return inputs;
 }

@@ -31,6 +31,9 @@ export function getInputs(): UploadInputs {
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)
   if (retentionDaysStr) {
     inputs.retentionDays = parseInt(retentionDaysStr)
+    if (isNaN(inputs.retentionDays)) {
+      core.setFailed('Invalid retention-days')
+    }
   }
 
   return inputs
