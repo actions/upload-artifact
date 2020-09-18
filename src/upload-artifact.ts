@@ -40,6 +40,10 @@ async function run(): Promise<void> {
       const options: UploadOptions = {
         continueOnError: false
       }
+      if (inputs.retentionDays) {
+        options.retentionDays = inputs.retentionDays
+      }
+
       const uploadResponse = await artifactClient.uploadArtifact(
         inputs.artifactName,
         searchResult.filesToUpload,

@@ -22,9 +22,19 @@ export function getInputs(): UploadInputs {
     )
   }
 
-  return {
+  const inputs = {
     artifactName: name,
     searchPath: path,
     ifNoFilesFound: noFileBehavior
+  } as UploadInputs
+
+  const retentionDaysStr = core.getInput(Inputs.RetentionDays)
+  if (retentionDaysStr) {
+    inputs.retentionDays = parseInt(retentionDaysStr)
+    if (isNaN(inputs.retentionDays)) {
+      core.setFailed('Invalid retention-days')
+    }
   }
+
+  return inputs
 }

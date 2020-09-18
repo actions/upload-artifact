@@ -3767,7 +3767,7 @@ class DefaultArtifactClient {
             }
             else {
                 // Create an entry for the artifact in the file container
-                const response = yield uploadHttpClient.createArtifactInFileContainer(name);
+                const response = yield uploadHttpClient.createArtifactInFileContainer(name, options);
                 if (!response.fileContainerResourceUrl) {
                     core.debug(response.toString());
                     throw new Error('No URL provided by the Artifact Service to upload an artifact to');
@@ -4019,6 +4019,9 @@ function run() {
                 const options = {
                     continueOnError: false
                 };
+                if (inputs.retentionDays) {
+                    options.retentionDays = inputs.retentionDays;
+                }
                 const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
                 if (uploadResponse.failedItems.length > 0) {
                     core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
@@ -4108,6 +4111,10 @@ function getWorkSpaceDirectory() {
     return workspaceDirectory;
 }
 exports.getWorkSpaceDirectory = getWorkSpaceDirectory;
+function getRetentionDays() {
+    return process.env['GITHUB_RETENTION_DAYS'];
+}
+exports.getRetentionDays = getRetentionDays;
 //# sourceMappingURL=config-variables.js.map
 
 /***/ }),
@@ -6390,11 +6397,19 @@ function getInputs() {
     if (!noFileBehavior) {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
     }
-    return {
+    const inputs = {
         artifactName: name,
         searchPath: path,
         ifNoFilesFound: noFileBehavior
     };
+    const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
+    if (retentionDaysStr) {
+        inputs.retentionDays = parseInt(retentionDaysStr);
+        if (isNaN(inputs.retentionDays)) {
+            core.setFailed('Invalid retention-days');
+        }
+    }
+    return inputs;
 }
 exports.getInputs = getInputs;
 
@@ -6666,12 +6681,17 @@ class UploadHttpClient {
      * @param {string} artifactName Name of the artifact being created
      * @returns The response from the Artifact Service if the file container was successfully created
      */
-    createArtifactInFileContainer(artifactName) {
+    createArtifactInFileContainer(artifactName, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const parameters = {
                 Type: 'actions_storage',
                 Name: artifactName
             };
+            // calculate retention period
+            if (options && options.retentionDays) {
+                const maxRetentionStr = config_variables_1.getRetentionDays();
+                parameters.RetentionDays = utils_1.getProperRetention(options.retentionDays, maxRetentionStr);
+            }
             const data = JSON.stringify(parameters, null, 2);
             const artifactUrl = utils_1.getArtifactUrl();
             // use the first client from the httpManager, `keep-alive` is not used so the connection will close immediately
@@ -7314,6 +7334,7 @@ var Inputs;
     Inputs["Name"] = "name";
     Inputs["Path"] = "path";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
+    Inputs["RetentionDays"] = "retention-days";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var NoFileOptions;
 (function (NoFileOptions) {
@@ -8137,6 +8158,21 @@ function createEmptyFilesForArtifact(emptyFilesToCreate) {
     });
 }
 exports.createEmptyFilesForArtifact = createEmptyFilesForArtifact;
+function getProperRetention(retentionInput, retentionSetting) {
+    if (retentionInput < 0) {
+        throw new Error('Invalid retention, minimum value is 1.');
+    }
+    let retention = retentionInput;
+    if (retentionSetting) {
+        const maxRetention = parseInt(retentionSetting);
+        if (!isNaN(maxRetention) && maxRetention < retention) {
+            core_1.warning(`Retention days is greater than the max value allowed by the repository setting, reduce retention to ${maxRetention} days`);
+            retention = maxRetention;
+        }
+    }
+    return retention;
+}
+exports.getProperRetention = getProperRetention;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
