@@ -1,9 +1,9 @@
 ---
 name: "@actions/artifact"
-version: 0.3.5
+version: 0.4.0
 type: npm
-summary: Actions artifact lib
-homepage: https://github.com/actions/toolkit/tree/main/packages/artifact
+summary: 
+homepage: 
 license: mit
 licenses:
 - sources: Auto-generated MIT license text
