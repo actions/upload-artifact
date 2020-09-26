@@ -234,6 +234,26 @@ If file permissions and case sensitivity are required, you can `tar` all of your
       path: my_files.tar    
 ```
 
+### Retention Period
+
+Artifacts are retained for 90 days by default. You can specify a shorter retention period:
+
+```yaml
+  - name: 'Create a file'
+    run: echo "I won't live long" > my_file.txt
+
+  - name: 'Upload Artifact'
+    uses: actions/upload-artifact@v2
+    with:
+      name: my-artifact
+      path: my_file.txt
+      retention-days: 5
+
+```
+
+The retention period must be between 1 and 90 inclusive.
+
+
 ## Additional Documentation
 
 See [persisting workflow data using artifacts](https://help.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts) for additional examples and tips.
