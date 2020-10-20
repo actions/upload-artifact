@@ -4022,12 +4022,28 @@ function run() {
                 if (inputs.retentionDays) {
                     options.retentionDays = inputs.retentionDays;
                 }
-                const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
-                if (uploadResponse.failedItems.length > 0) {
-                    core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                if (inputs.singleArchive === 'false') {
+                    core.info(`Uploading artifacts as individual archives`);
+                    for (const fileToUpload of searchResult.filesToUpload) {
+                        const uploadName = inputs.artifactName.concat('_'.concat(fileToUpload.substring(fileToUpload.lastIndexOf('/') + 1)));
+                        core.info(`Attempting to upload artifact with name: ${uploadName} at path ${fileToUpload}`);
+                        const uploadResponse = yield artifactClient.uploadArtifact(uploadName, [fileToUpload], searchResult.rootDirectory, options);
+                        if (uploadResponse.failedItems.length > 0) {
+                            core.setFailed(`An error was encountered when uploading ${uploadName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                        }
+                        else {
+                            core.info(`Artifact ${uploadName} has been successfully uploaded!`);
+                        }
+                    }
                 }
                 else {
-                    core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                    const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
+                    if (uploadResponse.failedItems.length > 0) {
+                        core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                    }
+                    else {
+                        core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                    }
                 }
             }
         }
@@ -6394,12 +6410,17 @@ function getInputs() {
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
+    const single = core.getInput(constants_1.Inputs.SingleArchive) || 'true';
     if (!noFileBehavior) {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
+    }
+    if (single !== 'true' && single !== 'false') {
+        core.setFailed(`Unrecognized ${constants_1.Inputs.SingleArchive} input. Provided: ${single}. Must be 'true' or 'false'.`);
     }
     const inputs = {
         artifactName: name,
         searchPath: path,
+        singleArchive: single,
         ifNoFilesFound: noFileBehavior
     };
     const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
@@ -7333,6 +7354,7 @@ var Inputs;
 (function (Inputs) {
     Inputs["Name"] = "name";
     Inputs["Path"] = "path";
+    Inputs["SingleArchive"] = "single-archive";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
     Inputs["RetentionDays"] = "retention-days";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
