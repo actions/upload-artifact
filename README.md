@@ -199,6 +199,25 @@ Environment variables along with context expressions can also be used for input.
         path: ${{ github.workspace }}/artifact/**/*
 ```
 
+### Retention Period
+
+Artifacts are retained for 90 days by default. You can specify a shorter retention period using the `retention-days` input:
+
+```yaml
+  - name: 'Create a file'
+    run: echo "I won't live long" > my_file.txt
+
+  - name: 'Upload Artifact'
+    uses: actions/upload-artifact@v2
+    with:
+      name: my-artifact
+      path: my_file.txt
+      retention-days: 5
+
+```
+
+The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
+
 ## Where does the upload go?
 In the top right corner of a workflow run, once the run is over, if you used this action, there will be an `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
 <img src="https://user-images.githubusercontent.com/16109154/72556687-20235a80-386d-11ea-9e2a-b534faa77083.png" width="375" height="140">
@@ -233,25 +252,6 @@ If file permissions and case sensitivity are required, you can `tar` all of your
       name: my-artifact
       path: my_files.tar    
 ```
-
-### Retention Period
-
-Artifacts are retained for 90 days by default. You can specify a shorter retention period:
-
-```yaml
-  - name: 'Create a file'
-    run: echo "I won't live long" > my_file.txt
-
-  - name: 'Upload Artifact'
-    uses: actions/upload-artifact@v2
-    with:
-      name: my-artifact
-      path: my_file.txt
-      retention-days: 5
-
-```
-
-The retention period must be between 1 and 90 inclusive.
 
 
 ## Additional Documentation
