@@ -31,8 +31,9 @@ async function run(): Promise<void> {
         }
       }
     } else {
+      const s = searchResult.filesToUpload.length === 1 ? '' : 's'
       core.info(
-        `With the provided path, there will be ${searchResult.filesToUpload.length} file(s) uploaded`
+        `With the provided path, there will be ${searchResult.filesToUpload.length} file${s} uploaded`
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
