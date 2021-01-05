@@ -219,10 +219,14 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
 The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
 
 ## Where does the upload go?
-In the top right corner of a workflow run, once the run is over, if you used this action, there will be an `Artifacts` dropdown which you can download items from. Here's a screenshot of what it looks like<br/>
-<img src="https://user-images.githubusercontent.com/16109154/72556687-20235a80-386d-11ea-9e2a-b534faa77083.png" width="375" height="140">
+
+At the bottom of the workflow summary page, there is a dedicated section for artifacts. Here's a screenshot of something you might see:
+
+<img src="https://user-images.githubusercontent.com/16109154/103645952-223c6880-4f59-11eb-8268-8dca6937b5f9.png" width="700" height="300">
 
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
+
+The size of the artifact is denoted in bytes. The displayed artifact size denotes the raw uploaded artifact size (the sum of all the individual files uploaded during the workflow run for the artifact), not the compressed size. When you click to download an artifact from the summary page, a compressed zip is created with all the contents of the artifact and the size of the zip that you download may differ significantly from the displayed size. Billing is based on the raw uploaded size and not the size of the zip.
 
 # Limitations
 
