@@ -256,7 +256,11 @@ If file permissions and case sensitivity are required, you can `tar` all of your
       name: my-artifact
       path: my_files.tar    
 ```
+### Too many uploads resulting in 429 responses
 
+A very minute subset of users who upload a very very large amount of artifacts in a short period of time may see their uploads throttled or fail because of `Request was blocked due to exceeding usage of resource 'DBCPU' in namespace` or `Unable to copy file to server StatusCode=TooManyRequests`.
+
+To reduce the chance of this happening, you can reduce the number of HTTP calls made during artifact upload by zipping or archiving the contents of your artifact before an upload starts. As an example, imagine an artifact with 1000 files (each 10 Kb in size). Without any modification, there would be around 1000 HTTP calls made to upload the artifact. If you zip or archive the artifact beforehand, the number of HTTP calls can be dropped to single digit territory. Measures like this will significantly speed up your upload and prevent uploads from being throttled or in some cases fail.
 
 ## Additional Documentation
 
