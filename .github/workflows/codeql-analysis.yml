@@ -2,6 +2,7 @@ name: "Code scanning - action"
 
 on:
   push:
+  pull_request:
     paths-ignore:
       - '**.md'
   schedule:
