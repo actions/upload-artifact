@@ -4078,6 +4078,9 @@ function run() {
                 const s = searchResult.filesToUpload.length === 1 ? '' : 's';
                 core.info(`With the provided path, there will be ${searchResult.filesToUpload.length} file${s} uploaded`);
                 core.debug(`Root artifact directory is ${searchResult.rootDirectory}`);
+                if (searchResult.filesToUpload.length > 10000) {
+                    core.warning(`There are over 10,000 files in this artifact, consider create an archive before upload to improve the upload performance.`);
+                }
                 const artifactClient = artifact_1.create();
                 const options = {
                     continueOnError: false

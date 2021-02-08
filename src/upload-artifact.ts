@@ -37,6 +37,12 @@ async function run(): Promise<void> {
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
+      if (searchResult.filesToUpload.length > 10000) {
+        core.warning(
+          `There are over 10,000 files in this artifact, consider create an archive before upload to improve the upload performance.`
+        )
+      }
+
       const artifactClient = create()
       const options: UploadOptions = {
         continueOnError: false
