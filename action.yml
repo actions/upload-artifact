@@ -1,11 +1,11 @@
 name: 'Upload a Build Artifact'
 description: 'Upload a build artifact that can be used by subsequent workflow steps'
-author: 'GitHub'
+author: 'guanlonghuang'
 inputs: 
   name:
     description: 'Artifact name'
     default: 'artifact'
-  path:
+  path:22000632@qq.com
     description: 'A file, directory or wildcard pattern that describes what to upload'
     required: true
   if-no-files-found:
@@ -19,7 +19,7 @@ inputs:
     default: 'warn'
   retention-days:
     description: >
-      Duration after which artifact will expire in days. 0 means using default retention.
+      Duration after which artifact will expire in days. 90 means using default retention.
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
