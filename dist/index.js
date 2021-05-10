@@ -4028,7 +4028,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const inputs = input_helper_1.getInputs();
-            const searchResult = yield search_1.findFilesToUpload(inputs.searchPath);
+            const globOptions = Object.assign(Object.assign({}, search_1.getDefaultGlobOptions()), { followSymbolicLinks: inputs.followSymlinks });
+            const searchResult = yield search_1.findFilesToUpload(inputs.searchPath, globOptions);
             if (searchResult.filesToUpload.length === 0) {
                 // No files were found, different use cases warrant different types of behavior if nothing is found
                 switch (inputs.ifNoFilesFound) {
@@ -6440,6 +6441,7 @@ function getDefaultGlobOptions() {
         omitBrokenSymbolicLinks: true
     };
 }
+exports.getDefaultGlobOptions = getDefaultGlobOptions;
 /**
  * If multiple paths are specific, the least common ancestor (LCA) of the search paths is used as
  * the delimiter to control the directory structure for the artifact. This function returns the LCA
@@ -6494,7 +6496,8 @@ function getMultiPathLCA(searchPaths) {
 function findFilesToUpload(searchPath, globOptions) {
     return __awaiter(this, void 0, void 0, function* () {
         const searchResults = [];
-        const globber = yield glob.create(searchPath, globOptions || getDefaultGlobOptions());
+        const resolvedGlobOptions = globOptions || getDefaultGlobOptions();
+        const globber = yield glob.create(searchPath, resolvedGlobOptions);
         const rawSearchResults = yield globber.glob();
         /*
           Files are saved with case insensitivity. Uploading both a.txt and A.txt will files to be overwritten
@@ -6506,8 +6509,11 @@ function findFilesToUpload(searchPath, globOptions) {
           directories so filter any directories out from the raw search results
         */
         for (const searchResult of rawSearchResults) {
-            const fileStats = yield stats(searchResult);
-            // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+            /* isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+             * if we're following symlinks so that stat follows the symlink too */
+            const fileStats = resolvedGlobOptions.followSymbolicLinks
+                ? yield stats(searchResult)
+                : yield fs_1.promises.lstat(searchResult);
             if (!fileStats.isDirectory()) {
                 core_1.debug(`File:${searchResult} was found using the provided searchPath`);
                 searchResults.push(searchResult);
@@ -6577,6 +6583,8 @@ function getInputs() {
     const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
+    // getBooleanInput is not released yet :(
+    const followSymlinks = core.getInput(constants_1.Inputs.FollowSymlinks).toLowerCase() == 'true';
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
@@ -6584,7 +6592,8 @@ function getInputs() {
     const inputs = {
         artifactName: name,
         searchPath: path,
-        ifNoFilesFound: noFileBehavior
+        ifNoFilesFound: noFileBehavior,
+        followSymlinks
     };
     const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
     if (retentionDaysStr) {
@@ -7521,6 +7530,7 @@ var Inputs;
     Inputs["Path"] = "path";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
     Inputs["RetentionDays"] = "retention-days";
+    Inputs["FollowSymlinks"] = "follow-symlinks";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var NoFileOptions;
 (function (NoFileOptions) {
