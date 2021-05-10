@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as path from 'path'
 import * as io from '@actions/io'
 import {promises as fs} from 'fs'
-import {findFilesToUpload} from '../src/search'
+import {findFilesToUpload, getDefaultGlobOptions} from '../src/search'
 
 const root = path.join(__dirname, '_temp', 'search')
 const searchItem1Path = path.join(
@@ -110,6 +110,12 @@ describe('Search', () => {
     await fs.writeFile(amazingFileInFolderHPath, 'amazing file')
 
     await fs.writeFile(lonelyFilePath, 'all by itself')
+
+    await fs.symlink(
+      path.join(root, 'folder-d'),
+      path.join(root, 'symlink-to-folder-d')
+    )
+
     /*
       Directory structure of files that get created:
       root/
@@ -136,6 +142,7 @@ describe('Search', () => {
               folder-j/
                   folder-k/
                       lonely-file.txt
+          symlink-to-folder-d/ -> ./folder-d/
           search-item5.txt
     */
   })
@@ -227,7 +234,8 @@ describe('Search', () => {
   it('Wildcard search - Absolute Path', async () => {
     const searchPath = path.join(root, '**/*[Ss]earch*')
     const searchResult = await findFilesToUpload(searchPath)
-    expect(searchResult.filesToUpload.length).toEqual(10)
+    // folder-d items included twice because symlink is followed by default
+    expect(searchResult.filesToUpload.length).toEqual(14)
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
@@ -261,7 +269,8 @@ describe('Search', () => {
       '**/*[Ss]earch*'
     )
     const searchResult = await findFilesToUpload(searchPath)
-    expect(searchResult.filesToUpload.length).toEqual(10)
+    // folder-d items included twice because symlink is followed by default
+    expect(searchResult.filesToUpload.length).toEqual(14)
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
@@ -351,5 +360,16 @@ describe('Search', () => {
       true
     )
     expect(searchResult.filesToUpload.includes(lonelyFilePath)).toEqual(true)
+  })
+
+  it('Declines to follow symlinks when requested', async () => {
+    const searchPath = path.join(root, 'symlink-to-folder-d')
+    const globOptions = {
+      ...getDefaultGlobOptions(),
+      followSymbolicLinks: false
+    }
+
+    const searchResult = await findFilesToUpload(searchPath, globOptions)
+    expect(searchResult.filesToUpload.length).toEqual(1)
   })
 })

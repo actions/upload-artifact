@@ -10,6 +10,11 @@ export function getInputs(): UploadInputs {
   const path = core.getInput(Inputs.Path, {required: true})
 
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
+
+  // getBooleanInput is not released yet :(
+  const followSymlinks =
+    core.getInput(Inputs.FollowSymlinks).toLowerCase() == 'true'
+
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
 
   if (!noFileBehavior) {
@@ -25,7 +30,8 @@ export function getInputs(): UploadInputs {
   const inputs = {
     artifactName: name,
     searchPath: path,
-    ifNoFilesFound: noFileBehavior
+    ifNoFilesFound: noFileBehavior,
+    followSymlinks
   } as UploadInputs
 
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)

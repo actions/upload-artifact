@@ -1,13 +1,18 @@
 import * as core from '@actions/core'
 import {create, UploadOptions} from '@actions/artifact'
-import {findFilesToUpload} from './search'
+import {findFilesToUpload, getDefaultGlobOptions} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
 
 async function run(): Promise<void> {
   try {
     const inputs = getInputs()
-    const searchResult = await findFilesToUpload(inputs.searchPath)
+    const globOptions = {
+      ...getDefaultGlobOptions(),
+      followSymbolicLinks: inputs.followSymlinks
+    }
+    const searchResult = await findFilesToUpload(inputs.searchPath, globOptions)
+
     if (searchResult.filesToUpload.length === 0) {
       // No files were found, different use cases warrant different types of behavior if nothing is found
       switch (inputs.ifNoFilesFound) {

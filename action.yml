@@ -23,6 +23,12 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+  follow-symlinks:
+    description: >
+      Whether symbolic links should be followed and expanded when building the set of files to be
+      archived (true), or if symbolic links should be included in the archived artifact verbatim
+      (false).
+    default: true
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -1,7 +1,7 @@
 import * as glob from '@actions/glob'
 import * as path from 'path'
 import {debug, info} from '@actions/core'
-import {stat} from 'fs'
+import {promises as fsPromises, stat} from 'fs'
 import {dirname} from 'path'
 import {promisify} from 'util'
 const stats = promisify(stat)
@@ -11,7 +11,7 @@ export interface SearchResult {
   rootDirectory: string
 }
 
-function getDefaultGlobOptions(): glob.GlobOptions {
+export function getDefaultGlobOptions(): glob.GlobOptions {
   return {
     followSymbolicLinks: true,
     implicitDescendants: true,
@@ -83,10 +83,8 @@ export async function findFilesToUpload(
   globOptions?: glob.GlobOptions
 ): Promise<SearchResult> {
   const searchResults: string[] = []
-  const globber = await glob.create(
-    searchPath,
-    globOptions || getDefaultGlobOptions()
-  )
+  const resolvedGlobOptions = globOptions || getDefaultGlobOptions()
+  const globber = await glob.create(searchPath, resolvedGlobOptions)
   const rawSearchResults: string[] = await globber.glob()
 
   /*
@@ -100,8 +98,12 @@ export async function findFilesToUpload(
     directories so filter any directories out from the raw search results
   */
   for (const searchResult of rawSearchResults) {
-    const fileStats = await stats(searchResult)
-    // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+    /* isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
+     * if we're following symlinks so that stat follows the symlink too */
+    const fileStats = resolvedGlobOptions.followSymbolicLinks
+      ? await stats(searchResult)
+      : await fsPromises.lstat(searchResult)
+
     if (!fileStats.isDirectory()) {
       debug(`File:${searchResult} was found using the provided searchPath`)
       searchResults.push(searchResult)
