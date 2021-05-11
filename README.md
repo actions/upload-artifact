@@ -82,7 +82,7 @@ If a wildcard pattern is used, the path hierarchy will be preserved after the fi
         ∟ some/directory/foo2.txt
         ∟ other/directory/foo1.txt
 ```
-If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude paths do not effect the directory structure.
+If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude paths do not affect the directory structure.
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
