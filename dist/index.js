@@ -6581,12 +6581,16 @@ const constants_1 = __webpack_require__(694);
 function getInputs() {
     const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
-    const searchPath = Array.isArray(path) ? path : [path];
+    const searchPath = parseFromJSON(path) || [path];
     const defaultArtifactName = 'artifact';
     // Accepts an individual value or an array as input, if array sizes don't match, use default value instead
-    const artifactName = Array.isArray(name)
-        ? name.concat(new Array(Math.max(0, searchPath.length - name.length)).fill(defaultArtifactName))
-        : new Array(searchPath.length).fill(name || defaultArtifactName);
+    const artifactName = parseParamaterToArrayFromInput(name, searchPath.length, defaultArtifactName, (defaultInput, index) => {
+        const artifactIndexStr = index == 0 ? '' : `_${index + 1}`;
+        return `${defaultInput}${artifactIndexStr}`;
+    });
+    // Accepts an individual value or an array as input
+    const retention = core.getInput(constants_1.Inputs.RetentionDays);
+    const retentionDays = parseParamaterToArrayFromInput(retention, searchPath.length, undefined, defaultInput => defaultInput).map(parseRetentionDays);
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
@@ -6595,34 +6599,43 @@ function getInputs() {
     const inputs = {
         artifactName,
         searchPath,
+        retentionDays,
         ifNoFilesFound: noFileBehavior
     };
-    // Accepts an individual value or an array as input
-    const retentionDays = core.getInput(constants_1.Inputs.RetentionDays);
-    if (Array.isArray(retentionDays)) {
-        // If array sizes don't match, use default value instead
-        inputs.retentionDays = retentionDays
-            .map(parseRetentionDays)
-            .concat(new Array(Math.max(0, searchPath.length - retentionDays.length)).fill(undefined));
-    }
-    else {
-        const retention = parseRetentionDays(retentionDays);
-        inputs.retentionDays = new Array(searchPath.length).fill(retention);
-    }
     return inputs;
 }
 exports.getInputs = getInputs;
+function parseParamaterToArrayFromInput(input, requiredLength, defaultInput, defaultFunc) {
+    // Accepts an individual value or an array as input, if array size doesn't match the required length, fill the rest with a default value
+    const inputArray = parseFromJSON(input || '[]');
+    if (inputArray != null) {
+        // If a stringified JSON array is provided, use it and concat it with the default when required
+        return inputArray.concat(Array.from({ length: Math.max(0, requiredLength - inputArray.length) }, (_, index) => defaultFunc(defaultInput, index)));
+    }
+    // If a string is provided, fill the array with that value
+    return Array.from({ length: Math.max(0, requiredLength) }, (_, index) => defaultFunc(input || defaultInput, index));
+}
+function parseFromJSON(jsonStr) {
+    try {
+        const json = JSON.parse(jsonStr);
+        if (Array.isArray(json)) {
+            return json;
+        }
+    }
+    catch (_err) {
+        // Input wasn't a stringified JSON array (string[]), return undefined to signal an invalid JSON was provided
+    }
+    return undefined;
+}
 function parseRetentionDays(retentionDaysStr) {
-    if (retentionDaysStr) {
+    if (retentionDaysStr != null) {
         const retentionDays = parseInt(retentionDaysStr);
         if (isNaN(retentionDays)) {
             core.setFailed('Invalid retention-days');
         }
         return retentionDays;
     }
-    else {
-        return undefined;
-    }
+    return undefined;
 }
 
 
