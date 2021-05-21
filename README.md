@@ -67,6 +67,14 @@ steps:
       !path/**/*.tmp
 ```
 
+### Upload multiple artifacts using a JSON string
+```yaml
+- uses: actions/upload-artifact@v2
+  with:
+    name: '["my-artifact", "my-artifact-2"]'
+    path: '["path/to/artifact/1/", "path/to/artifact/2/"]'
+```
+
 For supported wildcards along with behavior and documentation, see [@actions/glob](https://github.com/actions/toolkit/tree/main/packages/glob) which is used internally to search for files.
 
 If a wildcard pattern is used, the path hierarchy will be preserved after the first wildcard pattern. 
