@@ -125,7 +125,7 @@ If not provided, `artifact` will be used as the default name which will manifest
 
 ### Uploading to the same artifact
 
-Each artifact behaves as a file share. Uploading to the same artifact multiple times in the same workflow can overwrite and append already uploaded files
+With the following example, the available artifact (named `artifact` by default if no name is provided) would contain both `world.txt` (`hello`) and `extra-file.txt` (`howdy`).
 
 ```yaml
 - run: echo hi > world.txt
@@ -143,9 +143,10 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
   with:
     path: world.txt
 ```
-With the following example, the available artifact (named `artifact` which is the default if no name is provided) would contain both `world.txt` (`hello`) and `extra-file.txt` (`howdy`).
 
 > **_Warning:_**  Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted 
+
+Each artifact behaves as a file share. Uploading to the same artifact multiple times in the same workflow can overwrite and append already uploaded files
 
 ```yaml
     strategy:
