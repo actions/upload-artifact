@@ -39,7 +39,7 @@ async function run(): Promise<void> {
 
       if (searchResult.filesToUpload.length > 10000) {
         core.warning(
-          `There are over 10,000 files in this artifact, consider create an archive before upload to improve the upload performance.`
+          `There are over 10,000 files in this artifact, consider creating an archive before upload to improve the upload performance.`
         )
       }
 
