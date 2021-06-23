@@ -62,7 +62,6 @@ function wrappy (fn, cb) {
     wrapper[k] = fn[k]
   })
 
-  console.log("gotcha, dummy!")
   return wrapper
 
   function wrapper() {
