@@ -24,6 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - run: npm install
       - run: mv dist/index.js /tmp
       - run: npm run release
       - run: git diff --ignore-all-space dist/index.js /tmp/index.js
