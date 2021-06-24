@@ -30,8 +30,8 @@ jobs:
       with:
         node-version: 12.x
 
-    - name: npm install
-      run: npm install
+    - name: Install dependencies
+      run: npm ci
 
     - name: Compile
       run: npm run build
