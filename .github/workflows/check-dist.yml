@@ -29,10 +29,14 @@ jobs:
         with:
           node-version: 12.x
 
-      - run: npm install
-      - run: mv dist/index.js /tmp
-      - run: npm run release
-      - run: git diff --ignore-all-space dist/index.js /tmp/index.js
+      - name: Install dependencies
+        run: npm install
+      - name: Move checked in index.js file to tmp directory
+        run: mv dist/index.js /tmp
+      - name: Create new index.js file
+        run: npm run release
+      - name: Compare expected vs actual index.js file
+        run: git diff --ignore-all-space dist/index.js /tmp/index.js
         id: diff
 
       # If index.js was different than expected, upload the expected version as an artifact
