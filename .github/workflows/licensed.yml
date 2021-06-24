@@ -1,12 +1,12 @@
 name: Licensed
 
 on:
-  push: 
+  push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
   test:
