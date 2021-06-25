@@ -12,6 +12,11 @@ export interface UploadInputs {
   searchPath: string
 
   /**
+   * Whether or not to upload artifacts as a single archive or as individual files
+   */
+  singleArchive: string
+
+  /**
    * The desired behavior if no files are found with the provided search path
    */
   ifNoFilesFound: NoFileOptions

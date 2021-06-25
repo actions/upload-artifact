@@ -1,6 +1,7 @@
 export enum Inputs {
   Name = 'name',
   Path = 'path',
+  SingleArchive = 'single-archive',
   IfNoFilesFound = 'if-no-files-found',
   RetentionDays = 'retention-days'
 }
