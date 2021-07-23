@@ -35,7 +35,7 @@
     "@actions/io": "^1.0.2"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.24",
     "@types/node": "^13.11.1",
     "@typescript-eslint/parser": "^2.27.0",
     "@zeit/ncc": "^0.22.1",
