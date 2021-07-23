@@ -10,7 +10,7 @@
       "plugin:import/warnings",
       "plugin:import/typescript",
       "plugin:prettier/recommended",
-      "prettier/@typescript-eslint"
+      "prettier"
     ],
     "rules": {
        "@typescript-eslint/no-empty-function": "off"

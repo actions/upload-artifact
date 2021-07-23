@@ -1,0 +1,25 @@
+name: Licensed status
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Check licenses
+    steps:
+      - uses: actions/checkout@v2
+        with:
+         fetch-depth: 0 
+      - run: npm ci
+      - name: Install licensed
+        uses: jonabc/setup-licensed@v1
+        with:
+          version: '3.x'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: licensed status
