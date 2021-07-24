@@ -31,7 +31,7 @@
   "dependencies": {
     "@actions/artifact": "^0.5.2",
     "@actions/core": "^1.4.0",
-    "@actions/glob": "^0.1.0",
+    "@actions/glob": "^0.2.0",
     "@actions/io": "^1.1.1"
   },
   "devDependencies": {
