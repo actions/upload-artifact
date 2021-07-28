@@ -2,6 +2,7 @@ version: 2
 updates:
 - package-ecosystem: npm
   open-pull-requests-limit: 30
+  target-branch: chore/dependabot
   directory: /
   schedule:
     interval: weekly
