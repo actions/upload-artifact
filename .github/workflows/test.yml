@@ -28,6 +28,7 @@ jobs:
     - name: Set Node.js 12.x
       uses: actions/setup-node@v2.3.0
       with:
+          cache: npm
         node-version: 12.x
 
     - name: Install dependencies
