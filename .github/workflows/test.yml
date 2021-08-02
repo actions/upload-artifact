@@ -90,7 +90,7 @@ jobs:
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v2.0.10
+      uses: actions/download-artifact@v2
       with:
         name: 'Artifact-A'
         path: some/new/path
