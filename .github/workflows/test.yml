@@ -131,7 +131,7 @@ jobs:
     
     # Download Artifact #3 and verify the correctness of the content
     - name: 'Download artifact #3'
-      uses: actions/download-artifact@v2.0.10
+      uses: actions/download-artifact@v2
       with:
         name: 'GZip-Artifact'
         path: gzip/artifact/path
