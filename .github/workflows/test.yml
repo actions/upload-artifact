@@ -110,7 +110,7 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v2.0.10
+      uses: actions/download-artifact@v2
       with:
         name: 'artifact'
         path: some/other/path
