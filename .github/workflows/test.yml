@@ -151,7 +151,7 @@ jobs:
       shell: pwsh
 
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v2.0.10
+      uses: actions/download-artifact@v2
       with:
         name: 'Multi-Path-Artifact'
         path: multi/artifact
