@@ -1,24 +1,26 @@
 name: Licensed
-
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-
+    tags-ignore:    
+      - '**'
 jobs:
-  test:
+  licenses:
     runs-on: ubuntu-latest
-    name: Check licenses
+    name: Update licenses
     steps:
-      - uses: actions/checkout@v2
-      - run: npm ci
-      - name: Install licensed
-        run: |
-          cd $RUNNER_TEMP
-          curl -Lfs -o licensed.tar.gz https://github.com/github/licensed/releases/download/2.12.2/licensed-2.12.2-linux-x64.tar.gz
-          sudo tar -xzf licensed.tar.gz
-          sudo mv licensed /usr/local/bin/licensed
-      - run: licensed status
+    # if using actions/checkout at major version 2 or greater,
+    # please set fetch-depth to a high number, or to 0.
+    # running this action can require access to more than just the latest commit on a branch
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: jonabc/setup-licensed@v1
+      with:
+        version: 3.x
+    - run: npm install # install your projects dependencies in local environment
+    - id: licensed
+      uses: jonabc/licensed-ci@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
