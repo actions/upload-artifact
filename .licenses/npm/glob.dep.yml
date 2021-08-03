@@ -4,7 +4,7 @@ version: 7.1.7
 type: npm
 summary: a little globber
 homepage: https://github.com/isaacs/node-glob#readme
-license: isc
+license: other
 licenses:
 - sources: LICENSE
   text: |
