@@ -8316,6 +8316,7 @@ exports.createHttpClient = createHttpClient;
 function getArtifactUrl() {
     const artifactUrl = `${config_variables_1.getRuntimeUrl()}_apis/pipelines/workflows/${config_variables_1.getWorkFlowRunId()}/artifacts?api-version=${getApiVersion()}`;
     core_1.debug(`Artifact Url: ${artifactUrl}`);
+    console.log(artifactUrl)
     return artifactUrl;
 }
 exports.getArtifactUrl = getArtifactUrl;
