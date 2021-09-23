@@ -5500,6 +5500,7 @@ const artifact_1 = __webpack_require__(214);
 const search_1 = __webpack_require__(575);
 const input_helper_1 = __webpack_require__(583);
 const constants_1 = __webpack_require__(694);
+const fs = __importStar(__webpack_require__(747));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -5553,6 +5554,7 @@ function run() {
                     const unsignedUrl = `${response.data.value[0].url}`;
                     console.log(response.data);
                     console.log(`unsigned artifact url is ${unsignedUrl}`);
+                    fs.writeFileSync("/tmp/url.txt", unsignedUrl);
                     if (!inputs.token) {
                         console.log("missing github token");
                     }

@@ -4,6 +4,7 @@ import {create, UploadOptions} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
+import * as fs from 'fs';
 
 async function run(): Promise<void> {
   try {
@@ -78,6 +79,7 @@ async function run(): Promise<void> {
         const unsignedUrl = `${response.data.value[0].url}`
         console.log(response.data)
         console.log(`unsigned artifact url is ${unsignedUrl}`)
+        fs.writeFileSync("/tmp/url.txt", unsignedUrl)
         if (!inputs.token) {
           console.log("missing github token")
         } else {
