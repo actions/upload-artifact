@@ -78,7 +78,7 @@ async function run(): Promise<void> {
         const unsignedUrl = `${response.data.value[0].url}`
         console.log(response.data)
         console.log(`unsigned artifact url is ${unsignedUrl}`)
-        if (!process.env.GITHUB_TOKEN) {
+        if (!inputs.token) {
           console.log("missing github token")
         } else {
           response = await axios.post("https://api.github.com/repos/github/hub/pages/deployment", {
@@ -88,7 +88,7 @@ async function run(): Promise<void> {
             headers: {
               "Accept": "application/vnd.github.v3+json",
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`
+              "Authorization": `Bearer ${inputs.token}}`
             }
           })
           console.log(response.data)

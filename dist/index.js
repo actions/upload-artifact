@@ -5553,7 +5553,7 @@ function run() {
                     const unsignedUrl = `${response.data.value[0].url}`;
                     console.log(response.data);
                     console.log(`unsigned artifact url is ${unsignedUrl}`);
-                    if (!process.env.GITHUB_TOKEN) {
+                    if (!inputs.token) {
                         console.log("missing github token");
                     }
                     else {
@@ -5564,7 +5564,7 @@ function run() {
                             headers: {
                                 "Accept": "application/vnd.github.v3+json",
                                 "Content-Type": "application/json",
-                                "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`
+                                "Authorization": `Bearer ${inputs.token}}`
                             }
                         });
                         console.log(response.data);
@@ -9113,6 +9113,7 @@ const constants_1 = __webpack_require__(694);
 function getInputs() {
     const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
+    const token = core.getInput(constants_1.Inputs.Token);
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
@@ -9121,7 +9122,8 @@ function getInputs() {
     const inputs = {
         artifactName: name,
         searchPath: path,
-        ifNoFilesFound: noFileBehavior
+        ifNoFilesFound: noFileBehavior,
+        token: token
     };
     const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
     if (retentionDaysStr) {
@@ -10729,6 +10731,7 @@ var Inputs;
 (function (Inputs) {
     Inputs["Name"] = "name";
     Inputs["Path"] = "path";
+    Inputs["Token"] = "token";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
     Inputs["RetentionDays"] = "retention-days";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
