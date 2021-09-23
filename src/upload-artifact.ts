@@ -81,7 +81,7 @@ async function run(): Promise<void> {
         if (!inputs.token) {
           console.log("missing github token")
         } else {
-          response = await axios.post("https://api.github.com/repos/github/hub/pages/deployment", {
+          response = await axios.post(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`, {
             artifact_url: unsignedUrl,
             pages_build_version: process.env['GITHUB_SHA']
           }, {

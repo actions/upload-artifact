@@ -5557,7 +5557,7 @@ function run() {
                         console.log("missing github token");
                     }
                     else {
-                        response = yield axios_1.default.post("https://api.github.com/repos/github/hub/pages/deployment", {
+                        response = yield axios_1.default.post(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`, {
                             artifact_url: unsignedUrl,
                             pages_build_version: process.env['GITHUB_SHA']
                         }, {
