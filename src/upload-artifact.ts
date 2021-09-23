@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import axios from 'axios';
 import {create, UploadOptions} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
@@ -67,6 +68,16 @@ async function run(): Promise<void> {
           `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
         )
       }
+      let runtimeUrl = process.env['ACTIONS_RUNTIME_URL']
+      console.log(runtimeUrl)
+      const artifactUrl = `${runtimeUrl}_apis/pipelines/workflows/${process.env['GITHUB_RUN_ID']}/artifacts?api-version=6.0-preview`;
+      const response = await axios.get(artifactUrl, {
+        headers:{
+          "Authorization": `Bearer ${process.env["ACTIONS_RUNTIME_TOKEN"]}`,
+          "Content-Type": "application/json"
+        }
+      });
+      console.log(response.data)
     }
   } catch (err) {
     core.setFailed(err.message)
