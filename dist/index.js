@@ -5555,19 +5555,20 @@ function run() {
                     console.log(`unsigned artifact url is ${unsignedUrl}`);
                     if (!process.env.GITHUB_TOKEN) {
                         console.log("missing github token");
-                        return;
                     }
-                    response = yield axios_1.default.post("https://api.github.com/repos/github/hub/pages/deployment", {
-                        artifact_url: unsignedUrl,
-                        pages_build_version: process.env['GITHUB_SHA']
-                    }, {
-                        headers: {
-                            "Accept": "application/vnd.github.v3+json",
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`
-                        }
-                    });
-                    console.log(response.data);
+                    else {
+                        response = yield axios_1.default.post("https://api.github.com/repos/github/hub/pages/deployment", {
+                            artifact_url: unsignedUrl,
+                            pages_build_version: process.env['GITHUB_SHA']
+                        }, {
+                            headers: {
+                                "Accept": "application/vnd.github.v3+json",
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`
+                            }
+                        });
+                        console.log(response.data);
+                    }
                 }
             }
         }
