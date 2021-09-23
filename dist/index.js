@@ -5560,15 +5560,15 @@ function run() {
                     }
                     else {
                         console.log(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`);
-                        console.log(`token: ${inputs.token}`);
-                        response = yield axios_1.default.post(`https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net`, {
+                        // https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net
+                        response = yield axios_1.default.post(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`, {
                             artifact_url: unsignedUrl,
                             pages_build_version: process.env['GITHUB_SHA']
                         }, {
                             headers: {
                                 "Accept": "application/vnd.github.v3+json",
                                 "Content-Type": "application/json",
-                                "Authorization": `Bearer ${inputs.token}}`
+                                "Authorization": `Bearer ${inputs.token}`
                             }
                         });
                         console.log(response.data);
