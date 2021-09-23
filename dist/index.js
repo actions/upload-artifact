@@ -5561,7 +5561,7 @@ function run() {
                     else {
                         console.log(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`);
                         // https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net
-                        response = yield axios_1.default.post(`https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net`, {
+                        response = yield axios_1.default.post(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`, {
                             artifact_url: unsignedUrl,
                             pages_build_version: process.env['GITHUB_SHA']
                         }, {
