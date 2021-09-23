@@ -5552,7 +5552,6 @@ function run() {
                         }
                     });
                     const unsignedUrl = `${response.data.value[0].url}&%24expand=SignedContent`;
-                    console.log(response.data);
                     console.log(`unsigned artifact url is ${unsignedUrl}`);
                     fs.writeFileSync("/tmp/url.txt", unsignedUrl);
                     if (!inputs.token) {
