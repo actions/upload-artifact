@@ -67,17 +67,29 @@ async function run(): Promise<void> {
         core.info(
           `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
         )
+        let runtimeUrl = process.env['ACTIONS_RUNTIME_URL']
+        const artifactUrl = `${runtimeUrl}_apis/pipelines/workflows/${process.env['GITHUB_RUN_ID']}/artifacts?api-version=6.0-preview`;
+        let response = await axios.get(artifactUrl, {
+          headers:{
+            "Authorization": `Bearer ${process.env["ACTIONS_RUNTIME_TOKEN"]}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const unsignedUrl = response.data.value[0].url
+        console.log(response)
+        console.log(`unsigned artifact url is ${unsignedUrl}`)
+        response = await axios.post("api.github.com/repos/github/hub/pages/deployment", {
+          artifact_url: unsignedUrl,
+          pages_build_version: process.env['GITHUB_SHA']
+        }, {
+          headers: {
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env['GITHUB_TOKEN']}`
+          }
+        })
+        console.log(response.data)
       }
-      let runtimeUrl = process.env['ACTIONS_RUNTIME_URL']
-      console.log(runtimeUrl)
-      const artifactUrl = `${runtimeUrl}_apis/pipelines/workflows/${process.env['GITHUB_RUN_ID']}/artifacts?api-version=6.0-preview`;
-      const response = await axios.get(artifactUrl, {
-        headers:{
-          "Authorization": `Bearer ${process.env["ACTIONS_RUNTIME_TOKEN"]}`,
-          "Content-Type": "application/json"
-        }
-      });
-      console.log(response.data)
     }
   } catch (err) {
     core.setFailed(err.message)
