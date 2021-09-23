@@ -75,10 +75,10 @@ async function run(): Promise<void> {
             "Content-Type": "application/json"
           }
         });
-        const unsignedUrl = response.data.value[0].url
-        console.log(response)
+        const unsignedUrl = `${response.data.value[0].url}`
+        console.log(response.data)
         console.log(`unsigned artifact url is ${unsignedUrl}`)
-        response = await axios.post("api.github.com/repos/github/hub/pages/deployment", {
+        response = await axios.post("https://api.github.com/repos/github/hub/pages/deployment", {
           artifact_url: unsignedUrl,
           pages_build_version: process.env['GITHUB_SHA']
         }, {
