@@ -32,7 +32,8 @@
     "@actions/artifact": "^0.5.2",
     "@actions/core": "^1.2.6",
     "@actions/glob": "^0.1.0",
-    "@actions/io": "^1.0.2"
+    "@actions/io": "^1.0.2",
+    "axios": "^0.21.4"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
