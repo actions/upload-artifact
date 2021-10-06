@@ -94,6 +94,7 @@ async function run(): Promise<void> {
               "Authorization": `Bearer ${inputs.token}`
             }
           })
+          console.log("here?")
           core.setOutput("status_url", response.data)
           console.log(response.data)
         }
