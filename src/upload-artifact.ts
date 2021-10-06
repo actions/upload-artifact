@@ -101,6 +101,7 @@ async function run(): Promise<void> {
       }
     }
   } catch (err) {
+    console.log("we got to this error")
     core.setFailed(err.message)
   }
 }
