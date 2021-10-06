@@ -1,9 +1,9 @@
 import * as core from '@actions/core'
 import axios from 'axios';
-import {create, UploadOptions} from '@actions/artifact'
-import {findFilesToUpload} from './search'
-import {getInputs} from './input-helper'
-import {NoFileOptions} from './constants'
+import { create, UploadOptions } from '@actions/artifact'
+import { findFilesToUpload } from './search'
+import { getInputs } from './input-helper'
+import { NoFileOptions } from './constants'
 import * as fs from 'fs';
 
 async function run(): Promise<void> {
@@ -71,7 +71,7 @@ async function run(): Promise<void> {
         let runtimeUrl = process.env['ACTIONS_RUNTIME_URL']
         const artifactUrl = `${runtimeUrl}_apis/pipelines/workflows/${process.env['GITHUB_RUN_ID']}/artifacts?api-version=6.0-preview`;
         let response = await axios.get(artifactUrl, {
-          headers:{
+          headers: {
             "Authorization": `Bearer ${process.env["ACTIONS_RUNTIME_TOKEN"]}`,
             "Content-Type": "application/json"
           }
@@ -94,6 +94,7 @@ async function run(): Promise<void> {
               "Authorization": `Bearer ${inputs.token}`
             }
           })
+          core.setOutput("status_url", response.data)
           console.log(response.data)
         }
       }
