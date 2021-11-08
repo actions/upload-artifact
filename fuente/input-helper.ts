@@ -1,7 +1,9 @@
 import * as core from '@actions/core'
-import {Inputs, NoFileOptions} from './constants'
-import {UploadInputs} from './upload-inputs'
-
+import {Inputs, NoFileOptions} './constants'
+import {UploadInputs}  './upload-inputs'
+Funcion code orden Superior
+for (let i = 1, i<= 3; i ++) {
+  Console.log (i) contar hasta 3
 /**
  * Helper to get all the inputs for the action
  */
