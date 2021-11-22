@@ -1,0 +1,28 @@
+name: "📚 Documentation issues"
+description: Make a suggestion to improve the documentation!
+labels: ['documentation']
+title: '[docs]'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ❗ This is only for documentation updates for files in this repo, ie: `README.md`.
+
+        If you want to suggest changes for the [GitHub Docs](https://docs.github.com/), please [open an issue there](https://github.com/github/docs/issues/new/choose).
+  - type: textarea
+    id: affected
+    attributes:
+      label: What files would you like to change?
+      description: |
+        Please provide permalinks to the specified files and line numbers.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested
+    attributes:
+      label: What are your suggested changes?
+      description: |
+        Give as much detail as you can to help us understand the changes you want to see.
+    validations:
+      required: true

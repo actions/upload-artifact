@@ -1,0 +1,63 @@
+name: "🐛 Bug report"
+description: Let us know about a bug!
+labels: ['bug']
+title: '[bug]'
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: |
+        Please provide a clear and concise description of what the bug is. If applicable, add screenshots to help explain your problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: How can we reproduce it?
+      description: |
+        Please be minimal and precise as possible. If your repo/run is public, please include a URL so it is easier for us to investigate.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else we need to know?
+
+  - type: input
+    id: version
+    attributes:
+      label: What version of the action are you using?
+      placeholder: vX.Y.Z
+      description: |
+        Please check the documentation first since different major versions can have different behaviors.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: What are your runner environments?
+      multiple: true
+      options:
+        - self-hosted
+        - linux
+        - window
+        - macos
+    validations:
+      required: true
+
+  - type: input
+    id: ghes
+    attributes:
+      label: Are you on GitHub Enterprise Server? If so, what version?
+      placeholder: vX.Y
