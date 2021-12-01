@@ -32,8 +32,8 @@ Artifact related issues will be tracked in this repository so please do not open
 6. Make sure your code is correctly formatted: `npm run format`
 7. Make sure your code passes linting: `npm run lint`
 8. Update `dist/index.js` using `npm run release`. This creates a single javascript file that is used as an entry-point for the action
-7. Push to your fork and [submit a pull request][pr]
-8. Pat your self on the back and wait for your pull request to be reviewed and merged.
+9. Push to your fork and [submit a pull request][pr]
+10. Pat your self on the back and wait for your pull request to be reviewed and merged.
 
 Here are a few things you can do that will increase the likelihood of your pull request being accepted:
 

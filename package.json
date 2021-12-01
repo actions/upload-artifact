@@ -7,9 +7,9 @@
     "build": "tsc",
     "release": "ncc build src/upload-artifact.ts && git add -f dist/",
     "check-all": "concurrently \"npm:format-check\" \"npm:lint\" \"npm:test\" \"npm:build\"",
-    "format": "prettier --write **/*.ts",
-    "format-check": "prettier --check **/*.ts",
-    "lint": "eslint **/*.ts",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
+    "lint": "eslint .",
     "test": "jest --testTimeout 10000"
   },
   "repository": {

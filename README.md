@@ -28,16 +28,16 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: actions/checkout@v3
+  - uses: actions/checkout@v3
 
-- run: mkdir -p path/to/artifact
+  - run: mkdir -p path/to/artifact
 
-- run: echo hello > path/to/artifact/world.txt
+  - run: echo hello > path/to/artifact/world.txt
 
-- uses: actions/upload-artifact@v3
-  with:
-    name: my-artifact
-    path: path/to/artifact/world.txt
+  - uses: actions/upload-artifact@v3
+    with:
+      name: my-artifact
+      path: path/to/artifact/world.txt
 ```
 
 ### Upload an Entire Directory
@@ -152,17 +152,17 @@ With the following example, the available artifact (named `artifact` by default 
 Each artifact behaves as a file share. Uploading to the same artifact multiple times in the same workflow can overwrite and append already uploaded files:
 
 ```yaml
-    strategy:
-      matrix:
-          node-version: [8.x, 10.x, 12.x, 13.x]
-    steps:
-        - name: Create a file
-          run: echo ${{ matrix.node-version }} > my_file.txt
-        - name: Accidentally upload to the same artifact via multiple jobs
-          uses: actions/upload-artifact@v3
-          with:
-              name: my-artifact
-              path: ${{ github.workspace }}
+strategy:
+  matrix:
+    node-version: [8.x, 10.x, 12.x, 13.x]
+steps:
+  - name: Create a file
+    run: echo ${{ matrix.node-version }} > my_file.txt
+  - name: Accidentally upload to the same artifact via multiple jobs
+    uses: actions/upload-artifact@v3
+    with:
+      name: my-artifact
+      path: ${{ github.workspace }}
 ```
 
 > **_Warning:_** Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted. When uploading a file with an identical name and path in multiple jobs, uploads may fail with 503 errors due to conflicting uploads happening at the same time. Ensure uploads to identical locations to not interfere with each other.
@@ -170,10 +170,10 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
 In the above example, four jobs will upload four different files to the same artifact but there will only be one file available when `my-artifact` is downloaded. Each job overwrites what was previously uploaded. To ensure that jobs don't overwrite existing artifacts, use a different name per job:
 
 ```yaml
-          uses: actions/upload-artifact@v3
-          with:
-              name: my-artifact ${{ matrix.node-version }}
-              path: ${{ github.workspace }}
+uses: actions/upload-artifact@v3
+with:
+  name: my-artifact ${{ matrix.node-version }}
+  path: ${{ github.workspace }}
 ```
 
 ### Environment Variables and Tilde Expansion
@@ -181,42 +181,42 @@ In the above example, four jobs will upload four different files to the same art
 You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expansion is supported:
 
 ```yaml
-  - run: |
-      mkdir -p ~/new/artifact
-      echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v3
-    with:
-      name: Artifacts-V3
-      path: ~/new/**/*
+- run: |
+    mkdir -p ~/new/artifact
+    echo hello > ~/new/artifact/world.txt
+- uses: actions/upload-artifact@v3
+  with:
+    name: Artifacts-V3
+    path: ~/new/**/*
 ```
 
 Environment variables along with context expressions can also be used for input. For documentation see [context and expression syntax](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions):
 
 ```yaml
-    env:
-      name: my-artifact
-    steps:
-    - run: |
-        mkdir -p ${{ github.workspace }}/artifact
-        echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.name }}-name
-        path: ${{ github.workspace }}/artifact/**/*
+env:
+  name: my-artifact
+steps:
+  - run: |
+      mkdir -p ${{ github.workspace }}/artifact
+      echo hello > ${{ github.workspace }}/artifact/world.txt
+  - uses: actions/upload-artifact@v3
+    with:
+      name: ${{ env.name }}-name
+      path: ${{ github.workspace }}/artifact/**/*
 ```
 
 For environment variables created in other steps, make sure to use the `env` expression syntax
 
 ```yaml
-    steps:
-    - run: | 
-        mkdir testing
-        echo "This is a file to upload" > testing/file.txt
-        echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v3
-      with:
-        name: artifact
-        path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
+steps:
+  - run: |
+      mkdir testing
+      echo "This is a file to upload" > testing/file.txt
+      echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
+  - uses: actions/upload-artifact@v3
+    with:
+      name: artifact
+      path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
 ```
 
 ### Retention Period
@@ -224,15 +224,15 @@ For environment variables created in other steps, make sure to use the `env` exp
 Artifacts are retained for 90 days by default. You can specify a shorter retention period using the `retention-days` input:
 
 ```yaml
-  - name: Create a file
-    run: echo "I won't live long" > my_file.txt
+- name: Create a file
+  run: echo "I won't live long" > my_file.txt
 
-  - name: Upload Artifact
-    uses: actions/upload-artifact@v3
-    with:
-      name: my-artifact
-      path: my_file.txt
-      retention-days: 5
+- name: Upload Artifact
+  uses: actions/upload-artifact@v3
+  with:
+    name: my-artifact
+    path: my_file.txt
+    retention-days: 5
 ```
 
 The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
@@ -266,14 +266,14 @@ During a workflow run, files are uploaded and downloaded individually using the 
 If file permissions and case sensitivity are required, you can `tar` all of your files together before artifact upload. Post download, the `tar` file will maintain file permissions and case sensitivity:
 
 ```yaml
-  - name: Tar files
-    run: tar -cvf my_files.tar /path/to/my/directory
+- name: Tar files
+  run: tar -cvf my_files.tar /path/to/my/directory
 
-  - name: Upload Artifact
-    uses: actions/upload-artifact@v3
-    with:
-      name: my-artifact
-      path: my_files.tar
+- name: Upload Artifact
+  uses: actions/upload-artifact@v3
+  with:
+    name: my-artifact
+    path: my_files.tar
 ```
 
 ### Too many uploads resulting in 429 responses
