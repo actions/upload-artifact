@@ -216,7 +216,7 @@ For environment variables created in other steps, make sure to use the `env` exp
     - uses: actions/upload-artifact@v2
       with:
         name: artifact
-        path: ${{ env.artifactPath }}
+        path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
 ```
 
 ### Retention Period
