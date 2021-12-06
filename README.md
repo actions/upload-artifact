@@ -205,6 +205,20 @@ Environment variables along with context expressions can also be used for input.
         path: ${{ github.workspace }}/artifact/**/*
 ```
 
+For environment variables created in other steps, make sure to use the `env` expression syntax
+
+```
+    steps:
+    - run: | 
+        mkdir testing
+        echo "This is a file to upload" > testing/file.txt
+        echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
+```
+
 ### Retention Period
 
 Artifacts are retained for 90 days by default. You can specify a shorter retention period using the `retention-days` input:
