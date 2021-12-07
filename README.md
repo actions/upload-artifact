@@ -160,7 +160,7 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
     steps:
         - name: Create a file
           run: echo ${{ matrix.node-version }} > my_file.txt
-        - name: Accidently upload to the same artifact via multiple jobs
+        - name: Accidentally upload to the same artifact via multiple jobs
           uses: actions/upload-artifact@v2
           with:
               name: my-artifact
@@ -207,7 +207,7 @@ Environment variables along with context expressions can also be used for input.
 
 For environment variables created in other steps, make sure to use the `env` expression syntax
 
-```
+```yaml
     steps:
     - run: | 
         mkdir testing
