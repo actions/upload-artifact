@@ -3,6 +3,3 @@ contact_links:
   - name: 🙋 Ask a question
     url: https://github.community/c/code-to-cloud/52
     about: Please ask and answer questions on GitHub Support Community.
-  - name: 🔒 Report security vulnerability
-    url: https://bounty.github.com/
-    about: Please report security vulnerabilities to GitHub Security Bug Bounty.
