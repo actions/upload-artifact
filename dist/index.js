@@ -7078,9 +7078,7 @@ class UploadHttpClient {
         return __awaiter(this, void 0, void 0, function* () {
             const fileStat = yield stat(parameters.file);
             const totalFileSize = fileStat.size;
-            // on Windows with mkfifo from MSYS2 stats.isFIFO returns false, so we check if running on Windows node and
-            // if the file has size of 0 to compensate
-            const isFIFO = fileStat.isFIFO() || (process.platform === 'win32' && totalFileSize === 0);
+            const isFIFO = fileStat.isFIFO();
             let offset = 0;
             let isUploadSuccessful = true;
             let failedChunkSizes = 0;
