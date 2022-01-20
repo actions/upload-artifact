@@ -149,8 +149,6 @@ With the following example, the available artifact (named `artifact` by default 
     path: world.txt
 ```
 
-> **_Warning:_**  Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted
-
 Each artifact behaves as a file share. Uploading to the same artifact multiple times in the same workflow can overwrite and append already uploaded files:
 
 ```yaml
@@ -166,6 +164,8 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
               name: my-artifact
               path: ${{ github.workspace }}
 ```
+
+> **_Warning:_** Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted. When uploading a file with an identical name and path in multiple jobs, uploads may fail with 503 errors due to conflicting uploads happening at the same time. Ensure uploads to identical locations to not interfere with each other.
 
 In the above example, four jobs will upload four different files to the same artifact but there will only be one file available when `my-artifact` is downloaded. Each job overwrites what was previously uploaded. To ensure that jobs don't overwrite existing artifacts, use a different name per job:
 
