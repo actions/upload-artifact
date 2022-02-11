@@ -26,3 +26,5 @@ inputs:
 runs:
   using: 'node16'
   main: 'dist/index.js'
+- name: Upload a Build Artifact
+  uses: actions/upload-artifact@v2.3.1
