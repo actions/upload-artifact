@@ -1,4 +1,4 @@
-# Upload-Artifact v2
+# Upload-Artifact v3
 
 This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
 
@@ -34,7 +34,7 @@ steps:
 
 - run: echo hello > path/to/artifact/world.txt
 
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     name: my-artifact
     path: path/to/artifact/world.txt
@@ -43,7 +43,7 @@ steps:
 ### Upload an Entire Directory
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     name: my-artifact
     path: path/to/artifact/ # or path/to/artifact
@@ -52,7 +52,7 @@ steps:
 ### Upload using a Wildcard Pattern
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     name: my-artifact
     path: path/**/[abc]rtifac?/*
@@ -61,7 +61,7 @@ steps:
 ### Upload using Multiple Paths and Exclusions
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     name: my-artifact
     path: |
@@ -97,7 +97,7 @@ The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/ar
 If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found:
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     name: my-artifact
     path: path/to/artifact/
@@ -109,7 +109,7 @@ If a path (or paths), result in no files being found for the artifact, the actio
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   if: failure()
   with:
     name: my-artifact
@@ -121,7 +121,7 @@ To upload artifacts only when the previous step of a job failed, use [`if: failu
 You can upload an artifact without specifying a name
 
 ```yaml
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     path: path/to/artifact/world.txt
 ```
@@ -134,17 +134,17 @@ With the following example, the available artifact (named `artifact` by default 
 
 ```yaml
 - run: echo hi > world.txt
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     path: world.txt
 
 - run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     path: extra-file.txt
 
 - run: echo hello > world.txt
-- uses: actions/upload-artifact@v2
+- uses: actions/upload-artifact@v3
   with:
     path: world.txt
 ```
@@ -159,7 +159,7 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
         - name: Create a file
           run: echo ${{ matrix.node-version }} > my_file.txt
         - name: Accidentally upload to the same artifact via multiple jobs
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v3
           with:
               name: my-artifact
               path: ${{ github.workspace }}
@@ -170,7 +170,7 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
 In the above example, four jobs will upload four different files to the same artifact but there will only be one file available when `my-artifact` is downloaded. Each job overwrites what was previously uploaded. To ensure that jobs don't overwrite existing artifacts, use a different name per job:
 
 ```yaml
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v3
           with:
               name: my-artifact ${{ matrix.node-version }}
               path: ${{ github.workspace }}
@@ -184,9 +184,9 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
   - run: |
       mkdir -p ~/new/artifact
       echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v2
+  - uses: actions/upload-artifact@v3
     with:
-      name: Artifacts-V2
+      name: Artifacts-V3
       path: ~/new/**/*
 ```
 
@@ -199,7 +199,7 @@ Environment variables along with context expressions can also be used for input.
     - run: |
         mkdir -p ${{ github.workspace }}/artifact
         echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: ${{ env.name }}-name
         path: ${{ github.workspace }}/artifact/**/*
@@ -213,7 +213,7 @@ For environment variables created in other steps, make sure to use the `env` exp
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: artifact
         path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
@@ -228,7 +228,7 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
     run: echo "I won't live long" > my_file.txt
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v2
+    uses: actions/upload-artifact@v3
     with:
       name: my-artifact
       path: my_file.txt
@@ -270,7 +270,7 @@ If file permissions and case sensitivity are required, you can `tar` all of your
     run: tar -cvf my_files.tar /path/to/my/directory
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v2
+    uses: actions/upload-artifact@v3
     with:
       name: my-artifact
       path: my_files.tar
