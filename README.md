@@ -28,7 +28,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
 
 - run: mkdir -p path/to/artifact
 
@@ -209,7 +209,7 @@ For environment variables created in other steps, make sure to use the `env` exp
 
 ```yaml
     steps:
-    - run: | 
+    - run: |
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
