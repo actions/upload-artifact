@@ -1,5 +1,7 @@
 # Upload-Artifact v3
 
+[![Test](https://github.com/actions/upload-artifact/actions/workflows/test.yml/badge.svg)](https://github.com/actions/upload-artifact/actions/workflows/test.yml)
+
 This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
 
 See also [download-artifact](https://github.com/actions/download-artifact).
