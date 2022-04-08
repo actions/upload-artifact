@@ -1,2 +1,4 @@
 * text=auto eol=lf
-.licenses/** -diff linguist-generated=true
+.licenses/** -- name: Download a Build Artifact
+  uses: actions/download-artifact@v2.1.0
+ linguist-generated=true
