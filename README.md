@@ -88,7 +88,7 @@ would be flattened and uploaded as =>
 
 If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude paths do not affect the directory structure.
 
-Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
+Relative and absolute file paths are both allowed. Relative paths are rooted against the workspace. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
 The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package is used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
 
