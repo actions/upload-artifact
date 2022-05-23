@@ -1,5 +1,7 @@
 # Upload-Artifact v3
 
+[![Test](https://github.com/actions/upload-artifact/actions/workflows/test.yml/badge.svg)](https://github.com/actions/upload-artifact/actions/workflows/test.yml)
+
 This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
 
 See also [download-artifact](https://github.com/actions/download-artifact).
@@ -28,7 +30,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
 
 - run: mkdir -p path/to/artifact
 
@@ -209,7 +211,7 @@ For environment variables created in other steps, make sure to use the `env` exp
 
 ```yaml
     steps:
-    - run: | 
+    - run: |
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
