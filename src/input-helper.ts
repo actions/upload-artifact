@@ -11,6 +11,7 @@ export function getInputs(): UploadInputs {
 
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
+  const single = core.getInput(Inputs.SingleArchive) || 'true'
 
   if (!noFileBehavior) {
     core.setFailed(
@@ -22,9 +23,16 @@ export function getInputs(): UploadInputs {
     )
   }
 
+  if (single !== 'true' && single !== 'false') {
+    core.setFailed(
+      `Unrecognized ${Inputs.SingleArchive} input. Provided: ${single}. Must be 'true' or 'false'.`
+    )
+  }
+
   const inputs = {
     artifactName: name,
     searchPath: path,
+    singleArchive: single,
     ifNoFilesFound: noFileBehavior
   } as UploadInputs
 
