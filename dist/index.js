@@ -7177,7 +7177,9 @@ function getInputs() {
     const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
-    const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
+    const noFileBehavior = !ifNoFilesFound || ifNoFilesFound === ''
+        ? constants_1.NoFileOptions.warn
+        : constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
     }

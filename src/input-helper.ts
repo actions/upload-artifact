@@ -10,7 +10,10 @@ export function getInputs(): UploadInputs {
   const path = core.getInput(Inputs.Path, {required: true})
 
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
-  const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
+  const noFileBehavior: NoFileOptions =
+    !ifNoFilesFound || ifNoFilesFound === ''
+      ? NoFileOptions.warn
+      : NoFileOptions[ifNoFilesFound]
 
   if (!noFileBehavior) {
     core.setFailed(
