@@ -55,11 +55,14 @@ async function run(): Promise<void> {
 
       const artifactsName = inputs['artifactsName'] || 'artifacts'
       const artifactPerFile = inputs['artifactPerFile'] || false
+      const rootDirectory = searchResult.rootDirectory
+      core.info('rootDirectory: ' + rootDirectory)
+
       if (!artifactPerFile) {
         const uploadResponse = await artifactClient.uploadArtifact(
           artifactsName,
           searchResult.filesToUpload,
-          searchResult.rootDirectory,
+          rootDirectory,
           options
         )
 
@@ -80,9 +83,20 @@ async function run(): Promise<void> {
         const artifactNameRule = inputs['artifactNameRule']
         for (let i = 0; i < filesToUpload.length; i++) {
           const file = filesToUpload[i]
-          core.info(file)
+          core.info('file: ' + file)
 
-          const pathObject = path.parse(file)
+          const pathObject = Object.assign({}, path.parse(file))
+          const pathBase = pathObject.base
+          const pathRoot = path.parse(rootDirectory).dir
+          pathObject.root = pathRoot
+          core.info('root: ' + pathRoot)
+
+          pathObject['path'] = file.slice(
+            pathRoot.length,
+            file.length - path.sep.length - pathBase.length
+          )
+          core.info('path: ' + pathObject['path'])
+
           let artifactName = artifactNameRule
           for (const key of Object.keys(pathObject)) {
             const re = `$\{${key}}`
@@ -91,15 +105,20 @@ async function run(): Promise<void> {
               artifactName = artifactName.replace(re, value)
             }
           }
-          if (artifactName.includes(path.sep)) {
-            core.warning(`${artifactName} includes ${path.sep}`)
-            artifactName = artifactName.split(path.sep).join('_')
+
+          if (artifactName.startsWith(path.sep)) {
+            core.warning(`${artifactName} startsWith ${path.sep}`)
+            artifactName = artifactName.slice(path.sep.length)
           }
           if (artifactName.includes(':')) {
             core.warning(`${artifactName} includes :`)
             artifactName = artifactName.split(':').join('-')
           }
-          core.info(artifactName)
+          if (artifactName.includes(path.sep)) {
+            core.warning(`${artifactName} includes ${path.sep}`)
+            artifactName = artifactName.split(path.sep).join('_')
+          }
+          core.debug(artifactName)
 
           const artifactItemExist = SuccessedItems.includes(artifactName)
           if (artifactItemExist) {

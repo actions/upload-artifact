@@ -4781,8 +4781,10 @@ function run() {
                 }
                 const artifactsName = inputs['artifactsName'] || 'artifacts';
                 const artifactPerFile = inputs['artifactPerFile'] || false;
+                const rootDirectory = searchResult.rootDirectory;
+                core.info('rootDirectory: ' + rootDirectory);
                 if (!artifactPerFile) {
-                    const uploadResponse = yield artifactClient.uploadArtifact(artifactsName, searchResult.filesToUpload, searchResult.rootDirectory, options);
+                    const uploadResponse = yield artifactClient.uploadArtifact(artifactsName, searchResult.filesToUpload, rootDirectory, options);
                     if (uploadResponse.failedItems.length > 0) {
                         core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
                     }
@@ -4797,8 +4799,14 @@ function run() {
                     const artifactNameRule = inputs['artifactNameRule'];
                     for (let i = 0; i < filesToUpload.length; i++) {
                         const file = filesToUpload[i];
-                        core.info(file);
-                        const pathObject = path_1.default.parse(file);
+                        core.info('file: ' + file);
+                        const pathObject = Object.assign({}, path_1.default.parse(file));
+                        const pathBase = pathObject.base;
+                        const pathRoot = path_1.default.parse(rootDirectory).dir;
+                        pathObject.root = pathRoot;
+                        core.info('root: ' + pathRoot);
+                        pathObject['path'] = file.slice(pathRoot.length, file.length - path_1.default.sep.length - pathBase.length);
+                        core.info('path: ' + pathObject['path']);
                         let artifactName = artifactNameRule;
                         for (const key of Object.keys(pathObject)) {
                             const re = `$\{${key}}`;
@@ -4807,15 +4815,19 @@ function run() {
                                 artifactName = artifactName.replace(re, value);
                             }
                         }
-                        if (artifactName.includes(path_1.default.sep)) {
-                            core.warning(`${artifactName} includes ${path_1.default.sep}`);
-                            artifactName = artifactName.split(path_1.default.sep).join('_');
+                        if (artifactName.startsWith(path_1.default.sep)) {
+                            core.warning(`${artifactName} startsWith ${path_1.default.sep}`);
+                            artifactName = artifactName.slice(path_1.default.sep.length);
                         }
                         if (artifactName.includes(':')) {
                             core.warning(`${artifactName} includes :`);
                             artifactName = artifactName.split(':').join('-');
                         }
-                        core.info(artifactName);
+                        if (artifactName.includes(path_1.default.sep)) {
+                            core.warning(`${artifactName} includes ${path_1.default.sep}`);
+                            artifactName = artifactName.split(path_1.default.sep).join('_');
+                        }
+                        core.debug(artifactName);
                         const artifactItemExist = SuccessedItems.includes(artifactName);
                         if (artifactItemExist) {
                             const oldArtifactName = artifactName;

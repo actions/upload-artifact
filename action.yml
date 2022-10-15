@@ -28,25 +28,28 @@ inputs:
     default: "false"
   artifact-name-rule:
     description: >
-      https://nodejs.org/docs/latest-v16.x/api/path.html#pathparsepath
+      // https://nodejs.org/docs/latest-v16.x/api/path.html#pathparsepath
+      // Modified from path.parse()
 
       path.parse('/home/user/dir/file.txt');
       // Returns:
       // { root: '/',
       //   dir: '/home/user/dir',
+      //   path: 'home/user/dir'
       //   base: 'file.txt',
       //   ext: '.txt',
       //   name: 'file' }
 
       ┌─────────────────────┬────────────┐
-      │          dir        │    base    │
-      ├──────┬              ├──────┬─────┤
-      │ root │              │ name │ ext │
+      │          dir       sep   base    │
+      ├──────┬──────────────┼──────┬─────┤
+      │ root │     path     │ name │ ext │
       "  /    home/user/dir / file  .txt "
       └──────┴──────────────┴──────┴─────┘
       (All spaces in the "" line should be ignored. They are purely for formatting.)
 
       Every key need in wrapper: ${}
+      sep just for prompt, can't be used
     default: ${base}
 runs:
   using: 'node16'

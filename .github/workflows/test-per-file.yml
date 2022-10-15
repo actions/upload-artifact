@@ -64,14 +64,12 @@ jobs:
 
         tar -zvcf path/to/dir-3/all.gz path/to/dir-3/*
 
-    # Upload a single file artifact
     - name: 'Upload artifact #1'
       uses: ./
       with:
         path: path/to/dir-1/file1.txt
         artifact-per-file: true
 
-    # Upload using a wildcard pattern, name should default to 'artifact' if not provided
     - name: 'Upload artifact #2'
       uses: ./
       with:
@@ -79,20 +77,18 @@ jobs:
         artifact-per-file: true
         artifact-name-rule: ${dir}-${base}
 
-    # Upload a directory that contains a file that will be uploaded with GZip
     - name: 'Upload artifact #3'
       uses: ./
       with:
         path: path/to/dir-3/*.gz
         artifact-per-file: true
-        artifact-name-rule: ${dir}-${name}${ext}
+        artifact-name-rule: ${path}-${name}${ext}
 
-    # Upload a directory that contains a file that will be uploaded with GZip
     - name: 'Upload artifact #4'
       uses: ./
       with:
         path: |
-          path/**/dir*/
+          path/**/dir-1/
           !path/to/dir-3/*.gz
         artifact-per-file: true
-        artifact-name-rule: ${{ matrix.runs-on }}-${base}
+        artifact-name-rule: ${{ matrix.runs-on }}-${name}
