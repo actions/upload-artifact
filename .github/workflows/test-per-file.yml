@@ -91,4 +91,4 @@ jobs:
           path/**/dir-1/
           !path/to/dir-3/*.gz
         artifact-per-file: true
-        artifact-name-rule: ${{ matrix.runs-on }}-${name}
+        artifact-name-rule: ${{ matrix.runs-on }}-${path}-${name}

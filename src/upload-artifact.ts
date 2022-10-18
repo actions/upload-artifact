@@ -55,6 +55,16 @@ async function run(): Promise<void> {
 
       const artifactsName = inputs['artifactsName'] || 'artifacts'
       const artifactPerFile = inputs['artifactPerFile'] || false
+
+      // GitHub workspace
+      let githubWorkspacePath = process.env['GITHUB_WORKSPACE'] || undefined
+      if (!githubWorkspacePath) {
+        core.warning('GITHUB_WORKSPACE not defined')
+      } else {
+        githubWorkspacePath = path.resolve(githubWorkspacePath)
+        core.info(`GITHUB_WORKSPACE = '${githubWorkspacePath}'`)
+      }
+
       const rootDirectory = searchResult.rootDirectory
       core.info('rootDirectory: ' + rootDirectory)
 
@@ -87,7 +97,9 @@ async function run(): Promise<void> {
 
           const pathObject = Object.assign({}, path.parse(file))
           const pathBase = pathObject.base
-          const pathRoot = path.parse(rootDirectory).dir
+          const pathRoot = githubWorkspacePath
+            ? githubWorkspacePath
+            : path.parse(rootDirectory).dir
           pathObject.root = pathRoot
           core.info('root: ' + pathRoot)
 
@@ -131,7 +143,7 @@ async function run(): Promise<void> {
           const uploadResponse = await artifactClient.uploadArtifact(
             artifactName,
             [file],
-            searchResult.rootDirectory,
+            rootDirectory,
             options
           )
           if (uploadResponse.failedItems.length > 0) {

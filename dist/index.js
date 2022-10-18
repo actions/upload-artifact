@@ -4781,6 +4781,15 @@ function run() {
                 }
                 const artifactsName = inputs['artifactsName'] || 'artifacts';
                 const artifactPerFile = inputs['artifactPerFile'] || false;
+                // GitHub workspace
+                let githubWorkspacePath = process.env['GITHUB_WORKSPACE'] || undefined;
+                if (!githubWorkspacePath) {
+                    core.warning('GITHUB_WORKSPACE not defined');
+                }
+                else {
+                    githubWorkspacePath = path_1.default.resolve(githubWorkspacePath);
+                    core.info(`GITHUB_WORKSPACE = '${githubWorkspacePath}'`);
+                }
                 const rootDirectory = searchResult.rootDirectory;
                 core.info('rootDirectory: ' + rootDirectory);
                 if (!artifactPerFile) {
@@ -4802,7 +4811,9 @@ function run() {
                         core.info('file: ' + file);
                         const pathObject = Object.assign({}, path_1.default.parse(file));
                         const pathBase = pathObject.base;
-                        const pathRoot = path_1.default.parse(rootDirectory).dir;
+                        const pathRoot = githubWorkspacePath
+                            ? githubWorkspacePath
+                            : path_1.default.parse(rootDirectory).dir;
                         pathObject.root = pathRoot;
                         core.info('root: ' + pathRoot);
                         pathObject['path'] = file.slice(pathRoot.length, file.length - path_1.default.sep.length - pathBase.length);
@@ -4835,7 +4846,7 @@ function run() {
                             artifactName = `${i}__${artifactName}`;
                             core.warning(`${oldArtifactName} => ${artifactName}`);
                         }
-                        const uploadResponse = yield artifactClient.uploadArtifact(artifactName, [file], searchResult.rootDirectory, options);
+                        const uploadResponse = yield artifactClient.uploadArtifact(artifactName, [file], rootDirectory, options);
                         if (uploadResponse.failedItems.length > 0) {
                             FailedItems.push(artifactName);
                         }
