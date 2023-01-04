@@ -34,6 +34,9 @@ jobs:
       - name: Move the committed index.js file
         run: mv dist/index.js /tmp
 
+      - name: Rebuild with tsc
+        run: npm run build
+
       - name: Rebuild the index.js file
         run: npm run release
 
