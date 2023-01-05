@@ -5,12 +5,12 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "release": "node_modules/.bin/ncc build src/upload-artifact.ts && git add -f dist/",
+    "release": "./node_modules/.bin/ncc build src/upload-artifact.ts && git add -f dist/",
     "check-all": "concurrently \"npm:format-check\" \"npm:lint\" \"npm:test\" \"npm:build\"",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint **/*.ts",
-    "test": "node_modules/.bin/jest --testTimeout 10000"
+    "test": "./node_modules/.bin/jest --testTimeout 10000"
   },
   "repository": {
     "type": "git",
