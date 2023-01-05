@@ -86,11 +86,9 @@ jobs:
           path/to/dir-[23]/*
           !path/to/dir-3/*.txt
 
-    # Verify artifacts. Switch to download-artifact@v2 once it's out of preview
-
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'Artifact-A'
         path: some/new/path
@@ -110,7 +108,7 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'artifact'
         path: some/other/path
@@ -131,7 +129,7 @@ jobs:
     
     # Download Artifact #3 and verify the correctness of the content
     - name: 'Download artifact #3'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'GZip-Artifact'
         path: gzip/artifact/path
@@ -151,7 +149,7 @@ jobs:
       shell: pwsh
 
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'Multi-Path-Artifact'
         path: multi/artifact
