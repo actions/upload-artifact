@@ -25,10 +25,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Set Node.js 12.x
-      uses: actions/setup-node@v1
+    - name: Setup Node 16
+      uses: actions/setup-node@v3
       with:
-        node-version: 12.x
+        node-version: 16.x
+        cache: 'npm'
 
     - name: Install dependencies
       run: npm ci
@@ -36,14 +37,14 @@ jobs:
     - name: Compile
       run: npm run build
 
-    - name: npm test
-      run: npm test
-
     - name: Lint
       run: npm run lint
 
     - name: Format
       run: npm run format-check
+
+    - name: Test
+      run: npm run test
 
     # Test end-to-end by uploading two artifacts and then downloading them
     - name: Create artifact files
