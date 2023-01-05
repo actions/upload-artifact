@@ -1,0 +1,94 @@
+name: Test Artifact Per File
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  
+jobs:
+
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Compile
+      run: npm run build
+
+    - name: npm test
+      run: npm test
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Format
+      run: npm run format-check
+
+    # Test end-to-end by uploading two artifacts and then downloading them
+    - name: Create artifact files
+      run: |
+        mkdir -p path/to/dir-1
+        mkdir -p path/to/dir-2
+        mkdir -p path/to/dir-3
+        mkdir -p path/from/dir-1
+
+        echo > path/to/dir-1/file1.txt "path/to/dir-1/file1.txt"
+        echo > path/to/dir-2/file1.txt "path/to/dir-2/file1.txt"
+        echo > path/to/dir-2/file2.txt "path/to/dir-2/file2.txt"
+        echo > path/to/dir-3/file1.txt "path/to/dir-3/file1.txt"
+        echo > path/to/dir-3/file2.txt "path/to/dir-3/file2.txt"
+        echo > path/to/dir-3/file3.txt "path/to/dir-3/file3.txt"
+        echo > path/from/dir-1/file1.txt "path/from/dir-1/file1.txt"
+
+        tar -zvcf path/to/dir-3/all.gz path/to/dir-3/*
+
+    - name: 'Upload artifact #1'
+      uses: ./
+      with:
+        path: path/to/dir-1/file1.txt
+        artifact-per-file: true
+
+    - name: 'Upload artifact #2'
+      uses: ./
+      with:
+        path: path/to/dir-2/*
+        artifact-per-file: true
+        artifact-name-rule: ${dir}-${base}
+
+    - name: 'Upload artifact #3'
+      uses: ./
+      with:
+        path: path/to/dir-3/*.gz
+        artifact-per-file: true
+        artifact-name-rule: ${path}-${name}${ext}
+
+    - name: 'Upload artifact #4'
+      uses: ./
+      with:
+        path: |
+          path/**/dir-1/
+          !path/to/dir-3/*.gz
+        artifact-per-file: true
+        artifact-name-rule: ${{ matrix.runs-on }}-${path}-${name}

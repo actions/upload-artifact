@@ -5178,12 +5178,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const artifact_1 = __webpack_require__(214);
 const search_1 = __webpack_require__(575);
 const input_helper_1 = __webpack_require__(583);
 const constants_1 = __webpack_require__(694);
+const path_1 = __importDefault(__webpack_require__(622));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -5220,12 +5224,91 @@ function run() {
                 if (inputs.retentionDays) {
                     options.retentionDays = inputs.retentionDays;
                 }
-                const uploadResponse = yield artifactClient.uploadArtifact(inputs.artifactName, searchResult.filesToUpload, searchResult.rootDirectory, options);
-                if (uploadResponse.failedItems.length > 0) {
-                    core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                const artifactsName = inputs['artifactsName'] || 'artifacts';
+                const artifactPerFile = inputs['artifactPerFile'] || false;
+                // GitHub workspace
+                let githubWorkspacePath = process.env['GITHUB_WORKSPACE'] || undefined;
+                if (!githubWorkspacePath) {
+                    core.warning('GITHUB_WORKSPACE not defined');
                 }
                 else {
-                    core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                    githubWorkspacePath = path_1.default.resolve(githubWorkspacePath);
+                    core.info(`GITHUB_WORKSPACE = '${githubWorkspacePath}'`);
+                }
+                const rootDirectory = searchResult.rootDirectory;
+                core.info('rootDirectory: ' + rootDirectory);
+                if (!artifactPerFile) {
+                    const uploadResponse = yield artifactClient.uploadArtifact(artifactsName, searchResult.filesToUpload, rootDirectory, options);
+                    if (uploadResponse.failedItems.length > 0) {
+                        core.setFailed(`An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`);
+                    }
+                    else {
+                        core.info(`Artifact ${uploadResponse.artifactName} has been successfully uploaded!`);
+                    }
+                }
+                else {
+                    const filesToUpload = searchResult.filesToUpload;
+                    const SuccessedItems = [];
+                    const FailedItems = [];
+                    const artifactNameRule = inputs['artifactNameRule'];
+                    for (let i = 0; i < filesToUpload.length; i++) {
+                        const file = filesToUpload[i];
+                        core.info('file: ' + file);
+                        const pathObject = Object.assign({}, path_1.default.parse(file));
+                        const pathBase = pathObject.base;
+                        const pathRoot = githubWorkspacePath
+                            ? githubWorkspacePath
+                            : path_1.default.parse(rootDirectory).dir;
+                        pathObject.root = pathRoot;
+                        core.info('root: ' + pathRoot);
+                        pathObject['path'] = file.slice(pathRoot.length, file.length - path_1.default.sep.length - pathBase.length);
+                        core.info('path: ' + pathObject['path']);
+                        let artifactName = artifactNameRule;
+                        for (const key of Object.keys(pathObject)) {
+                            const re = `$\{${key}}`;
+                            if (artifactNameRule.includes(re)) {
+                                const value = pathObject[key] || '';
+                                artifactName = artifactName.replace(re, value);
+                            }
+                        }
+                        if (artifactName.startsWith(path_1.default.sep)) {
+                            core.warning(`${artifactName} startsWith ${path_1.default.sep}`);
+                            artifactName = artifactName.slice(path_1.default.sep.length);
+                        }
+                        if (artifactName.includes(':')) {
+                            core.warning(`${artifactName} includes :`);
+                            artifactName = artifactName.split(':').join('-');
+                        }
+                        if (artifactName.includes(path_1.default.sep)) {
+                            core.warning(`${artifactName} includes ${path_1.default.sep}`);
+                            artifactName = artifactName.split(path_1.default.sep).join('_');
+                        }
+                        core.debug(artifactName);
+                        const artifactItemExist = SuccessedItems.includes(artifactName);
+                        if (artifactItemExist) {
+                            const oldArtifactName = artifactName;
+                            core.warning(`${artifactName} artifact alreay exist`);
+                            artifactName = `${i}__${artifactName}`;
+                            core.warning(`${oldArtifactName} => ${artifactName}`);
+                        }
+                        const uploadResponse = yield artifactClient.uploadArtifact(artifactName, [file], rootDirectory, options);
+                        if (uploadResponse.failedItems.length > 0) {
+                            FailedItems.push(artifactName);
+                        }
+                        else {
+                            SuccessedItems.push(artifactName);
+                        }
+                    }
+                    if (FailedItems.length > 0) {
+                        let errMsg = `${FailedItems.length} artifacts failed to upload, they were:\n`;
+                        errMsg += FailedItems.join('\n');
+                        core.setFailed(errMsg);
+                    }
+                    if (SuccessedItems.length > 0) {
+                        let infoMsg = `${SuccessedItems.length} artifacts has been successfully uploaded! They were:\n`;
+                        infoMsg += SuccessedItems.join('\n');
+                        core.info(infoMsg);
+                    }
                 }
             }
         }
@@ -7887,26 +7970,59 @@ const constants_1 = __webpack_require__(694);
  * Helper to get all the inputs for the action
  */
 function getInputs() {
-    const name = core.getInput(constants_1.Inputs.Name);
+    const TRUE_MAP = ['true', 'True', 'TRUE'];
+    let artifactPerFile = false;
+    const artifactPerFileStr = core.getInput(constants_1.Inputs.ArtifactPerFile);
+    if (artifactPerFileStr) {
+        artifactPerFile = TRUE_MAP.includes(artifactPerFileStr) ? true : false;
+    }
+    let name = '';
+    let artifactNameRule = '';
+    if (!artifactPerFile) {
+        name = core.getInput(constants_1.Inputs.Name);
+    }
+    else {
+        artifactNameRule = core.getInput(constants_1.Inputs.ArtifactNameRule) || '${base}';
+    }
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
         core.setFailed(`Unrecognized ${constants_1.Inputs.IfNoFilesFound} input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(constants_1.NoFileOptions)}`);
     }
-    const inputs = {
-        artifactName: name,
-        searchPath: path,
-        ifNoFilesFound: noFileBehavior
-    };
-    const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
-    if (retentionDaysStr) {
-        inputs.retentionDays = parseInt(retentionDaysStr);
-        if (isNaN(inputs.retentionDays)) {
-            core.setFailed('Invalid retention-days');
+    const typedInputs = (artifactPerFile) => {
+        const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
+        if (!artifactPerFile) {
+            const inputs = {
+                artifactsName: name,
+                searchPath: path,
+                ifNoFilesFound: noFileBehavior
+            };
+            if (retentionDaysStr) {
+                inputs.retentionDays = parseInt(retentionDaysStr);
+                if (isNaN(inputs.retentionDays)) {
+                    core.setFailed('Invalid retention-days');
+                }
+            }
+            return inputs;
         }
-    }
-    return inputs;
+        else {
+            const inputs = {
+                searchPath: path,
+                ifNoFilesFound: noFileBehavior,
+                artifactPerFile: artifactPerFile,
+                artifactNameRule: artifactNameRule
+            };
+            if (retentionDaysStr) {
+                inputs.retentionDays = parseInt(retentionDaysStr);
+                if (isNaN(inputs.retentionDays)) {
+                    core.setFailed('Invalid retention-days');
+                }
+            }
+            return inputs;
+        }
+    };
+    return typedInputs(artifactPerFile);
 }
 exports.getInputs = getInputs;
 
@@ -9244,6 +9360,8 @@ var Inputs;
     Inputs["Path"] = "path";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
     Inputs["RetentionDays"] = "retention-days";
+    Inputs["ArtifactPerFile"] = "artifact-per-file";
+    Inputs["ArtifactNameRule"] = "artifact-name-rule";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var NoFileOptions;
 (function (NoFileOptions) {

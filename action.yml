@@ -3,8 +3,8 @@ description: 'Upload a build artifact that can be used by subsequent workflow st
 author: 'GitHub'
 inputs: 
   name:
-    description: 'Artifact name'
-    default: 'artifact'
+    description: 'Artifacts name'
+    default: 'artifacts'
   path:
     description: 'A file, directory or wildcard pattern that describes what to upload'
     required: true
@@ -23,6 +23,34 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+  artifact-per-file:
+    description: enable otption for uploading one artifact per file
+    default: "false"
+  artifact-name-rule:
+    description: >
+      // https://nodejs.org/docs/latest-v16.x/api/path.html#pathparsepath
+      // Modified from path.parse()
+
+      path.parse('/home/user/dir/file.txt');
+      // Returns:
+      // { root: '/',
+      //   dir: '/home/user/dir',
+      //   path: 'home/user/dir'
+      //   base: 'file.txt',
+      //   ext: '.txt',
+      //   name: 'file' }
+
+      ┌─────────────────────┬────────────┐
+      │          dir       sep   base    │
+      ├──────┬──────────────┼──────┬─────┤
+      │ root │     path     │ name │ ext │
+      "  /    home/user/dir / file  .txt "
+      └──────┴──────────────┴──────┴─────┘
+      (All spaces in the "" line should be ignored. They are purely for formatting.)
+
+      Every key need in wrapper: ${}
+      sep just for prompt, can't be used
+    default: ${base}
 runs:
   using: 'node16'
   main: 'dist/index.js'

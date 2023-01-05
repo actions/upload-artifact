@@ -4,7 +4,7 @@ export interface UploadInputs {
   /**
    * The name of the artifact that will be uploaded
    */
-  artifactName: string
+  artifactsName: string
 
   /**
    * The search path used to describe what to upload as part of the artifact
@@ -20,4 +20,21 @@ export interface UploadInputs {
    * Duration after which artifact will expire in days
    */
   retentionDays: number
+}
+
+export interface UploadPerFile {
+  searchPath: string
+  ifNoFilesFound: NoFileOptions
+  retentionDays: number
+
+  // artifact-per-file: {true | false}
+  // @default: false
+  artifactPerFile: boolean
+
+  // https://nodejs.org/docs/latest-v16.x/api/path.html#pathparsepath
+  // @args: searchResult.filesToUpload
+  // @return: String.replace()
+  // @default: pathObject.base
+  // @default rule: "${base}"
+  artifactNameRule: string
 }
