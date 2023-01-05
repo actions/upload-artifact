@@ -37,7 +37,10 @@ jobs:
       run: npm run build
 
     - name: npm test
-      run: npm run test
+      run: |
+        npm install
+        npm ci
+        npm run test
 
     - name: Lint
       run: npm run lint
