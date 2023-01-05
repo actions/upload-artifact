@@ -40,6 +40,7 @@ jobs:
       run: |
         npm install
         npm ci
+        ls node_modules/jest
         npm run test
 
     - name: Lint
