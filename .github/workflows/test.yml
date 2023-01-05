@@ -32,17 +32,13 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Compile
       run: npm run build
 
-    - name: npm test
-      run: |
-        npm install
-        npm ci
-        ls node_modules/jest
-        npm run test
+    - name: Test
+      run: npm run test
 
     - name: Lint
       run: npm run lint
