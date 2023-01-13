@@ -10688,6 +10688,7 @@ var Inputs;
     Inputs["Path"] = "path";
     Inputs["IfNoFilesFound"] = "if-no-files-found";
     Inputs["RetentionDays"] = "retention-days";
+    Inputs["RootDirectory"] = "root-directory";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var NoFileOptions;
 (function (NoFileOptions) {
@@ -10746,6 +10747,7 @@ const constants_1 = __nccwpck_require__(9042);
 function getInputs() {
     const name = core.getInput(constants_1.Inputs.Name);
     const path = core.getInput(constants_1.Inputs.Path, { required: true });
+    const rootDirectory = core.getInput(constants_1.Inputs.RootDirectory);
     const ifNoFilesFound = core.getInput(constants_1.Inputs.IfNoFilesFound);
     const noFileBehavior = constants_1.NoFileOptions[ifNoFilesFound];
     if (!noFileBehavior) {
@@ -10754,7 +10756,8 @@ function getInputs() {
     const inputs = {
         artifactName: name,
         searchPath: path,
-        ifNoFilesFound: noFileBehavior
+        ifNoFilesFound: noFileBehavior,
+        rootDirectory: rootDirectory
     };
     const retentionDaysStr = core.getInput(constants_1.Inputs.RetentionDays);
     if (retentionDaysStr) {
@@ -10874,7 +10877,7 @@ function getMultiPathLCA(searchPaths) {
     }
     return path.join(...commonPaths);
 }
-function findFilesToUpload(searchPath, globOptions) {
+function findFilesToUpload(searchPath, manualRootDirectory, globOptions) {
     return __awaiter(this, void 0, void 0, function* () {
         const searchResults = [];
         const globber = yield glob.create(searchPath, globOptions || getDefaultGlobOptions());
@@ -10905,6 +10908,13 @@ function findFilesToUpload(searchPath, globOptions) {
             else {
                 (0, core_1.debug)(`Removing ${searchResult} from rawSearchResults because it is a directory`);
             }
+        }
+        // Root directory manually set in inputs
+        if (manualRootDirectory) {
+            return {
+                filesToUpload: searchResults,
+                rootDirectory: manualRootDirectory
+            };
         }
         // Calculate the root directory for the artifact using the search paths that were utilized
         const searchPaths = globber.getSearchPaths();
@@ -10985,7 +10995,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const inputs = (0, input_helper_1.getInputs)();
-            const searchResult = yield (0, search_1.findFilesToUpload)(inputs.searchPath);
+            const searchResult = yield (0, search_1.findFilesToUpload)(inputs.searchPath, inputs.rootDirectory);
             if (searchResult.filesToUpload.length === 0) {
                 // No files were found, different use cases warrant different types of behavior if nothing is found
                 switch (inputs.ifNoFilesFound) {

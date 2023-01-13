@@ -20,4 +20,9 @@ export interface UploadInputs {
    * Duration after which artifact will expire in days
    */
   retentionDays: number
+
+  /**
+   * A file path that denotes the root directory of the files being uploaded
+   */
+  rootDirectory: string
 }

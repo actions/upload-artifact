@@ -80,6 +80,7 @@ function getMultiPathLCA(searchPaths: string[]): string {
 
 export async function findFilesToUpload(
   searchPath: string,
+  manualRootDirectory?: string,
   globOptions?: glob.GlobOptions
 ): Promise<SearchResult> {
   const searchResults: string[] = []
@@ -118,6 +119,14 @@ export async function findFilesToUpload(
       debug(
         `Removing ${searchResult} from rawSearchResults because it is a directory`
       )
+    }
+  }
+
+  // Root directory manually set in inputs
+  if (manualRootDirectory) {
+    return {
+      filesToUpload: searchResults,
+      rootDirectory: manualRootDirectory
     }
   }
 
