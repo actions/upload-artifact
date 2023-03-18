@@ -90,6 +90,8 @@ If multiple paths are provided as input, the least common ancestor of all the se
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
+> **_Warning:_** If any directory contains no files (is empty), that directory will not be added to the final artifact.
+
 The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package is used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
 
 ### Customization if no files are found
