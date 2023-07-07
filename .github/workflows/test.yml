@@ -2,7 +2,7 @@ name: Test
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - '**.md'
   pull_request:
@@ -23,21 +23,19 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set Node.js 12.x
-      uses: actions/setup-node@v1
+    - name: Setup Node 16
+      uses: actions/setup-node@v3
       with:
-        node-version: 12.x
+        node-version: 16.x
+        cache: 'npm'
 
-    - name: npm install
-      run: npm install
+    - name: Install dependencies
+      run: npm ci
 
     - name: Compile
       run: npm run build
-
-    - name: npm test
-      run: npm test
 
     - name: Lint
       run: npm run lint
@@ -45,12 +43,15 @@ jobs:
     - name: Format
       run: npm run format-check
 
+    - name: Test
+      run: npm run test
+
     # Test end-to-end by uploading two artifacts and then downloading them
     - name: Create artifact files
       run: |
         mkdir -p path/to/dir-1
         mkdir -p path/to/dir-2
-        mkdir -p path/to/dir-3    
+        mkdir -p path/to/dir-3
         echo "Lorem ipsum dolor sit amet" > path/to/dir-1/file1.txt
         echo "Hello world from file #2" > path/to/dir-2/file2.txt
         echo "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip" > path/to/dir-3/gzip.txt
@@ -85,11 +86,9 @@ jobs:
           path/to/dir-[23]/*
           !path/to/dir-3/*.txt
 
-    # Verify artifacts. Switch to download-artifact@v2 once it's out of preview
-
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'Artifact-A'
         path: some/new/path
@@ -109,7 +108,7 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'artifact'
         path: some/other/path
@@ -127,10 +126,10 @@ jobs:
             Write-Error "File contents of downloaded artifacts are incorrect"
         }
       shell: pwsh
-    
+
     # Download Artifact #3 and verify the correctness of the content
     - name: 'Download artifact #3'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'GZip-Artifact'
         path: gzip/artifact/path
@@ -150,7 +149,7 @@ jobs:
       shell: pwsh
 
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: 'Multi-Path-Artifact'
         path: multi/artifact
