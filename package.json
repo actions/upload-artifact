@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "release": "ncc build src/upload-artifact.ts && git add -f dist/",
+    "release": "ncc build src/upload-artifact.ts && git add -f dist/index.js",
     "check-all": "concurrently \"npm:format-check\" \"npm:lint\" \"npm:test\" \"npm:build\"",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",

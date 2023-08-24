@@ -1,5 +1,5 @@
-import * as core from '@actions/core'
-import {create, UploadOptions} from '@actions/artifact'
+import * as core from '../node_modules/@actions/core/'
+import {UploadOptions, create} from '../node_modules/@actions/artifact/lib/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
@@ -44,9 +44,7 @@ async function run(): Promise<void> {
       }
 
       const artifactClient = create()
-      const options: UploadOptions = {
-        continueOnError: false
-      }
+      const options: UploadOptions = {}
       if (inputs.retentionDays) {
         options.retentionDays = inputs.retentionDays
       }
@@ -58,13 +56,13 @@ async function run(): Promise<void> {
         options
       )
 
-      if (uploadResponse.failedItems.length > 0) {
+      if (uploadResponse.success === false) {
         core.setFailed(
-          `An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`
+          `An error was encountered when uploading ${inputs.artifactName}.`
         )
       } else {
         core.info(
-          `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
+          `Artifact ${inputs.artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}}`
         )
       }
     }
