@@ -1,6 +1,6 @@
 ---
 name: tmp
-version: 0.1.0
+version: 0.2.1
 type: npm
 summary: Temporary file and directory creator
 homepage: http://github.com/raszi/node-tmp
