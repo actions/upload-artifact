@@ -1,9 +1,9 @@
 ---
 name: rimraf
-version: 2.6.3
+version: 3.0.2
 type: npm
 summary: A deep deletion module for node (like `rm -rf`)
-homepage: https://github.com/isaacs/rimraf#readme
+homepage: 
 license: isc
 licenses:
 - sources: LICENSE
