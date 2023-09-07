@@ -7,7 +7,10 @@ import {NoFileOptions} from './constants'
 async function run(): Promise<void> {
   try {
     const inputs = getInputs()
-    const searchResult = await findFilesToUpload(inputs.searchPath)
+    const searchResult = await findFilesToUpload(
+      inputs.searchPath,
+      inputs.rootDirectory
+    )
     if (searchResult.filesToUpload.length === 0) {
       // No files were found, different use cases warrant different types of behavior if nothing is found
       switch (inputs.ifNoFilesFound) {

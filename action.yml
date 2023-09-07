@@ -23,6 +23,10 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+  root-directory:
+    description: >
+      A file path that denotes the root directory of the files being uploaded.
+      This path is used to strip the provided path(s) to control how they are uploaded and structured
 runs:
   using: 'node16'
   main: 'dist/index.js'

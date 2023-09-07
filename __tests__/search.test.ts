@@ -149,6 +149,17 @@ describe('Search', () => {
     )
   })
 
+  it('Single file search - Absolute Path - Manual directory', async () => {
+    const rootDirectory = path.join(root, 'folder-a')
+    const searchResult = await findFilesToUpload(
+      extraFileInFolderCPath,
+      rootDirectory
+    )
+    expect(searchResult.filesToUpload.length).toEqual(1)
+    expect(searchResult.filesToUpload[0]).toEqual(extraFileInFolderCPath)
+    expect(searchResult.rootDirectory).toEqual(rootDirectory)
+  })
+
   it('Single file search - Relative Path', async () => {
     const relativePath = path.join(
       '__tests__',
