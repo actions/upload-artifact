@@ -19,7 +19,7 @@ Please note that this project is released with a [Contributor Code of Conduct][c
 
 ## What should I know before submitting a pull request or issue
 
-The code related to `upload-artifact` is split between this repository and [actions/toolkit](https://github.com/actions/toolkit) where the `@actions/artifact` npm package is housed. The npm package contains the core functionality to interact with artifacts. Any extra functionality on top of interacting with the apis such as search is inside this repository.
+The code related to `upload-artifact` is split between this repository and [actions/toolkit](https://github.com/actions/toolkit) where the `@actions/artifact` npm package is housed. The npm package contains the core functionality to interact with artifacts. Any extra functionality on top of interacting with the APIs such as search is inside this repository.
 Artifact related issues will be tracked in this repository so please do not open duplicate issues in `actions/toolkit`.
 
 ## Submitting a pull request
