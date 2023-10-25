@@ -37,12 +37,6 @@ async function run(): Promise<void> {
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
-      if (searchResult.filesToUpload.length > 10000) {
-        core.warning(
-          `There are over 10,000 files in this artifact, consider creating an archive before upload to improve the upload performance.`
-        )
-      }
-
       const artifactClient = create()
       const options: UploadOptions = {}
       if (inputs.retentionDays) {
@@ -62,8 +56,9 @@ async function run(): Promise<void> {
         )
       } else {
         core.info(
-          `Artifact ${inputs.artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}}`
+          `Artifact ${inputs.artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}`
         )
+        core.setOutput('artifact-id', uploadResponse.id)
       }
     }
   } catch (error) {
