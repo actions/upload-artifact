@@ -23,6 +23,12 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+outputs:
+  artifact-id:
+    description: >
+      A unique identifier for the artifact that was just uploaded. Empty if artifact upload failed.
+
+      This ID can be used as input to other APIs to download, delete or get more information about an artifact: https://docs.github.com/en/rest/actions/artifacts
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
