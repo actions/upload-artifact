@@ -1,5 +1,8 @@
 import * as core from '../node_modules/@actions/core/'
-import {UploadOptions, create} from '../node_modules/@actions/artifact/lib/artifact'
+import {
+  UploadOptions,
+  create
+} from '../node_modules/@actions/artifact/lib/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
@@ -41,6 +44,10 @@ async function run(): Promise<void> {
       const options: UploadOptions = {}
       if (inputs.retentionDays) {
         options.retentionDays = inputs.retentionDays
+      }
+
+      if (typeof inputs.compressionLevel !== 'undefined') {
+        options.compressionLevel = inputs.compressionLevel
       }
 
       const uploadResponse = await artifactClient.uploadArtifact(
