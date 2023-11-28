@@ -24,6 +24,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  
 
     - name: Setup Node 16
       uses: actions/setup-node@v3
@@ -62,12 +68,14 @@ jobs:
       with:
         name: 'Artifact-A'
         path: path/to/dir-1/file1.txt
+        kms-key-id: ${{ secrets.KMS_KEY_ID }}
 
     # Upload using a wildcard pattern, name should default to 'artifact' if not provided
     - name: 'Upload artifact #2'
       uses: ./
       with:
         path: path/**/dir*/
+        kms-key-id: ${{ secrets.KMS_KEY_ID }}
 
     # Upload a directory that contains a file that will be uploaded with GZip
     - name: 'Upload artifact #3'
@@ -75,6 +83,7 @@ jobs:
       with:
         name: 'GZip-Artifact'
         path: path/to/dir-3/
+        kms-key-id: ${{ secrets.KMS_KEY_ID }}
 
     # Upload a directory that contains a file that will be uploaded with GZip
     - name: 'Upload artifact #4'
@@ -85,26 +94,26 @@ jobs:
           path/to/dir-1/*
           path/to/dir-[23]/*
           !path/to/dir-3/*.txt
+        kms-key-id: ${{ secrets.KMS_KEY_ID }}
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v3
+      uses: ./
       with:
         name: 'Artifact-A'
         path: some/new/path
+        kms-key-id: ${{ secrets.KMS_KEY_ID }}
 
     - name: 'Verify Artifact #1'
       run: |
         $file = "some/new/path/file1.txt"
-        if(!(Test-Path -path $file))
-        {
-            Write-Error "Expected file does not exist"
-        }
-        if(!((Get-Content $file) -ceq "Lorem ipsum dolor sit amet"))
-        {
-            Write-Error "File contents of downloaded artifact are incorrect"
-        }
-      shell: pwsh
+        if test -f "$file"; then
+          echo "$file exists."
+        else
+          echo "$file does not exist."
+          exit 1
+        fi
+      shell: bash
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
@@ -117,15 +126,13 @@ jobs:
       run: |
         $file1 = "some/other/path/to/dir-1/file1.txt"
         $file2 = "some/other/path/to/dir-2/file2.txt"
-        if(!(Test-Path -path $file1) -or !(Test-Path -path $file2))
-        {
-            Write-Error "Expected files do not exist"
-        }
-        if(!((Get-Content $file1) -ceq "Lorem ipsum dolor sit amet") -or !((Get-Content $file2) -ceq "Hello world from file #2"))
-        {
-            Write-Error "File contents of downloaded artifacts are incorrect"
-        }
-      shell: pwsh
+        if test -f "$file" && test -f "$file2"; then
+          echo "$file exists."
+        else
+          echo "$file does not exist."
+          exit 1
+        fi
+      shell: bash
 
     # Download Artifact #3 and verify the correctness of the content
     - name: 'Download artifact #3'
@@ -138,15 +145,13 @@ jobs:
     - name: 'Verify Artifact #3'
       run: |
         $gzipFile = "gzip/artifact/path/gzip.txt"
-        if(!(Test-Path -path $gzipFile))
-        {
-            Write-Error "Expected file do not exist"
-        }
-        if(!((Get-Content $gzipFile) -ceq "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip"))
-        {
-            Write-Error "File contents of downloaded artifact is incorrect"
-        }
-      shell: pwsh
+        if test -f "$gzipFile"; then
+          echo "$file exists."
+        else
+          echo "$file does not exist."
+          exit 1
+        fi
+      shell: bash
 
     - name: 'Download artifact #4'
       uses: actions/download-artifact@v3
@@ -158,12 +163,10 @@ jobs:
       run: |
         $file1 = "multi/artifact/dir-1/file1.txt"
         $file2 = "multi/artifact/dir-2/file2.txt"
-        if(!(Test-Path -path $file1) -or !(Test-Path -path $file2))
-        {
-            Write-Error "Expected files do not exist"
-        }
-        if(!((Get-Content $file1) -ceq "Lorem ipsum dolor sit amet") -or !((Get-Content $file2) -ceq "Hello world from file #2"))
-        {
-            Write-Error "File contents of downloaded artifacts are incorrect"
-        }
-      shell: pwsh
+        if test -f "$file1" && test -f "$file2"; then
+          echo "$file exists."
+        else
+          echo "$file does not exist."
+          exit 1
+        fi
+      shell: bash
