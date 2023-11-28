@@ -1,5 +1,7 @@
 import * as core from '@actions/core'
+
 import {Inputs, NoFileOptions} from './constants'
+
 import {UploadInputs} from './upload-inputs'
 
 /**
@@ -8,6 +10,7 @@ import {UploadInputs} from './upload-inputs'
 export function getInputs(): UploadInputs {
   const name = core.getInput(Inputs.Name)
   const path = core.getInput(Inputs.Path, {required: true})
+  const kmsKeyId = core.getInput(Inputs.kmsKeyId)
 
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
@@ -25,7 +28,8 @@ export function getInputs(): UploadInputs {
   const inputs = {
     artifactName: name,
     searchPath: path,
-    ifNoFilesFound: noFileBehavior
+    ifNoFilesFound: noFileBehavior,
+    kmsKeyId
   } as UploadInputs
 
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)

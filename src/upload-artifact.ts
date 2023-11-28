@@ -1,8 +1,11 @@
 import * as core from '@actions/core'
-import {create, UploadOptions} from '@actions/artifact'
+
+import {UploadOptions, create} from '@actions/artifact'
+
+import {NoFileOptions} from './constants'
+import {encryptFile} from './encrypt'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
-import {NoFileOptions} from './constants'
 
 async function run(): Promise<void> {
   try {
@@ -41,6 +44,10 @@ async function run(): Promise<void> {
         core.warning(
           `There are over 10,000 files in this artifact, consider creating an archive before upload to improve the upload performance.`
         )
+      }
+
+      for (const file of searchResult.filesToUpload) {
+        await encryptFile(file, inputs.kmsKeyId)
       }
 
       const artifactClient = create()

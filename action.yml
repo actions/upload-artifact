@@ -23,6 +23,10 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+  kms-key-id:
+    description: >
+      The ID of the customer-managed AWS Key Management Service (AWS KMS) key that should be used to encrypt the artifact.
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'

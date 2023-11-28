@@ -1,24 +1,8 @@
 # Upload-Artifact v3
 
-This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
+This uploads encrypted artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
 
-See also [download-artifact](https://github.com/actions/download-artifact).
-
-# What's new
-
-- Easier upload
-  - Specify a wildcard pattern
-  - Specify an individual file
-  - Specify a directory (previously you were limited to only this option)
-  - Multi path upload
-    - Use a combination of individual files, wildcards or directories
-    - Support for excluding certain files
-- Upload an artifact without providing a name
-- Fix for artifact uploads sometimes not working with containers
-- Proxy support out of the box
-- Port entire action to typescript from a runner plugin so it is easier to collaborate and accept contributions
-
-Refer [here](https://github.com/actions/upload-artifact/tree/releases/v1) for the previous version
+See also [download-artifact](https://github.com/benjefferies/download-encrypted-artifact).
 
 # Usage
 
@@ -28,46 +12,50 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: actions/checkout@v3
+- uses: actions/checkout@v1
 
 - run: mkdir -p path/to/artifact
 
 - run: echo hello > path/to/artifact/world.txt
 
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     name: my-artifact
     path: path/to/artifact/world.txt
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Upload an Entire Directory
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     name: my-artifact
     path: path/to/artifact/ # or path/to/artifact
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Upload using a Wildcard Pattern
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     name: my-artifact
     path: path/**/[abc]rtifac?/*
+  kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Upload using Multiple Paths and Exclusions
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     name: my-artifact
     path: |
       path/output/bin/
       path/output/test-results
       !path/**/*.tmp
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 For supported wildcards along with behavior and documentation, see [@actions/glob](https://github.com/actions/toolkit/tree/main/packages/glob) which is used internally to search for files.
@@ -97,11 +85,12 @@ The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/ar
 If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found:
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     name: my-artifact
     path: path/to/artifact/
     if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Conditional Artifact Upload
@@ -109,11 +98,12 @@ If a path (or paths), result in no files being found for the artifact, the actio
 To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   if: failure()
   with:
     name: my-artifact
     path: path/to/artifact/
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Uploading without an artifact name
@@ -121,9 +111,10 @@ To upload artifacts only when the previous step of a job failed, use [`if: failu
 You can upload an artifact without specifying a name
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     path: path/to/artifact/world.txt
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 If not provided, `artifact` will be used as the default name which will manifest itself in the UI after upload.
@@ -134,19 +125,22 @@ With the following example, the available artifact (named `artifact` by default 
 
 ```yaml
 - run: echo hi > world.txt
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     path: world.txt
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 
 - run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     path: extra-file.txt
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 
 - run: echo hello > world.txt
-- uses: actions/upload-artifact@v3
+- uses: benjefferies/upload-encrypted-artifact@v1
   with:
     path: world.txt
+    kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 Each artifact behaves as a file share. Uploading to the same artifact multiple times in the same workflow can overwrite and append already uploaded files:
@@ -159,10 +153,11 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
         - name: Create a file
           run: echo ${{ matrix.node-version }} > my_file.txt
         - name: Accidentally upload to the same artifact via multiple jobs
-          uses: actions/upload-artifact@v3
+          uses: benjefferies/upload-encrypted-artifact@v1
           with:
               name: my-artifact
               path: ${{ github.workspace }}
+              kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 > **_Warning:_** Be careful when uploading to the same artifact via multiple jobs as artifacts may become corrupted. When uploading a file with an identical name and path in multiple jobs, uploads may fail with 503 errors due to conflicting uploads happening at the same time. Ensure uploads to identical locations to not interfere with each other.
@@ -170,10 +165,11 @@ Each artifact behaves as a file share. Uploading to the same artifact multiple t
 In the above example, four jobs will upload four different files to the same artifact but there will only be one file available when `my-artifact` is downloaded. Each job overwrites what was previously uploaded. To ensure that jobs don't overwrite existing artifacts, use a different name per job:
 
 ```yaml
-          uses: actions/upload-artifact@v3
+          uses: benjefferies/upload-encrypted-artifact@v1
           with:
               name: my-artifact ${{ matrix.node-version }}
               path: ${{ github.workspace }}
+              kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Environment Variables and Tilde Expansion
@@ -184,10 +180,11 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
   - run: |
       mkdir -p ~/new/artifact
       echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v3
+  - uses: benjefferies/upload-encrypted-artifact@v1
     with:
       name: Artifacts-V3
       path: ~/new/**/*
+      kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 Environment variables along with context expressions can also be used for input. For documentation see [context and expression syntax](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions):
@@ -199,10 +196,11 @@ Environment variables along with context expressions can also be used for input.
     - run: |
         mkdir -p ${{ github.workspace }}/artifact
         echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v3
+    - uses: benjefferies/upload-encrypted-artifact@v1
       with:
         name: ${{ env.name }}-name
         path: ${{ github.workspace }}/artifact/**/*
+        kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 For environment variables created in other steps, make sure to use the `env` expression syntax
@@ -213,10 +211,11 @@ For environment variables created in other steps, make sure to use the `env` exp
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v3
+    - uses: benjefferies/upload-encrypted-artifact@v1
       with:
         name: artifact
         path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
+        kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Retention Period
@@ -228,11 +227,12 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
     run: echo "I won't live long" > my_file.txt
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v3
+    uses: benjefferies/upload-encrypted-artifact@v1
     with:
       name: my-artifact
       path: my_file.txt
       retention-days: 5
+      kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
@@ -270,10 +270,11 @@ If file permissions and case sensitivity are required, you can `tar` all of your
     run: tar -cvf my_files.tar /path/to/my/directory
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v3
+    uses: benjefferies/upload-encrypted-artifact@v1
     with:
       name: my-artifact
       path: my_files.tar
+      kms-key-id: = arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
 ```
 
 ### Too many uploads resulting in 429 responses

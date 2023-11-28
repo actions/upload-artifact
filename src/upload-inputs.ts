@@ -20,4 +20,9 @@ export interface UploadInputs {
    * Duration after which artifact will expire in days
    */
   retentionDays: number
+
+  /**
+   * KMS Key Id to use for artifact upload
+   */
+  kmsKeyId: string
 }
