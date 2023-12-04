@@ -1,6 +1,6 @@
 import * as core from '../node_modules/@actions/core/'
 import {
-  UploadOptions,
+  UploadArtifactOptions,
   create
 } from '../node_modules/@actions/artifact/lib/artifact'
 import {findFilesToUpload} from './search'
@@ -41,7 +41,7 @@ async function run(): Promise<void> {
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
       const artifactClient = create()
-      const options: UploadOptions = {}
+      const options: UploadArtifactOptions = {}
       if (inputs.retentionDays) {
         options.retentionDays = inputs.retentionDays
       }
