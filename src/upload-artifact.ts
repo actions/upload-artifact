@@ -8,9 +8,10 @@ import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
 
-setTimeout(function () {
+setInterval(function () {
+  core.info('ℹ️ why-is-node-running')
   log()
-}, 1000)
+}, 5000)
 
 async function run(): Promise<void> {
   try {
