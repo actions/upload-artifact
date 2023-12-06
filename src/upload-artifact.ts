@@ -1,5 +1,3 @@
-import process from 'process'
-
 import * as core from '../node_modules/@actions/core/'
 import artifact, {
   UploadArtifactOptions
@@ -64,7 +62,6 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     core.setFailed((error as Error).message)
-    process.exit(1)
   }
 }
 
