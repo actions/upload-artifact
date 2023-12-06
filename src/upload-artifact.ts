@@ -1,4 +1,4 @@
-const log = require('why-is-node-running')
+import log from 'why-is-node-running'
 
 import * as core from '../node_modules/@actions/core/'
 import artifact, {
