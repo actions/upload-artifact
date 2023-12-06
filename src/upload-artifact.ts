@@ -8,11 +8,6 @@ import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
 
-setInterval(function () {
-  core.info('ℹ️ why-is-node-running')
-  log()
-}, 5000)
-
 async function run(): Promise<void> {
   try {
     const inputs = getInputs()
@@ -69,6 +64,18 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     core.setFailed((error as Error).message)
+    setTimeout(function () {
+      core.notice('ℹ️ why-is-node-running')
+      log()
+    }, 100)
+    setTimeout(function () {
+      core.notice('ℹ️ why-is-node-running')
+      log()
+    }, 10000)
+    setTimeout(function () {
+      core.notice('ℹ️ why-is-node-running')
+      log()
+    }, 30000)
   }
 }
 
