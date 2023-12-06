@@ -1,5 +1,3 @@
-import log from 'why-is-node-running'
-
 import * as core from '../node_modules/@actions/core/'
 import artifact, {
   UploadArtifactOptions
@@ -64,18 +62,6 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     core.setFailed((error as Error).message)
-    setTimeout(function () {
-      core.notice('ℹ️ why-is-node-running')
-      log()
-    }, 100)
-    setTimeout(function () {
-      core.notice('ℹ️ why-is-node-running')
-      log()
-    }, 10000)
-    setTimeout(function () {
-      core.notice('ℹ️ why-is-node-running')
-      log()
-    }, 30000)
   }
 }
 
