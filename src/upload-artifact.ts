@@ -1,3 +1,5 @@
+const log = require('why-is-node-running')
+
 import * as core from '../node_modules/@actions/core/'
 import artifact, {
   UploadArtifactOptions
@@ -5,6 +7,10 @@ import artifact, {
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
+
+setTimeout(function () {
+  log()
+}, 1000)
 
 async function run(): Promise<void> {
   try {
