@@ -62,6 +62,7 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     core.setFailed((error as Error).message)
+    console.log('sanity check')
   }
 }
 
