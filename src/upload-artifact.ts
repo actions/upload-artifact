@@ -1,3 +1,5 @@
+import log from 'why-is-node-running'
+
 import * as core from '../node_modules/@actions/core/'
 import artifact, {
   UploadArtifactOptions
@@ -62,6 +64,7 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     core.setFailed((error as Error).message)
+    log()
   }
 }
 
