@@ -1,34 +1,107 @@
-# Upload-Artifact v4 beta
+# `@actions/download-artifact`
 
-❗ Not publicly available. If you try to use this version then it will fail. Available only internally at GitHub while in development. Stay tuned for public announcements soon about broader availability❗
-
-This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
+Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts) from your Workflow Runs. Internally powered by [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package.
 
 See also [download-artifact](https://github.com/actions/download-artifact).
 
-# What's new
+- [`@actions/download-artifact`](#actionsdownload-artifact)
+  - [v4 - What's new](#v4---whats-new)
+    - [Improvements](#improvements)
+    - [Breaking Changes](#breaking-changes)
+  - [Usage](#usage)
+    - [Inputs](#inputs)
+    - [Outputs](#outputs)
+  - [Examples](#examples)
+    - [Upload an Individual File](#upload-an-individual-file)
+    - [Upload an Entire Directory](#upload-an-entire-directory)
+    - [Upload using a Wildcard Pattern](#upload-using-a-wildcard-pattern)
+    - [Upload using Multiple Paths and Exclusions](#upload-using-multiple-paths-and-exclusions)
+    - [Customization if no files are found](#customization-if-no-files-are-found)
+    - [(Not) Uploading to the same artifact](#not-uploading-to-the-same-artifact)
+    - [Environment Variables and Tilde Expansion](#environment-variables-and-tilde-expansion)
+    - [Retention Period](#retention-period)
+    - [Using Outputs](#using-outputs)
+      - [Example output between steps](#example-output-between-steps)
+      - [Example output between jobs](#example-output-between-jobs)
+  - [Where does the upload go?](#where-does-the-upload-go)
+  - [Additional Documentation](#additional-documentation)
 
-🚧 Under construction 🚧
 
-Big changes coming...
+## v4 - What's new
 
-Refer [here](https://github.com/actions/upload-artifact/tree/releases/v3) for the previous version
+> [!IMPORTANT]
+> upload-artifact@v4+ is not currently supported on GHES yet. If you are on GHES, you must use [v3](https://github.com/actions/upload-artifact/releases/tag/v3).
 
-# Usage
+The release of upload-artifact@v4 and download-artifact@v4 are major changes to the backend architecture of Artifacts. They have numerous performance and behavioral improvements.
 
-See [action.yml](action.yml)
+For more information, see the [`@actions/artifact`](https://github.com/actions/toolkit/tree/main/packages/artifact) documentation.
+
+### Improvements
+
+1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
+2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and [REST API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
+3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs. Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
+
+### Breaking Changes
+
+1. On self hosted runners, additional [firewall rules](https://github.com/actions/toolkit/tree/main/packages/artifact#breaking-changes) may be required.
+2. Uploading to the same named Artifact multiple times.
+
+    Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
+
+3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 10 artifacts.
+
+## Usage
+
+### Inputs
+
+```yaml
+- uses: actions/download-artifact@v4
+  with:
+    # Name of the artifact to upload.
+    # Optional. Default is 'artifact'
+    name:
+
+    # A file, directory or wildcard pattern that describes what to upload
+    # Required.
+    path:
+
+    # The desired behavior if no files are found using the provided path.
+    # Available Options:
+    #   warn: Output a warning but do not fail the action
+    #   error: Fail the action with an error message
+    #   ignore: Do not output any warnings or errors, the action does not fail
+    # Optional. Default is 'warn'
+    if-no-files-found:
+
+    # Duration after which artifact will expire in days. 0 means using default retention.
+    # Minimum 1 day.
+    # Maximum 90 days unless changed from the repository settings page.
+    # Optional. Defaults to repository settings.
+    retention-days:
+
+    # The level of compression for Zlib to be applied to the artifact archive.
+    # The value can range from 0 to 9.
+    # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
+    # Optional. Default is '6'
+    compression-level:
+```
+
+### Outputs
+
+| Name | Description | Example |
+| - | - | - |
+| `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+
+## Examples
 
 ### Upload an Individual File
 
 ```yaml
 steps:
-- uses: actions/checkout@v3
-
 - run: mkdir -p path/to/artifact
-
 - run: echo hello > path/to/artifact/world.txt
-
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     name: my-artifact
     path: path/to/artifact/world.txt
@@ -37,7 +110,7 @@ steps:
 ### Upload an Entire Directory
 
 ```yaml
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     name: my-artifact
     path: path/to/artifact/ # or path/to/artifact
@@ -46,7 +119,7 @@ steps:
 ### Upload using a Wildcard Pattern
 
 ```yaml
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     name: my-artifact
     path: path/**/[abc]rtifac?/*
@@ -55,7 +128,7 @@ steps:
 ### Upload using Multiple Paths and Exclusions
 
 ```yaml
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     name: my-artifact
     path: |
@@ -84,8 +157,6 @@ If multiple paths are provided as input, the least common ancestor of all the se
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
-The [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package is used internally to handle most of the logic around uploading an artifact. There is extra documentation around upload limitations and behavior in the toolkit repo that is worth checking out.
-
 ### Customization if no files are found
 
 If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found:
@@ -98,47 +169,53 @@ If a path (or paths), result in no files being found for the artifact, the actio
     if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 ```
 
-### Conditional Artifact Upload
+### (Not) Uploading to the same artifact
 
-To upload artifacts only when the previous step of a job failed, use [`if: failure()`](https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#job-status-check-functions):
-
-```yaml
-- uses: actions/upload-artifact@v4-beta
-  if: failure()
-  with:
-    name: my-artifact
-    path: path/to/artifact/
-```
-
-### Uploading without an artifact name
-
-You can upload an artifact without specifying a name
-
-```yaml
-- uses: actions/upload-artifact@v4-beta
-  with:
-    path: path/to/artifact/world.txt
-```
-
-If not provided, `artifact` will be used as the default name which will manifest itself in the UI after upload.
-
-### Uploading to the same artifact
-
-Unlike earlier versions of `upload-artifact`, uploading to the same artifact via multiple jobs is _not_ supported with `v4`. 
+Unlike earlier versions of `upload-artifact`, uploading to the same artifact via multiple jobs is _not_ supported with `v4`.
 
 ```yaml
 - run: echo hi > world.txt
 - uses: actions/upload-artifact@v4-beta
   with:
+    # implicitly named as 'artifact'
     path: world.txt
 
 - run: echo howdy > extra-file.txt
 - uses: actions/upload-artifact@v4-beta
   with:
+    # also implicitly named as 'artifact', will fail here!
     path: extra-file.txt
 ```
 
 Artifact names must be unique since each created artifact is idempotent so multiple jobs cannot modify the same artifact.
+
+In matrix scenarios, be careful to not accidentally upload to the same artifact, or else you will encounter conflict errors. It would be best to name the artifact _with_ a prefix or suffix from the matrix:
+
+```yaml
+jobs:
+  upload:
+    name: Generate Build Artifacts
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        version: [a, b, c]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Build
+      run: ./some-script --version=${{ matrix.version }} > my-binary
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: binary-${{ matrix.os }}-${{ matrix.version }}
+        path: my-binary
+```
+
+This will result in artifacts like: `binary-ubuntu-latest-a`, `binary-windows-latest-b`, and so on.
+
+Previously the behavior _allowed_ for the artifact names to be the same which resulted in unexpected mutations and accidental corruption. Artifacts created by upload-artifact@v4 will be immutable.
 
 ### Environment Variables and Tilde Expansion
 
@@ -173,7 +250,7 @@ For environment variables created in other steps, make sure to use the `env` exp
 
 ```yaml
     steps:
-    - run: | 
+    - run: |
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
@@ -201,11 +278,11 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
 
 The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
 
-## Outputs
+### Using Outputs
 
 If an artifact upload is successful then an `artifact-id` output is available. This ID is a unique identifier that can be used with [Artifact REST APIs](https://docs.github.com/en/rest/actions/artifacts).
 
-### Example output between steps
+#### Example output between steps
 
 ```yml
     - uses: actions/upload-artifact@v4-beta
@@ -218,7 +295,7 @@ If an artifact upload is successful then an `artifact-id` output is available. T
       run:  echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 ```
 
-### Example output between jobs
+#### Example output between jobs
 
 ```yml
 jobs:
@@ -257,6 +334,3 @@ See [Storing workflow data as artifacts](https://docs.github.com/en/actions/adva
 
 See extra documentation for the [@actions/artifact](https://github.com/actions/toolkit/blob/main/packages/artifact/docs/additional-information.md) package that is used internally regarding certain behaviors and limitations.
 
-# License
-
-The scripts and documentation in this project are released under the [MIT License](LICENSE).

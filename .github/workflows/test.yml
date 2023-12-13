@@ -1,4 +1,5 @@
 name: Test
+
 on:
   push:
     branches:
@@ -10,7 +11,6 @@ on:
       - '**.md'
 
 jobs:
-
   build:
     name: Build
 
@@ -23,12 +23,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Setup Node 16
-      uses: actions/setup-node@v3
+    - name: Setup Node 20
+      uses: actions/setup-node@v4
       with:
-        node-version: 16.x
+        node-version: 20.x
         cache: 'npm'
 
     - name: Install dependencies
@@ -54,33 +54,26 @@ jobs:
         mkdir -p path/to/dir-3
         echo "Lorem ipsum dolor sit amet" > path/to/dir-1/file1.txt
         echo "Hello world from file #2" > path/to/dir-2/file2.txt
-        echo "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip" > path/to/dir-3/gzip.txt
 
     # Upload a single file artifact
     - name: 'Upload artifact #1'
       uses: ./
       with:
-        name: 'Artifact-A'
+        name: 'Artifact-A-${{ matrix.runs-on }}'
         path: path/to/dir-1/file1.txt
 
-    # Upload using a wildcard pattern, name should default to 'artifact' if not provided
+    # Upload using a wildcard pattern
     - name: 'Upload artifact #2'
       uses: ./
       with:
+        name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: path/**/dir*/
 
-    # Upload a directory that contains a file that will be uploaded with GZip
+    # Upload a multi-path artifact
     - name: 'Upload artifact #3'
       uses: ./
       with:
-        name: 'GZip-Artifact'
-        path: path/to/dir-3/
-
-    # Upload a directory that contains a file that will be uploaded with GZip
-    - name: 'Upload artifact #4'
-      uses: ./
-      with:
-        name: 'Multi-Path-Artifact'
+        name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: |
           path/to/dir-1/*
           path/to/dir-[23]/*
@@ -88,9 +81,9 @@ jobs:
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4-beta
       with:
-        name: 'Artifact-A'
+        name: 'Artifact-A-${{ matrix.runs-on }}'
         path: some/new/path
 
     - name: 'Verify Artifact #1'
@@ -108,9 +101,9 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4-beta
       with:
-        name: 'artifact'
+        name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: some/other/path
 
     - name: 'Verify Artifact #2'
@@ -127,31 +120,11 @@ jobs:
         }
       shell: pwsh
 
-    # Download Artifact #3 and verify the correctness of the content
-    - name: 'Download artifact #3'
-      uses: actions/download-artifact@v3
-      with:
-        name: 'GZip-Artifact'
-        path: gzip/artifact/path
-
-    # Because a directory was used as input during the upload the parent directories, path/to/dir-3/, should not be included in the uploaded artifact
-    - name: 'Verify Artifact #3'
-      run: |
-        $gzipFile = "gzip/artifact/path/gzip.txt"
-        if(!(Test-Path -path $gzipFile))
-        {
-            Write-Error "Expected file do not exist"
-        }
-        if(!((Get-Content $gzipFile) -ceq "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip"))
-        {
-            Write-Error "File contents of downloaded artifact is incorrect"
-        }
-      shell: pwsh
-
+    # Download Artifact #4 and verify the correctness of the content
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4-beta
       with:
-        name: 'Multi-Path-Artifact'
+        name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: multi/artifact
 
     - name: 'Verify Artifact #4'
