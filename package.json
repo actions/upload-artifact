@@ -1,7 +1,7 @@
 {
   "name": "upload-artifact",
-  "version": "3.0.0",
-  "description": "Upload a build artifact that can be used by subsequent workflow steps",
+  "version": "4.0.0",
+  "description": "Upload an Actions Artifact in a workflow run",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
