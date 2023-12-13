@@ -1,0 +1,9 @@
+---
+name: buffers
+version: 0.1.1
+type: npm
+summary: Treat a collection of Buffers as a single contiguous partially mutable Buffer.
+homepage:
+license: none
+licenses: []
+notices: []
