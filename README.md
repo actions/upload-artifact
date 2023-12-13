@@ -162,7 +162,7 @@ Relative and absolute file paths are both allowed. Relative paths are rooted aga
 If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found:
 
 ```yaml
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     name: my-artifact
     path: path/to/artifact/
@@ -175,13 +175,13 @@ Unlike earlier versions of `upload-artifact`, uploading to the same artifact via
 
 ```yaml
 - run: echo hi > world.txt
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     # implicitly named as 'artifact'
     path: world.txt
 
 - run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v4-beta
+- uses: actions/upload-artifact@v4
   with:
     # also implicitly named as 'artifact', will fail here!
     path: extra-file.txt
@@ -225,7 +225,7 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
   - run: |
       mkdir -p ~/new/artifact
       echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v4-beta
+  - uses: actions/upload-artifact@v4
     with:
       name: Artifacts-V4-beta
       path: ~/new/**/*
@@ -240,7 +240,7 @@ Environment variables along with context expressions can also be used for input.
     - run: |
         mkdir -p ${{ github.workspace }}/artifact
         echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v4-beta
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.name }}-name
         path: ${{ github.workspace }}/artifact/**/*
@@ -254,7 +254,7 @@ For environment variables created in other steps, make sure to use the `env` exp
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v4-beta
+    - uses: actions/upload-artifact@v4
       with:
         name: artifact
         path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
@@ -269,7 +269,7 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
     run: echo "I won't live long" > my_file.txt
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v4-beta
+    uses: actions/upload-artifact@v4
     with:
       name: my-artifact
       path: my_file.txt
@@ -285,7 +285,7 @@ If an artifact upload is successful then an `artifact-id` output is available. T
 #### Example output between steps
 
 ```yml
-    - uses: actions/upload-artifact@v4-beta
+    - uses: actions/upload-artifact@v4
       id: artifact-upload-step
       with:
         name: my-artifact
@@ -304,7 +304,7 @@ jobs:
     outputs:
       output1: ${{ steps.my-artifact.outputs.artifact-id }}
     steps:
-      - uses: actions/upload-artifact@v4-beta
+      - uses: actions/upload-artifact@v4
         id: artifact-upload-step
         with:
           name: my-artifact
