@@ -24,6 +24,10 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Using Outputs](#using-outputs)
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
+  - [Limitations](#limitations)
+    - [Number of Artifacts](#number-of-artifacts)
+    - [Zip archives](#zip-archives)
+    - [Permission Loss](#permission-loss)
   - [Where does the upload go?](#where-does-the-upload-go)
 
 
@@ -356,6 +360,35 @@ jobs:
       - env:
           OUTPUT1: ${{needs.job1.outputs.output1}}
         run: echo "Artifact ID from previous job is $OUTPUT1"
+```
+
+## Limitations
+
+### Number of Artifacts
+
+Within an individual job, there is a limit of 10 artifacts that can be created for that job.
+
+You may also be limited by Artifacts if you have exceeded your shared storage quota. Storage is calculated every 6-12 hours. See [the documentation](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#calculating-minute-and-storage-spending) for more info.
+
+### Zip archives
+
+When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than a Zip or to download individual artifact contents.
+
+### Permission Loss
+
+File permissions are not maintained during artifact upload. All directories will have `755` and all files will have `644`. For example, if you make a file executable using `chmod` and then upload that file, post-download the file is no longer guaranteed to be set as an executable.
+
+If you must preserve permissions, you can `tar` all of your files together before artifact upload. Post download, the `tar` file will maintain file permissions and case sensitivity.
+
+```yaml
+- name: 'Tar files'
+  run: tar -cvf my_files.tar /path/to/my/directory
+
+- name: 'Upload Artifact'
+  uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: my_files.tar
 ```
 
 ## Where does the upload go?
