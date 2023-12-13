@@ -1,9 +1,9 @@
 ---
 name: glob
-version: 7.1.6
+version: 7.2.3
 type: npm
 summary: a little globber
-homepage: https://github.com/isaacs/node-glob#readme
+homepage: 
 license: isc
 licenses:
 - sources: LICENSE
