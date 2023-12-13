@@ -24,7 +24,6 @@ See also [download-artifact](https://github.com/actions/download-artifact).
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
   - [Where does the upload go?](#where-does-the-upload-go)
-  - [Additional Documentation](#additional-documentation)
 
 
 ## v4 - What's new
@@ -327,10 +326,3 @@ At the bottom of the workflow summary page, there is a dedicated section for art
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
 
 The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload.
-
-## Additional Documentation
-
-See [Storing workflow data as artifacts](https://docs.github.com/en/actions/advanced-guides/storing-workflow-data-as-artifacts) for additional examples and tips.
-
-See extra documentation for the [@actions/artifact](https://github.com/actions/toolkit/blob/main/packages/artifact/docs/additional-information.md) package that is used internally regarding certain behaviors and limitations.
-
