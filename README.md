@@ -16,6 +16,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Upload an Entire Directory](#upload-an-entire-directory)
     - [Upload using a Wildcard Pattern](#upload-using-a-wildcard-pattern)
     - [Upload using Multiple Paths and Exclusions](#upload-using-multiple-paths-and-exclusions)
+    - [Altering compressions level (speed v. size)](#altering-compressions-level-speed-v-size)
     - [Customization if no files are found](#customization-if-no-files-are-found)
     - [(Not) Uploading to the same artifact](#not-uploading-to-the-same-artifact)
     - [Environment Variables and Tilde Expansion](#environment-variables-and-tilde-expansion)
@@ -40,6 +41,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
 2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and [REST API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
 3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs. Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
+4. The compression level of an Artifact can be manually tweaked for speed or size reduction.
 
 ### Breaking Changes
 
@@ -155,6 +157,45 @@ would be flattened and uploaded as =>
 If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude paths do not affect the directory structure.
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
+
+### Altering compressions level (speed v. size)
+
+If you are uploading large or easily compressable data to your artifact, you may benefit from tweaking the compression level. By default, the compression level is `6`, the same as GNU Gzip.
+
+The value can range from 0 to 9:
+  - 0: No compression
+  - 1: Best speed
+  - 6: Default compression (same as GNU Gzip)
+  - 9: Best compression
+
+Higher levels will result in better compression, but will take longer to complete.
+For large files that are not easily compressed, a value of `0` is recommended for significantly faster uploads.
+
+For instance, if you are uploading random binary data, you can save a lot of time by opting out of compression completely, since it won't benefit:
+
+```yaml
+- name: Make a 1GB random binary file
+  run: |
+    dd if=/dev/urandom of=my-1gb-file bs=1M count=1000
+- uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: my-1gb-file
+    compression-level: 0 # no compression
+```
+
+But, if you are uploading data that is easily compressed (like plaintext, code, etc) you can save space and cost by having a higher compression level. But this will be heavier on the CPU therefore slower to upload:
+
+```yaml
+- name: Make a file with a lot of repeated text
+  run: |
+    for i in {1..100000}; do echo -n 'foobar' >> foobar.txt; done
+- uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: foobar.txt
+    compression-level: 9 # maximum compression
+```
 
 ### Customization if no files are found
 
