@@ -61,7 +61,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 ### Inputs
 
 ```yaml
-- uses: actions/download-artifact@v4
+- uses: actions/upload-artifact@v4
   with:
     # Name of the artifact to upload.
     # Optional. Default is 'artifact'
@@ -259,7 +259,7 @@ jobs:
 
 This will result in artifacts like: `binary-ubuntu-latest-a`, `binary-windows-latest-b`, and so on.
 
-Previously the behavior _allowed_ for the artifact names to be the same which resulted in unexpected mutations and accidental corruption. Artifacts created by upload-artifact@v4 will be immutable.
+Previously the behavior _allowed_ for the artifact names to be the same which resulted in unexpected mutations and accidental corruption. Artifacts created by upload-artifact@v4 are immutable.
 
 ### Environment Variables and Tilde Expansion
 
