@@ -1,10 +1,10 @@
-# `@actions/download-artifact`
+# `@actions/upload-artifact`
 
 Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts) from your Workflow Runs. Internally powered by [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package.
 
 See also [download-artifact](https://github.com/actions/download-artifact).
 
-- [`@actions/download-artifact`](#actionsdownload-artifact)
+- [`@actions/upload-artifact`](#actionsupload-artifact)
   - [v4 - What's new](#v4---whats-new)
     - [Improvements](#improvements)
     - [Breaking Changes](#breaking-changes)
