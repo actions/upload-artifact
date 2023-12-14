@@ -36,5 +36,17 @@ export function getInputs(): UploadInputs {
     }
   }
 
+  const compressionLevelStr = core.getInput(Inputs.CompressionLevel)
+  if (compressionLevelStr) {
+    inputs.compressionLevel = parseInt(compressionLevelStr)
+    if (isNaN(inputs.compressionLevel)) {
+      core.setFailed('Invalid compression-level')
+    }
+
+    if (inputs.compressionLevel < 0 || inputs.compressionLevel > 9) {
+      core.setFailed('Invalid compression-level. Valid values are 0-9')
+    }
+  }
+
   return inputs
 }
