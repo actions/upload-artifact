@@ -1,7 +1,5 @@
-import * as core from '../node_modules/@actions/core/'
-import artifact, {
-  UploadArtifactOptions
-} from '../node_modules/@actions/artifact/lib/artifact'
+import * as core from '@actions/core'
+import artifact, {UploadArtifactOptions} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'

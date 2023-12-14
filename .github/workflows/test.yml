@@ -81,7 +81,7 @@ jobs:
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v4-beta
+      uses: actions/download-artifact@v4
       with:
         name: 'Artifact-A-${{ matrix.runs-on }}'
         path: some/new/path
@@ -101,7 +101,7 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v4-beta
+      uses: actions/download-artifact@v4
       with:
         name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: some/other/path
@@ -122,7 +122,7 @@ jobs:
 
     # Download Artifact #4 and verify the correctness of the content
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v4-beta
+      uses: actions/download-artifact@v4
       with:
         name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: multi/artifact
