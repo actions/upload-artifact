@@ -271,7 +271,7 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
       echo hello > ~/new/artifact/world.txt
   - uses: actions/upload-artifact@v4
     with:
-      name: Artifacts-V4-beta
+      name: my-artifacts
       path: ~/new/**/*
 ```
 
