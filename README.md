@@ -346,7 +346,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.my-artifact.outputs.artifact-id }}
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - uses: actions/upload-artifact@v4
         id: artifact-upload-step
