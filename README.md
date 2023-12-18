@@ -56,6 +56,8 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 
 3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 10 artifacts.
 
+For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
+
 ## Usage
 
 ### Inputs
