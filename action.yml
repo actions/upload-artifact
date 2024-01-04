@@ -42,5 +42,5 @@ outputs:
 
       This ID can be used as input to other APIs to download, delete or get more information about an artifact: https://docs.github.com/en/rest/actions/artifacts
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'dist/index.js'
