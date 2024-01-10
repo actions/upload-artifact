@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import artifact, {UploadArtifactOptions} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
@@ -57,6 +58,12 @@ async function run(): Promise<void> {
         `Artifact ${inputs.artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}`
       )
       core.setOutput('artifact-id', uploadResponse.id)
+
+      const repository = github.context.repo
+      const artifactURL = `${github.context.serverUrl}/${repository.owner}/${repository.repo}/actions/runs/${github.context.runId}/artifacts/${uploadResponse.id}`
+
+      core.info(`Artifact web download URL: ${artifactURL}`)
+      core.setOutput('artifact-url', artifactURL)
     }
   } catch (error) {
     core.setFailed((error as Error).message)

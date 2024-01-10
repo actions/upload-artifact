@@ -99,6 +99,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 | Name | Description | Example |
 | - | - | - |
 | `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+| `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | ```https://github.com/example-org/example-repo/actions/runs/artifacts/1234``` |
 
 ## Examples
 
