@@ -62,7 +62,7 @@ async function run(): Promise<void> {
       const repository = github.context.repo
       const artifactURL = `${github.context.serverUrl}/${repository.owner}/${repository.repo}/actions/runs/${github.context.runId}/artifacts/${uploadResponse.id}`
 
-      core.info(`Artifact web download URL: ${artifactURL}`)
+      core.info(`Artifact download URL: ${artifactURL}`)
       core.setOutput('artifact-url', artifactURL)
     }
   } catch (error) {
