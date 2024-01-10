@@ -54,7 +54,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 
     Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
 
-3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 10 artifacts.
+3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
