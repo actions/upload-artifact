@@ -54,7 +54,9 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 
     Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
 
-3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 10 artifacts.
+3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
+
+For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
 ## Usage
 
@@ -97,6 +99,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 | Name | Description | Example |
 | - | - | - |
 | `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+| `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 
 ## Examples
 
@@ -346,7 +349,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.my-artifact.outputs.artifact-id }}
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - uses: actions/upload-artifact@v4
         id: artifact-upload-step
