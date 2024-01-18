@@ -25,4 +25,9 @@ export interface UploadInputs {
    * The level of compression for Zlib to be applied to the artifact archive.
    */
   compressionLevel?: number
+
+  /**
+   * Whether or not to replace an existing artifact with the same name
+   */
+  overwrite: boolean
 }

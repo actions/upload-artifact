@@ -4,7 +4,8 @@ export enum Inputs {
   Path = 'path',
   IfNoFilesFound = 'if-no-files-found',
   RetentionDays = 'retention-days',
-  CompressionLevel = 'compression-level'
+  CompressionLevel = 'compression-level',
+  Overwrite = 'overwrite'
 }
 
 export enum NoFileOptions {
