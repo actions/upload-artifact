@@ -1,9 +1,26 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import artifact, {UploadArtifactOptions} from '@actions/artifact'
+import artifact, {
+  UploadArtifactOptions,
+  ArtifactNotFoundError
+} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
+
+async function deleteArtifactIfExists(artifactName: string): Promise<void> {
+  try {
+    await artifact.deleteArtifact(artifactName)
+  } catch (error) {
+    if (error instanceof ArtifactNotFoundError) {
+      core.debug(`Skipping deletion of '${artifactName}', it does not exist`)
+      return
+    }
+
+    // Best effort, we don't want to fail the action if this fails
+    core.debug(`Unable to delete artifact: ${(error as Error).message}`)
+  }
+}
 
 async function run(): Promise<void> {
   try {
@@ -37,6 +54,10 @@ async function run(): Promise<void> {
         `With the provided path, there will be ${searchResult.filesToUpload.length} file${s} uploaded`
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
+
+      if (inputs.overwrite) {
+        await deleteArtifactIfExists(inputs.artifactName)
+      }
 
       const options: UploadArtifactOptions = {}
       if (inputs.retentionDays) {

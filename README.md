@@ -24,6 +24,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Using Outputs](#using-outputs)
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
+    - [Overwriting an Artifact](#overwriting-an-artifact)
   - [Limitations](#limitations)
     - [Number of Artifacts](#number-of-artifacts)
     - [Zip archives](#zip-archives)
@@ -44,7 +45,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
 2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and [REST API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
-3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs. Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
+3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs unless the Artifacts are deleted and recreated (where they will have a new ID). Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
 4. The compression level of an Artifact can be manually tweaked for speed or size reduction.
 
 ### Breaking Changes
@@ -92,6 +93,12 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
+
+    # If true, an artifact with a matching name will be deleted before a new one is uploaded.
+    # If false, the action will fail if an artifact for the given name already exists.
+    # Does not fail if the artifact does not exist.
+    # Optional. Default is 'false'
+    overwrite:
 ```
 
 ### Outputs
@@ -363,6 +370,36 @@ jobs:
       - env:
           OUTPUT1: ${{needs.job1.outputs.output1}}
         run: echo "Artifact ID from previous job is $OUTPUT1"
+```
+
+### Overwriting an Artifact
+
+Although it's not possible to mutate an Artifact, can completely overwrite one. But do note that this will give the Artifact a new ID, the previous one will no longer exist:
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        run: echo "hello world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+  upload-again:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a different file
+        run: echo "goodbye world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+          overwrite: true
 ```
 
 ## Limitations

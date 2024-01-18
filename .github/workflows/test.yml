@@ -140,3 +140,31 @@ jobs:
             Write-Error "File contents of downloaded artifacts are incorrect"
         }
       shell: pwsh
+
+    # Replace the contents of Artifact #1
+    - name: 'Overwrite artifact #1 again'
+      uses: ./
+      with:
+        name: 'Artifact-A-${{ matrix.runs-on }}'
+        path: path/to/dir-2/file2.txt
+        overwrite: true
+
+    # Download replaced Artifact #1 and verify the correctness of the content
+    - name: 'Download artifact #1 again'
+      uses: actions/download-artifact@v4
+      with:
+        name: 'Artifact-A-${{ matrix.runs-on }}'
+        path: overwrite/some/new/path
+
+    - name: 'Verify Artifact #1 again'
+      run: |
+        $file = "overwrite/some/new/path/file2.txt"
+        if(!(Test-Path -path $file))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $file) -ceq "Hello world from file #2"))
+        {
+            Write-Error "File contents of downloaded artifacts are incorrect"
+        }
+      shell: pwsh

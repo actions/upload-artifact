@@ -2,6 +2,7 @@
 
 - [Migration](#migration)
   - [Multiple uploads to the same named Artifact](#multiple-uploads-to-the-same-named-artifact)
+  - [Overwriting an Artifact](#overwriting-an-artifact)
 
 Several behavioral differences exist between Artifact actions `v3` and below vs `v4`. This document outlines common scenarios in `v3`, and how they would be handled in `v4`.
 
@@ -78,3 +79,66 @@ jobs:
 ```
 
 In `v4`, the new `pattern:` input will filter the downloaded Artifacts to match the name specified. The new `merge-multiple:` input will support downloading multiple Artifacts to the same directory. If the files within the Artifacts have the same name, the last writer wins.
+
+## Overwriting an Artifact
+
+In `v3`, the contents of an Artifact were mutable so something like the following was possible:
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        run: echo "hello world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+  upload-again:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a different file
+        run: echo "goodbye world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+```
+
+The resulting `my-file.txt` in `my-artifact` will have "goodbye world" as the content.
+
+In `v4`, Artifacts are immutable unless deleted. To achieve this same behavior, you can use `overwrite: true` to delete the Artifact before a new one is created:
+
+```diff
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        run: echo "hello world" > my-file.txt
+      - name: Upload Artifact
+-       uses: actions/upload-artifact@v3
++       uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+  upload-again:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a different file
+        run: echo "goodbye world" > my-file.txt
+      - name: Upload Artifact
+-       uses: actions/upload-artifact@v3
++       uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
++         overwrite: true
+```
+
+Note that this will create an _entirely_ new Artifact, with a different ID from the previous.
