@@ -93,6 +93,12 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
+
+    # If true, an artifact with a matching name will be deleted before a new one is uploaded.
+    # If false, the action will fail if an artifact for the given name already exists.
+    # Does not fail if the artifact does not exist.
+    # Optional. Default is 'false'
+    overwrite:
 ```
 
 ### Outputs
