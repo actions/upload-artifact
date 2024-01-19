@@ -54,4 +54,4 @@ outputs:
       Common uses cases for such a download URL can be adding download links to artifacts in descriptions or comments on pull requests or issues.
 runs:
   using: 'node20'
-  main: 'dist/merge/index.js'
+  main: '../dist/merge/index.js'
