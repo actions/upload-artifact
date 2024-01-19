@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as path from 'path'
 import * as io from '@actions/io'
 import {promises as fs} from 'fs'
-import {findFilesToUpload} from '../src/search'
+import {findFilesToUpload} from '../src/shared/search'
 
 const root = path.join(__dirname, '_temp', 'search')
 const searchItem1Path = path.join(
