@@ -45,7 +45,6 @@ async function run(): Promise<void> {
 
     const downloadPromises = artifacts.map(artifact =>
       artifactClient.downloadArtifact(artifact.id, {
-        ...options,
         path: inputs.separateDirectories
           ? path.join(tmpDir, artifact.name)
           : tmpDir
