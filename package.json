@@ -2,10 +2,10 @@
   "name": "upload-artifact",
   "version": "4.2.0",
   "description": "Upload an Actions Artifact in a workflow run",
-  "main": "dist/index.js",
+  "main": "dist/upload/index.js",
   "scripts": {
     "build": "tsc",
-    "release": "ncc build src/upload-artifact.ts && git add -f dist/index.js",
+    "release": "ncc build src/upload/index.ts -o dist/upload",
     "check-all": "concurrently \"npm:format-check\" \"npm:lint\" \"npm:test\" \"npm:build\"",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
