@@ -181,11 +181,45 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # Merge Artifact-A-* from previous jobs
-    - name: Merge
+    # Merge all artifacts from previous jobs
+    - name: Merge all artifacts in run
       uses: ./merge/
       with:
+        # our matrix produces artifacts with the same file, this prevents "stomping" on each other, also makes it
+        # easier to identify each of the merged artifacts
+        separate-directories: true
+    - name: 'Download merged artifacts'
+      uses: actions/download-artifact@v4
+      with:
         name: Merged-Artifacts
+        path: all-merged-artifacts
+    - name: 'Check merged artifact has directories for each artifact'
+      run: |
+        $artifacts = @(
+          "Artifact-A-ubuntu-latest",
+          "Artifact-A-macos-latest",
+          "Artifact-A-windows-latest",
+          "Artifact-Wildcard-ubuntu-latest",
+          "Artifact-Wildcard-macos-latest",
+          "Artifact-Wildcard-windows-latest",
+          "Multi-Path-Artifact-ubuntu-latest",
+          "Multi-Path-Artifact-macos-latest",
+          "Multi-Path-Artifact-windows-latest"
+        )
+
+        foreach ($artifact in $artifacts) {
+          $path = "all-merged-artifacts/$artifact"
+          if (!(Test-Path $path)) {
+            Write-Error "$path does not exist."
+          }
+        }
+      shell: pwsh
+
+    # Merge Artifact-A-* from previous jobs
+    - name: Merge all Artifact-A
+      uses: ./merge/
+      with:
+        name: Merged-Artifact-As
         pattern: 'Artifact-A-*'
         separate-directories: true
 
@@ -193,15 +227,15 @@ jobs:
     - name: 'Download merged artifacts'
       uses: actions/download-artifact@v4
       with:
-        name: Merged-Artifacts
-        path: merged-artifacts
+        name: Merged-Artifact-As
+        path: merged-artifact-a
 
     - name: 'Verify merged artifacts'
       run: |
         $files = @(
-          "merged-artifacts/Artifact-A-ubuntu-latest/file1.txt",
-          "merged-artifacts/Artifact-A-macos-latest/file1.txt",
-          "merged-artifacts/Artifact-A-windows-latest/file1.txt"
+          "merged-artifact-a/Artifact-A-ubuntu-latest/file1.txt",
+          "merged-artifact-a/Artifact-A-macos-latest/file1.txt",
+          "merged-artifact-a/Artifact-A-windows-latest/file1.txt"
         )
 
         foreach ($file in $files) {
@@ -214,3 +248,4 @@ jobs:
           }
         }
       shell: pwsh
+
