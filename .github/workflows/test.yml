@@ -141,12 +141,16 @@ jobs:
         }
       shell: pwsh
 
+    - name: 'Alter file 1 content'
+      run: |
+        echo "This file has changed" > path/to/dir-1/file1.txt
+
     # Replace the contents of Artifact #1
-    - name: 'Overwrite artifact #1 again'
+    - name: 'Overwrite artifact #1'
       uses: ./
       with:
         name: 'Artifact-A-${{ matrix.runs-on }}'
-        path: path/to/dir-2/file2.txt
+        path: path/to/dir-1/file1.txt
         overwrite: true
 
     # Download replaced Artifact #1 and verify the correctness of the content
@@ -158,13 +162,55 @@ jobs:
 
     - name: 'Verify Artifact #1 again'
       run: |
-        $file = "overwrite/some/new/path/file2.txt"
+        $file = "overwrite/some/new/path/file1.txt"
         if(!(Test-Path -path $file))
         {
             Write-Error "Expected file does not exist"
         }
-        if(!((Get-Content $file) -ceq "Hello world from file #2"))
+        if(!((Get-Content $file) -ceq "This file has changed"))
         {
-            Write-Error "File contents of downloaded artifacts are incorrect"
+            Write-Error "File contents of downloaded artifact are incorrect"
+        }
+      shell: pwsh
+  merge:
+    name: Merge
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Merge Artifact-A-* from previous jobs
+    - name: Merge
+      uses: ./merge/
+      with:
+        name: Merged-Artifacts
+        pattern: 'Artifact-A-*'
+        separate-directories: true
+
+    # Download merged artifacts and verify the correctness of the content
+    - name: 'Download merged artifacts'
+      uses: actions/download-artifact@v4
+      with:
+        name: Merged-Artifacts
+        path: merged-artifacts
+
+    - name: 'Verify merged artifacts'
+      run: |
+        $files = @(
+          "merged-artifacts/Artifact-A-ubuntu-latest/file1.txt",
+          "merged-artifacts/Artifact-A-macos-latest/file1.txt",
+          "merged-artifacts/Artifact-A-windows-latest/file1.txt"
+        )
+
+        foreach ($file in $files) {
+          if (!(Test-Path $file)) {
+            Write-Error "$file does not exist."
+          }
+
+          if (!((Get-Content $file) -ceq "This file has changed")) {
+            Write-Error "$file has incorrect content."
+          }
         }
       shell: pwsh
