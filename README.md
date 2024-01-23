@@ -41,6 +41,8 @@ The release of upload-artifact@v4 and download-artifact@v4 are major changes to 
 
 For more information, see the [`@actions/artifact`](https://github.com/actions/toolkit/tree/main/packages/artifact) documentation.
 
+There is also a new sub-action, `actions/upload-artifact/merge`. For more info, check out that action's [README](./merge/README.md).
+
 ### Improvements
 
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
