@@ -191,7 +191,7 @@ jobs:
     - name: 'Download merged artifacts'
       uses: actions/download-artifact@v4
       with:
-        name: Merged-Artifacts
+        name: merged-artifacts
         path: all-merged-artifacts
     - name: 'Check merged artifact has directories for each artifact'
       run: |
