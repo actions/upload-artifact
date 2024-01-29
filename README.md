@@ -408,7 +408,7 @@ jobs:
 
 ### Number of Artifacts
 
-Within an individual job, there is a limit of 10 artifacts that can be created for that job.
+Within an individual job, there is a limit of 500 artifacts that can be created for that job.
 
 You may also be limited by Artifacts if you have exceeded your shared storage quota. Storage is calculated every 6-12 hours. See [the documentation](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#calculating-minute-and-storage-spending) for more info.
 
