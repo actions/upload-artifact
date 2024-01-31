@@ -33,6 +33,7 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v3
         with:
+          name: my-artifact
           path: my-artifact
       - run: ls -R my-artifact
 ```
@@ -73,6 +74,7 @@ jobs:
 -     uses: actions/download-artifact@v3
 +     uses: actions/download-artifact@v4
       with:
+-       name: my-artifact
         path: my-artifact
 +       pattern: my-artifact-*
 +       merge-multiple: true
