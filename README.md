@@ -41,6 +41,8 @@ The release of upload-artifact@v4 and download-artifact@v4 are major changes to 
 
 For more information, see the [`@actions/artifact`](https://github.com/actions/toolkit/tree/main/packages/artifact) documentation.
 
+There is also a new sub-action, `actions/upload-artifact/merge`. For more info, check out that action's [README](./merge/README.md).
+
 ### Improvements
 
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
@@ -406,7 +408,7 @@ jobs:
 
 ### Number of Artifacts
 
-Within an individual job, there is a limit of 10 artifacts that can be created for that job.
+Within an individual job, there is a limit of 500 artifacts that can be created for that job.
 
 You may also be limited by Artifacts if you have exceeded your shared storage quota. Storage is calculated every 6-12 hours. See [the documentation](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#calculating-minute-and-storage-spending) for more info.
 
