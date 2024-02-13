@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import {Inputs} from './constants'
+import {NoFileOptions} from '../shared/constants'
 import {MergeInputs} from './merge-inputs'
 
 /**
@@ -11,9 +12,23 @@ export function getInputs(): MergeInputs {
   const separateDirectories = core.getBooleanInput(Inputs.SeparateDirectories)
   const deleteMerged = core.getBooleanInput(Inputs.DeleteMerged)
 
+  const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
+  const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
+
+  if (!noFileBehavior) {
+    core.setFailed(
+      `Unrecognized ${
+        Inputs.IfNoFilesFound
+      } input. Provided: ${ifNoFilesFound}. Available options: ${Object.keys(
+        NoFileOptions
+      )}`
+    )
+  }
+
   const inputs = {
     name,
     pattern,
+    ifNoFilesFound: noFileBehavior,
     separateDirectories,
     deleteMerged,
     retentionDays: 0,

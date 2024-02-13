@@ -36,6 +36,14 @@ For most cases, this may not be the most efficient solution. See [the migration 
     # Optional. Default is '*'
     pattern:
 
+    # The desired behavior if no artifacts are found using the provided pattern.
+    # Available Options:
+    #   warn: Output a warning but do not fail the action
+    #   error: Fail the action with an error message
+    #   ignore: Do not output any warnings or errors, the action does not fail
+    # Optional. Default is 'error'
+    if-no-files-found:
+
     # If true, the artifacts will be merged into separate directories.
     # If false, the artifacts will be merged into the root of the destination.
     # Optional. Default is 'false'

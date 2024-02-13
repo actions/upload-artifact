@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
-import {Inputs, NoFileOptions} from './constants'
+import {Inputs} from './constants'
+import {NoFileOptions} from '../shared/constants'
 import {UploadInputs} from './upload-inputs'
 
 /**
