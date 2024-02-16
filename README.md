@@ -176,7 +176,7 @@ Relative and absolute file paths are both allowed. Relative paths are rooted aga
 
 ### Altering compressions level (speed v. size)
 
-If you are uploading large or easily compressable data to your artifact, you may benefit from tweaking the compression level. By default, the compression level is `6`, the same as GNU Gzip.
+If you are uploading large or easily compressible data to your artifact, you may benefit from tweaking the compression level. By default, the compression level is `6`, the same as GNU Gzip.
 
 The value can range from 0 to 9:
   - 0: No compression
