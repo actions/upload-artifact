@@ -4,6 +4,7 @@ import * as core from '@actions/core'
 import {Minimatch} from 'minimatch'
 import artifactClient, {UploadArtifactOptions} from '@actions/artifact'
 import {getInputs} from './input-helper'
+import {NoFileOptions} from '../shared/constants'
 import {uploadArtifact} from '../shared/upload-artifact'
 import {findFilesToUpload} from '../shared/search'
 
@@ -32,7 +33,28 @@ export async function run(): Promise<void> {
   )
 
   if (artifacts.length === 0) {
-    throw new Error(`No artifacts found matching pattern '${inputs.pattern}'`)
+    // No files were found, different use cases warrant different types of behavior if nothing is found
+    switch (inputs.ifNoFilesFound) {
+      case NoFileOptions.warn: {
+        core.warning(
+          `No artifacts were found with the provided pattern: ${inputs.pattern}.`
+        )
+        break
+      }
+      case NoFileOptions.error: {
+        core.setFailed(
+          `No artifacts were found with the provided pattern: ${inputs.pattern}.`
+        )
+        break
+      }
+      case NoFileOptions.ignore: {
+        core.info(
+          `No artifacts were found with the provided pattern: ${inputs.pattern}.`
+        )
+        break
+      }
+    }
+    return;
   }
 
   core.info(`Preparing to download the following artifacts:`)

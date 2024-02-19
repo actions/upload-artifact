@@ -1,3 +1,5 @@
+import {NoFileOptions} from '../shared/constants'
+
 export interface MergeInputs {
   /**
    * The name of the artifact that the artifacts will be merged into
@@ -8,6 +10,11 @@ export interface MergeInputs {
    * A glob pattern matching the artifacts that should be merged.
    */
   pattern: string
+
+  /**
+   * The desired behavior if no files are found with the provided search path
+   */
+  ifNoFilesFound: NoFileOptions
 
   /**
    * Duration after which artifact will expire in days

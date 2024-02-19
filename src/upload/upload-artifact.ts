@@ -5,7 +5,7 @@ import artifact, {
 } from '@actions/artifact'
 import {findFilesToUpload} from '../shared/search'
 import {getInputs} from './input-helper'
-import {NoFileOptions} from './constants'
+import {NoFileOptions} from '../shared/constants'
 import {uploadArtifact} from '../shared/upload-artifact'
 
 async function deleteArtifactIfExists(artifactName: string): Promise<void> {

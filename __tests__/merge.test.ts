@@ -57,6 +57,7 @@ const mockInputs = (overrides?: Partial<{[K in Inputs]?: any}>) => {
   const inputs = {
     [Inputs.Name]: 'my-merged-artifact',
     [Inputs.Pattern]: '*',
+    [Inputs.IfNoFilesFound]: 'error',
     [Inputs.SeparateDirectories]: false,
     [Inputs.RetentionDays]: 0,
     [Inputs.CompressionLevel]: 6,
@@ -122,11 +123,44 @@ describe('merge', () => {
     )
   })
 
-  it('fails if no artifacts found', async () => {
+  it('supports error (by default) if no artifacts found', async () => {
     mockInputs({[Inputs.Pattern]: 'this-does-not-match'})
 
-    expect(run()).rejects.toThrow()
+    await run()
 
+    expect(core.setFailed).toHaveBeenCalledWith(
+      `No artifacts were found with the provided pattern: this-does-not-match.`
+    )
+    expect(artifact.uploadArtifact).not.toBeCalled()
+    expect(artifact.downloadArtifact).not.toBeCalled()
+  })
+
+  it('supports warn if no artifacts found', async () => {
+    mockInputs({
+      [Inputs.Pattern]: 'this-does-not-match',
+      [Inputs.IfNoFilesFound]: 'warn'
+    })
+
+    await run()
+
+    expect(core.warning).toHaveBeenCalledWith(
+      `No artifacts were found with the provided pattern: this-does-not-match.`
+    )
+    expect(artifact.uploadArtifact).not.toBeCalled()
+    expect(artifact.downloadArtifact).not.toBeCalled()
+  })
+
+  it('supports ignore if no artifacts found', async () => {
+    mockInputs({
+      [Inputs.Pattern]: 'this-does-not-match',
+      [Inputs.IfNoFilesFound]: 'ignore'
+    })
+
+    await run()
+
+    expect(core.info).toHaveBeenCalledWith(
+      `No artifacts were found with the provided pattern: this-does-not-match.`
+    )
     expect(artifact.uploadArtifact).not.toBeCalled()
     expect(artifact.downloadArtifact).not.toBeCalled()
   })

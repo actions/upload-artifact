@@ -9,6 +9,15 @@ inputs:
   pattern:
     description: 'A glob pattern matching the artifact names that should be merged.'
     default: '*'
+  if-no-files-found:
+    description: >
+      The desired behavior if no artifacts are found using the provided pattern.
+
+      Available Options:
+        warn: Output a warning but do not fail the action
+        error: Fail the action with an error message
+        ignore: Do not output any warnings or errors, the action does not fail
+    default: 'error'
   separate-directories:
     description: 'When multiple artifacts are matched, this changes the behavior of how they are merged in the archive.
       If true, the matched artifacts will be extracted into individual named directories within the specified path.
