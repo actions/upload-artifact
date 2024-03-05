@@ -1,4 +1,4 @@
-name: 'Merge Build Artifacts'
+mergename: 'Merge Build Artifacts'
 description: 'Merge one or more build Artifacts'
 author: 'GitHub'
 inputs:
