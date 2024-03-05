@@ -9,7 +9,7 @@ on:
         required: true
 
 env:
-  TAG_NAME: ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+  TAG_NAME: ${{ bndrs21.event.inputs.TAG_NAME || github.event.release.tag_name }}
 permissions:
   contents: write
 
