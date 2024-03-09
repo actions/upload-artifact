@@ -408,7 +408,7 @@ jobs:
 
 ### Overwriting an Artifact
 
-Although it's not possible to mutate an Artifact, can completely overwrite one. But do note that this will give the Artifact a new ID, the previous one will no longer exist:
+Although it's not possible to mutate an Artifact, you can completely overwrite one but do note that this will give the Artifact a new ID, the previous one will no longer exist:
 
 ```yaml
 jobs:
