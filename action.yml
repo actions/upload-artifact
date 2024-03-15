@@ -17,6 +17,11 @@ inputs:
         error: Fail the action with an error message
         ignore: Do not output any warnings or errors, the action does not fail
     default: 'warn'
+  follow-symbolic-links:
+    description: >
+      If true, symlink directories will be used to search files.
+      If false, symlink directories will be ignored to search files.
+    default: 'true'
   retention-days:
     description: >
       Duration after which artifact will expire in days. 0 means using default retention.

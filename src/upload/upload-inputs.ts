@@ -17,6 +17,11 @@ export interface UploadInputs {
   ifNoFilesFound: NoFileOptions
 
   /**
+   * Wether or not to follow symbolic links when searching for files to upload
+   */
+  followSymbolicLinks?: boolean
+
+  /**
    * Duration after which artifact will expire in days
    */
   retentionDays: number

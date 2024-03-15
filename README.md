@@ -84,6 +84,11 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # Optional. Default is 'warn'
     if-no-files-found:
 
+    # If true, symlink directories will be used to search files.
+    # If false, symlink directories will be ignored to search files.
+    # Optional. Default is 'true'
+    followSymbolicLinks:
+
     # Duration after which artifact will expire in days. 0 means using default retention.
     # Minimum 1 day.
     # Maximum 90 days unless changed from the repository settings page.

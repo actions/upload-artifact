@@ -13,6 +13,8 @@ export function getInputs(): UploadInputs {
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
 
+  const followSymbolicLinks = core.getBooleanInput(Inputs.FollowSymbolicLinks)
+
   if (!noFileBehavior) {
     core.setFailed(
       `Unrecognized ${
@@ -27,6 +29,7 @@ export function getInputs(): UploadInputs {
     artifactName: name,
     searchPath: path,
     ifNoFilesFound: noFileBehavior,
+    followSymbolicLinks: followSymbolicLinks,
     overwrite: overwrite
   } as UploadInputs
 

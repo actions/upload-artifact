@@ -61,6 +61,18 @@ const lonelyFilePath = path.join(
   'lonely-file.txt'
 )
 
+const symbolicLinkExtraSearchItem4Path = path.join(
+  root,
+  'folder-l',
+  'extraSearch-item4.txt'
+)
+
+const symbolicLinkExtraSearchItem5Path = path.join(
+  root,
+  'folder-l',
+  'extraSearch-item5.txt'
+)
+
 describe('Search', () => {
   beforeAll(async () => {
     // mock all output so that there is less noise when running tests
@@ -110,6 +122,12 @@ describe('Search', () => {
     await fs.writeFile(amazingFileInFolderHPath, 'amazing file')
 
     await fs.writeFile(lonelyFilePath, 'all by itself')
+
+    await fs.symlink(
+      path.join(root, 'folder-h', 'folder-i'),
+      path.join(root, 'folder-l'),
+      'dir'
+    )
     /*
       Directory structure of files that get created:
       root/
@@ -136,6 +154,7 @@ describe('Search', () => {
               folder-j/
                   folder-k/
                       lonely-file.txt
+          folder-l/ (symbolic link to folder-i)
           search-item5.txt
     */
   })
@@ -168,9 +187,36 @@ describe('Search', () => {
     )
   })
 
+  it('Single file search - Symbolic Link', async () => {
+    const relativePath = path.join(
+      '__tests__',
+      '_temp',
+      'search',
+      'folder-l',
+      'extraSearch-item4.txt'
+    )
+
+    const searchResult = await findFilesToUpload(relativePath)
+    expect(searchResult.filesToUpload.length).toEqual(1)
+    expect(searchResult.filesToUpload[0]).toEqual(
+      symbolicLinkExtraSearchItem4Path
+    )
+    expect(searchResult.rootDirectory).toEqual(path.join(root, 'folder-l'))
+  })
+
+  it('Single file search - Symbolic Link - Ignore symbolic links', async () => {
+    const relativePath = path.join('__tests__', '_temp', 'search', 'folder-l')
+
+    const searchResult = await findFilesToUpload(relativePath, {
+      followSymbolicLinks: false
+    })
+    expect(searchResult.filesToUpload.length).toEqual(0)
+  })
+
   it('Single file using wildcard', async () => {
     const expectedRoot = path.join(root, 'folder-h')
     const searchPath = path.join(root, 'folder-h', '**/*lonely*')
+
     const searchResult = await findFilesToUpload(searchPath)
     expect(searchResult.filesToUpload.length).toEqual(1)
     expect(searchResult.filesToUpload[0]).toEqual(lonelyFilePath)
@@ -224,10 +270,33 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(expectedRootDirectory)
   })
 
+  it('Directory search - Absolute Path - Symbolic Link', async () => {
+    const relativePath = path.join('__tests__', '_temp', 'search', 'folder-l')
+
+    const searchResult = await findFilesToUpload(relativePath)
+    expect(searchResult.filesToUpload.length).toEqual(2)
+
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem4Path)
+    ).toEqual(true)
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem5Path)
+    ).toEqual(true)
+  })
+
+  it('Directory search - Absolute Path - Symbolic Link - Ignore symbolic links', async () => {
+    const relativePath = path.join('__tests__', '_temp', 'search', 'folder-l')
+
+    const searchResult = await findFilesToUpload(relativePath, {
+      followSymbolicLinks: false
+    })
+    expect(searchResult.filesToUpload.length).toEqual(0)
+  })
+
   it('Wildcard search - Absolute Path', async () => {
     const searchPath = path.join(root, '**/*[Ss]earch*')
     const searchResult = await findFilesToUpload(searchPath)
-    expect(searchResult.filesToUpload.length).toEqual(10)
+    expect(searchResult.filesToUpload.length).toEqual(12)
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
@@ -249,6 +318,12 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.includes(extraSearchItem5Path)).toEqual(
       true
     )
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem4Path)
+    ).toEqual(true)
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem5Path)
+    ).toEqual(true)
 
     expect(searchResult.rootDirectory).toEqual(root)
   })
@@ -261,7 +336,7 @@ describe('Search', () => {
       '**/*[Ss]earch*'
     )
     const searchResult = await findFilesToUpload(searchPath)
-    expect(searchResult.filesToUpload.length).toEqual(10)
+    expect(searchResult.filesToUpload.length).toEqual(12)
 
     expect(searchResult.filesToUpload.includes(searchItem1Path)).toEqual(true)
     expect(searchResult.filesToUpload.includes(searchItem2Path)).toEqual(true)
@@ -283,6 +358,12 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.includes(extraSearchItem5Path)).toEqual(
       true
     )
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem4Path)
+    ).toEqual(true)
+    expect(
+      searchResult.filesToUpload.includes(symbolicLinkExtraSearchItem5Path)
+    ).toEqual(true)
 
     expect(searchResult.rootDirectory).toEqual(root)
   })

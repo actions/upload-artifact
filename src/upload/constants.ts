@@ -3,6 +3,7 @@ export enum Inputs {
   Name = 'name',
   Path = 'path',
   IfNoFilesFound = 'if-no-files-found',
+  FollowSymbolicLinks = 'follow-symbolic-links',
   RetentionDays = 'retention-days',
   CompressionLevel = 'compression-level',
   Overwrite = 'overwrite'

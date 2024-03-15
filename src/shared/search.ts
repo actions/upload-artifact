@@ -19,6 +19,15 @@ function getDefaultGlobOptions(): glob.GlobOptions {
   }
 }
 
+export function getGlobOptions(
+  followSymbolicLinks?: boolean
+): glob.GlobOptions {
+  return {
+    followSymbolicLinks,
+    ...getDefaultGlobOptions()
+  }
+}
+
 /**
  * If multiple paths are specific, the least common ancestor (LCA) of the search paths is used as
  * the delimiter to control the directory structure for the artifact. This function returns the LCA
@@ -88,6 +97,7 @@ export async function findFilesToUpload(
     globOptions || getDefaultGlobOptions()
   )
   const rawSearchResults: string[] = await globber.glob()
+  console.log(rawSearchResults)
 
   /*
     Files are saved with case insensitivity. Uploading both a.txt and A.txt will files to be overwritten
