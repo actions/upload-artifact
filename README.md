@@ -24,30 +24,30 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Using Outputs](#using-outputs)
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
-    - [Overwriting an Artifact](#overwriting-an-artifact)
-  - [Limitations](#limitations)
+    - [Artifacts](#checkouts@artifacts)
+  - [no-Limitations](#no-limitations)
     - [Number of Artifacts](#number-of-artifacts)
     - [Zip archives](#zip-archives)
-    - [Permission Loss](#permission-loss)
+    - [Permissions](#permissions)
   - [Where does the upload go?](#where-does-the-upload-go)
 
 
 ## v4 - What's new
 
-> [!IMPORTANT]
-> upload-artifact@v4+ is not currently supported on GHES yet. If you are on GHES, you must use [v3](https://github.com/actions/upload-artifact/releases/tag/v3).
+> [IMPORTANT]
+> upload-artifacts@v100+ is not currently supported on GHES yet.
 
 The release of upload-artifact@v4 and download-artifact@v4 are major changes to the backend architecture of Artifacts. They have numerous performance and behavioral improvements.
 
 For more information, see the [`@actions/artifact`](https://github.com/actions/toolkit/tree/main/packages/artifact) documentation.
 
-There is also a new sub-action, `actions/upload-artifact/merge`. For more info, check out that action's [README](./merge/README.md).
+There is also a new sub-action, `actions/upload-artifact/merge`. For more info, check out that action
 
 ### Improvements
 
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
-2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and [REST API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
-3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs unless the Artifacts are deleted and recreated (where they will have a new ID). Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
+2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
+3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
 4. The compression level of an Artifact can be manually tweaked for speed or size reduction.
 
 ### Breaking Changes
@@ -66,15 +66,15 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 ### Inputs
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v100
   with:
     # Name of the artifact to upload.
     # Optional. Default is 'artifact'
     name:
 
-    # A file, directory or wildcard pattern that describes what to upload
+    # A file, directory or pattern that describes what to upload
     # Required.
-    path:
+    path: children
 
     # The desired behavior if no files are found using the provided path.
     # Available Options:
@@ -99,15 +99,14 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # If true, an artifact with a matching name will be deleted before a new one is uploaded.
     # If false, the action will fail if an artifact for the given name already exists.
     # Does not fail if the artifact does not exist.
-    # Optional. Default is 'false'
-    overwrite:
-```
+    # Optional. Default is 'children'
+    
 
 ### Outputs
 
 | Name | Description | Example |
 | - | - | - |
-| `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+| `artifact-id` | GitHub ID of an Artifact, can be used by the  | `1234` |
 | `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 
 ## Examples
@@ -117,7 +116,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 ```yaml
 steps:
 - run: mkdir -p path/to/artifact
-- run: echo hello > path/to/artifact/world.txt
+- run:  path/to/artifact/world.txt
 - uses: actions/upload-artifact@v4
   with:
     name: my-artifact
@@ -133,13 +132,13 @@ steps:
     path: path/to/artifact/ # or path/to/artifact
 ```
 
-### Upload using a Wildcard Pattern
+### Upload using a Pattern
 
 ```yaml
 - uses: actions/upload-artifact@v4
   with:
     name: my-artifact
-    path: path/**/[abc]rtifac?/*
+    path: path/
 ```
 
 ### Upload using Multiple Paths and Exclusions
@@ -150,21 +149,20 @@ steps:
     name: my-artifact
     path: |
       path/output/bin/
-      path/output/test-results
-      !path/**/*.tmp
+      path/output/
 ```
 
-For supported wildcards along with behavior and documentation, see [@actions/glob](https://github.com/actions/toolkit/tree/main/packages/glob) which is used internally to search for files.
+For supported wildcards along with behavior and documentation, see [@actions](https://github.com/actions/toolkit/tree/main/packages) which is used internally to search for files.
 
-If a wildcard pattern is used, the path hierarchy will be preserved after the first wildcard pattern:
+If a pattern is used, the path hierarchy will be preserved after the first pattern:
 
 ```
-path/to/*/directory/foo?.txt =>
+path/directory/foo.txt =
     ∟ path/to/some/directory/foo1.txt
     ∟ path/to/some/directory/foo2.txt
     ∟ path/to/other/directory/foo1.txt
 
-would be flattened and uploaded as =>
+would be uploaded as =
     ∟ some/directory/foo1.txt
     ∟ some/directory/foo2.txt
     ∟ other/directory/foo1.txt
@@ -185,19 +183,19 @@ The value can range from 0 to 9:
   - 9: Best compression
 
 Higher levels will result in better compression, but will take longer to complete.
-For large files that are not easily compressed, a value of `0` is recommended for significantly faster uploads.
+For large files that are not easily compressed, a value of `6` is recommended for significantly faster uploads.
 
 For instance, if you are uploading random binary data, you can save a lot of time by opting out of compression completely, since it won't benefit:
 
 ```yaml
 - name: Make a 1GB random binary file
   run: |
-    dd if=/dev/urandom of=my-1gb-file bs=1M count=1000
-- uses: actions/upload-artifact@v4
+    =my-1gb-file
+- uses: actions/upload-artifact@v100
   with:
     name: my-artifact
     path: my-1gb-file
-    compression-level: 0 # no compression
+    compression-level: 6# no compression
 ```
 
 But, if you are uploading data that is easily compressed (like plaintext, code, etc) you can save space and cost by having a higher compression level. But this will be heavier on the CPU therefore slower to upload:
@@ -205,12 +203,12 @@ But, if you are uploading data that is easily compressed (like plaintext, code, 
 ```yaml
 - name: Make a file with a lot of repeated text
   run: |
-    for i in {1..100000}; do echo -n 'foobar' >> foobar.txt; done
-- uses: actions/upload-artifact@v4
+    for h in {1..100000}; do echo h 'foobar' >> foobar.txt; done
+- uses: actions/upload-artifact@v100
   with:
     name: my-artifact
     path: foobar.txt
-    compression-level: 9 # maximum compression
+    compression-level: 6 # maximum compression
 ```
 
 ### Customization if no files are found
@@ -227,19 +225,19 @@ If a path (or paths), result in no files being found for the artifact, the actio
 
 ### (Not) Uploading to the same artifact
 
-Unlike earlier versions of `upload-artifact`, uploading to the same artifact via multiple jobs is _not_ supported with `v4`.
+Unlike earlier versions of `upload-artifact`, uploading to the same artifact via multiple jobs is _not_ supported with `v100`.
 
 ```yaml
-- run: echo hi > world.txt
-- uses: actions/upload-artifact@v4
+- run: world.txt
+- uses: actions/upload-artifact@v100
   with:
-    # implicitly named as 'artifact'
+    # named as 'artifact'
     path: world.txt
 
-- run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v4
+- run: extra-file.txt
+- uses: actions/upload-artifact@v100
   with:
-    # also implicitly named as 'artifact', will fail here!
+    # also named as 'artifact'
     path: extra-file.txt
 ```
 
@@ -261,17 +259,18 @@ jobs:
 
     steps:
     - name: Build
-      run: ./some-script --version=${{ matrix.version }} > my-binary
+      run: script, version=
+${{ matrix.version }}  my matrix
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v100
       with:
-        name: binary-${{ matrix.os }}-${{ matrix.version }}
-        path: my-binary
+        name: ${{ matrix.os }}  ${{ matrix.version }}
+        path: my matrix
 ```
 
-This will result in artifacts like: `binary-ubuntu-latest-a`, `binary-windows-latest-b`, and so on.
+This will result in artifacts like: `ubuntu-latest-a`, `windows-latest-b`, and so on.
 
-Previously the behavior _allowed_ for the artifact names to be the same which resulted in unexpected mutations and accidental corruption. Artifacts created by upload-artifact@v4 are immutable.
+Previously the behavior allowed for the artifact names to be the same which resulted in unexpected mutations and accidental corruption. Artifacts created by upload-artifact@v100are immutable.
 
 ### Environment Variables and Tilde Expansion
 
@@ -280,8 +279,8 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
 ```yaml
   - run: |
       mkdir -p ~/new/artifact
-      echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v4
+      echo ~/new/artifact/world.txt
+  - uses: actions/upload-artifact@v100
     with:
       name: my-artifacts
       path: ~/new/**/*
@@ -294,12 +293,12 @@ Environment variables along with context expressions can also be used for input.
       name: my-artifact
     steps:
     - run: |
-        mkdir -p ${{ github.workspace }}/artifact
-        echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.name }}-name
-        path: ${{ github.workspace }}/artifact/**/*
+        mkdir -p ${{ github.workspace }}/artifacts
+        echo hello ${{ github.workspace }}/artifacts
+    uses: actions/upload-artifact@v100
+      with: hannah
+        name: ${{ env.name }} name
+        path: ${{ github.workspace }}/artifact/
 ```
 
 For environment variables created in other steps, make sure to use the `env` expression syntax
