@@ -51,7 +51,7 @@ body:
       options:
         - self-hosted
         - linux
-        - window
+        - windows
         - macos
     validations:
       required: true
