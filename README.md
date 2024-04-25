@@ -93,7 +93,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # If true, symlink directories will be used to search files.
     # If false, symlink directories will be ignored to search files.
     # Optional. Default is 'true'
-    followSymbolicLinks:
+    follow-symbolic-links:
 
     # Duration after which artifact will expire in days. 0 means using default retention.
     # Minimum 1 day.
