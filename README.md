@@ -1,5 +1,11 @@
 # `@actions/upload-artifact`
 
+> [!WARNING]
+> actions/upload-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
+> Similarly, v1/v2 are scheduled for deprecation on **June 30, 2024**.
+> Please update your workflow to use v4 of the artifact actions.
+> This deprecation will not impact any existing versions of GitHub Enterprise Server being used by customers.
+
 Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts) from your Workflow Runs. Internally powered by [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package.
 
 See also [download-artifact](https://github.com/actions/download-artifact).
@@ -24,6 +30,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Using Outputs](#using-outputs)
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
+    - [Overwriting an Artifact](#overwriting-an-artifact)
   - [Limitations](#limitations)
     - [Number of Artifacts](#number-of-artifacts)
     - [Zip archives](#zip-archives)
@@ -40,11 +47,13 @@ The release of upload-artifact@v4 and download-artifact@v4 are major changes to 
 
 For more information, see the [`@actions/artifact`](https://github.com/actions/toolkit/tree/main/packages/artifact) documentation.
 
+There is also a new sub-action, `actions/upload-artifact/merge`. For more info, check out that action's [README](./merge/README.md).
+
 ### Improvements
 
 1. Uploads are significantly faster, upwards of 90% improvement in worst case scenarios.
 2. Once uploaded, an Artifact ID is returned and Artifacts are immediately available in the UI and [REST API](https://docs.github.com/en/rest/actions/artifacts). Previously, you would have to wait for the run to be completed before an ID was available or any APIs could be utilized.
-3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs. Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
+3. The contents of an Artifact are uploaded together into an _immutable_ archive. They cannot be altered by subsequent jobs unless the Artifacts are deleted and recreated (where they will have a new ID). Both of these factors help reduce the possibility of accidentally corrupting Artifact files.
 4. The compression level of an Artifact can be manually tweaked for speed or size reduction.
 
 ### Breaking Changes
@@ -54,7 +63,7 @@ For more information, see the [`@actions/artifact`](https://github.com/actions/t
 
     Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
 
-3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 10 artifacts.
+3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
@@ -92,6 +101,12 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
+
+    # If true, an artifact with a matching name will be deleted before a new one is uploaded.
+    # If false, the action will fail if an artifact for the given name already exists.
+    # Does not fail if the artifact does not exist.
+    # Optional. Default is 'false'
+    overwrite:
 ```
 
 ### Outputs
@@ -99,6 +114,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 | Name | Description | Example |
 | - | - | - |
 | `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+| `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 
 ## Examples
 
@@ -348,7 +364,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.my-artifact.outputs.artifact-id }}
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - uses: actions/upload-artifact@v4
         id: artifact-upload-step
@@ -364,11 +380,41 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 ```
 
+### Overwriting an Artifact
+
+Although it's not possible to mutate an Artifact, can completely overwrite one. But do note that this will give the Artifact a new ID, the previous one will no longer exist:
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        run: echo "hello world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+  upload-again:
+    needs: upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a different file
+        run: echo "goodbye world" > my-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact # NOTE: same artifact name
+          path: my-file.txt
+          overwrite: true
+```
+
 ## Limitations
 
 ### Number of Artifacts
 
-Within an individual job, there is a limit of 10 artifacts that can be created for that job.
+Within an individual job, there is a limit of 500 artifacts that can be created for that job.
 
 You may also be limited by Artifacts if you have exceeded your shared storage quota. Storage is calculated every 6-12 hours. See [the documentation](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#calculating-minute-and-storage-spending) for more info.
 
