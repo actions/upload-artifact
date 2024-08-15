@@ -61,13 +61,13 @@ const lonelyFilePath = path.join(
   'lonely-file.txt'
 )
 
+const hiddenFile = path.join(root, '.hidden-file.txt')
 const fileInHiddenFolderPath = path.join(
   root,
   '.hidden-folder',
   'folder-in-hidden-folder',
   'file.txt'
 )
-const hiddenFile = path.join(root, '.hidden-file.txt')
 const fileInHiddenFolderInFolderA = path.join(
   root,
   'folder-a',
@@ -132,6 +132,10 @@ describe('Search', () => {
     await fs.writeFile(amazingFileInFolderHPath, 'amazing file')
 
     await fs.writeFile(lonelyFilePath, 'all by itself')
+
+    await fs.writeFile(hiddenFile, 'hidden file')
+    await fs.writeFile(fileInHiddenFolderPath, 'file in hidden directory')
+    await fs.writeFile(fileInHiddenFolderInFolderA, 'file in hidden directory')
     /*
       Directory structure of files that get created:
       root/
@@ -385,25 +389,19 @@ describe('Search', () => {
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath)
 
-    expect(searchResult.filesToUpload.includes(hiddenFile)).toEqual(false)
-    expect(searchResult.filesToUpload.includes(fileInHiddenFolderPath)).toEqual(
-      false
+    expect(searchResult.filesToUpload).not.toContain(hiddenFile)
+    expect(searchResult.filesToUpload).not.toContain(fileInHiddenFolderPath)
+    expect(searchResult.filesToUpload).not.toContain(
+      fileInHiddenFolderInFolderA
     )
-    expect(
-      searchResult.filesToUpload.includes(fileInHiddenFolderInFolderA)
-    ).toEqual(false)
   })
 
   it('Hidden files included', async () => {
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath, true)
 
-    expect(searchResult.filesToUpload.includes(hiddenFile)).toEqual(false)
-    expect(searchResult.filesToUpload.includes(fileInHiddenFolderPath)).toEqual(
-      false
-    )
-    expect(
-      searchResult.filesToUpload.includes(fileInHiddenFolderInFolderA)
-    ).toEqual(false)
+    expect(searchResult.filesToUpload).toContain(hiddenFile)
+    expect(searchResult.filesToUpload).toContain(fileInHiddenFolderPath)
+    expect(searchResult.filesToUpload).toContain(fileInHiddenFolderInFolderA)
   })
 })
