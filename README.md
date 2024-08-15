@@ -110,6 +110,8 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     overwrite:
 
     # Whether to include hidden files in the provided path in the artifact
+    # The file contents of any hidden files in the path should be validated before
+    # enabled this to avoid uploading sensitive information.
     # Optional. Default is 'false'
     include-hidden-files:
 ```
