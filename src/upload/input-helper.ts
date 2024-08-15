@@ -29,7 +29,7 @@ export function getInputs(): UploadInputs {
     searchPath: path,
     ifNoFilesFound: noFileBehavior,
     overwrite: overwrite,
-    includeHiddenFiles: includeHiddenFiles,
+    includeHiddenFiles: includeHiddenFiles
   } as UploadInputs
 
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)

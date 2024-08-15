@@ -81,7 +81,7 @@ function getMultiPathLCA(searchPaths: string[]): string {
 
 export async function findFilesToUpload(
   searchPath: string,
-  includeHiddenFiles?: boolean,
+  includeHiddenFiles?: boolean
 ): Promise<SearchResult> {
   const searchResults: string[] = []
   const globber = await glob.create(

@@ -24,7 +24,10 @@ async function deleteArtifactIfExists(artifactName: string): Promise<void> {
 
 export async function run(): Promise<void> {
   const inputs = getInputs()
-  const searchResult = await findFilesToUpload(inputs.searchPath, inputs.includeHiddenFiles)
+  const searchResult = await findFilesToUpload(
+    inputs.searchPath,
+    inputs.includeHiddenFiles
+  )
   if (searchResult.filesToUpload.length === 0) {
     // No files were found, different use cases warrant different types of behavior if nothing is found
     switch (inputs.ifNoFilesFound) {

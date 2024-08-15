@@ -19,7 +19,7 @@ export function getInputs(): MergeInputs {
     deleteMerged,
     retentionDays: 0,
     compressionLevel: 6,
-    includeHiddenFiles,
+    includeHiddenFiles
   } as MergeInputs
 
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)
