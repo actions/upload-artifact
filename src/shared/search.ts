@@ -16,7 +16,7 @@ function getDefaultGlobOptions(includeHiddenFiles: boolean): glob.GlobOptions {
     followSymbolicLinks: true,
     implicitDescendants: true,
     omitBrokenSymbolicLinks: true,
-    excludeHiddenFiles: !includeHiddenFiles,
+    excludeHiddenFiles: !includeHiddenFiles
   }
 }
 
