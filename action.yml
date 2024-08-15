@@ -40,6 +40,11 @@ inputs:
       If false, the action will fail if an artifact for the given name already exists.
       Does not fail if the artifact does not exist.
     default: 'false'
+  include-hidden-files:
+    description: >
+      If true, hidden files will be included in the merged artifact.
+      If false, hidden files will be excluded from the merged artifact.
+    default: 'false'
 
 outputs:
   artifact-id:
