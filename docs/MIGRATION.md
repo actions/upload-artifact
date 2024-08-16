@@ -207,3 +207,41 @@ jobs:
 ```
 
 Note that this will download all artifacts to a temporary directory and reupload them as a single artifact. For more information on inputs and other use cases for `actions/upload-artifact/merge@v4`, see [the action documentation](../merge/README.md).
+
+## `.git` Directory
+
+By default, files in the `.git` directory are ignored to avoid unintentionally uploading
+credentials.
+
+In versions of this action before `v4.4.0`, files in the `.git` directory were included by default.
+If this directory is required, ensure credentials are not saved in `.git/config` and then
+enable the `include-git-directory` input.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: .
+```
+
+
+```diff
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
++       with:
++         persist-credentials: false
+      - name: Upload Artifact
+-       uses: actions/upload-artifact@v3
++       uses: actions/upload-artifact@v4
+        with:
+          path: .
++         include-git-directory: true
+```

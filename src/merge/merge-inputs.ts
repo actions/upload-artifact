@@ -30,4 +30,9 @@ export interface MergeInputs {
    * If false, the artifacts will be merged into the root of the destination.
    */
   separateDirectories: boolean
+
+  /**
+   * Include files in the `.git` directory in the artifact
+   */
+  includeGitDirectory: boolean
 }

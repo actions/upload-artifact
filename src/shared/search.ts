@@ -78,14 +78,23 @@ function getMultiPathLCA(searchPaths: string[]): string {
   return path.join(...commonPaths)
 }
 
+export interface SearchOptions {
+  /**
+   * Indicates whether files in the .git directory should be included in the artifact
+   * 
+   * @default false
+   */
+  includeGitDirectory: boolean
+}
+
 export async function findFilesToUpload(
   searchPath: string,
-  globOptions?: glob.GlobOptions
+  searchOptions?: SearchOptions,
 ): Promise<SearchResult> {
   const searchResults: string[] = []
   const globber = await glob.create(
     searchPath,
-    globOptions || getDefaultGlobOptions()
+    getDefaultGlobOptions()
   )
   const rawSearchResults: string[] = await globber.glob()
 
@@ -104,6 +113,12 @@ export async function findFilesToUpload(
     // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
     if (!fileStats.isDirectory()) {
       debug(`File:${searchResult} was found using the provided searchPath`)
+
+      if (!searchOptions?.includeGitDirectory && inGitDirectory(searchResult)) {
+        debug(`Ignoring ${searchResult} because it is in the .git directory`)
+        continue
+      }
+
       searchResults.push(searchResult)
 
       // detect any files that would be overwritten because of case insensitivity
@@ -154,4 +169,16 @@ export async function findFilesToUpload(
     filesToUpload: searchResults,
     rootDirectory: searchPaths[0]
   }
+}
+
+function inGitDirectory(filePath: string): boolean {
+  // The .git directory is a directory, so we need to check if the file path is a directory
+  // and if it is a .git directory
+  for (const part of filePath.split(path.sep)) {
+    if (part === '.git') {
+      return true
+    }
+  }
+
+  return false
 }

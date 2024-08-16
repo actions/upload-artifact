@@ -5,6 +5,7 @@ Merge multiple [Actions Artifacts](https://docs.github.com/en/actions/using-work
 - [`@actions/upload-artifact/merge`](#actionsupload-artifactmerge)
   - [Usage](#usage)
     - [Inputs](#inputs)
+      - [Uploading the `.git` directory](#uploading-the-git-directory)
     - [Outputs](#outputs)
   - [Examples](#examples)
     - [Combining all artifacts in a workflow run](#combining-all-artifacts-in-a-workflow-run)
@@ -57,6 +58,44 @@ For most cases, this may not be the most efficient solution. See [the migration 
     # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
+```
+
+#### Uploading the `.git` directory
+
+By default, files in a `.git` directory are ignored in the merged artifact.
+This is intended to prevent accidentally uploading Git credentials into an artifact that could then
+be extracted.
+If files in the `.git` directory are needed, ensure that `actions/checkout` is being used with
+`persist-credentials: false`.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        foo: [a, b, c]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false # Ensure credentials are not saved in `.git/config`
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact-${{ matrix.foo }}
+          path: .
+          include-git-directory: true
+
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          include-git-directory: true
 ```
 
 ### Outputs

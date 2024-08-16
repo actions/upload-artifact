@@ -16,6 +16,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Breaking Changes](#breaking-changes)
   - [Usage](#usage)
     - [Inputs](#inputs)
+      - [Uploading the `.git` directory](#uploading-the-git-directory)
     - [Outputs](#outputs)
   - [Examples](#examples)
     - [Upload an Individual File](#upload-an-individual-file)
@@ -64,6 +65,7 @@ There is also a new sub-action, `actions/upload-artifact/merge`. For more info, 
     Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
 
 3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
+4. With `v4.4` and later, the `.git` directory is excluded by default.
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
@@ -107,6 +109,30 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # Does not fail if the artifact does not exist.
     # Optional. Default is 'false'
     overwrite:
+```
+
+#### Uploading the `.git` directory
+
+By default, files in a `.git` directory are ignored in the uploaded artifact.
+This is intended to prevent accidentally uploading Git credentials into an artifact that could then
+be extracted.
+If files in the `.git` directory are needed, ensure that `actions/checkout` is being used with
+`persist-credentials: false`.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false # Ensure credentials are not saved in `.git/config`
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: .
+          include-git-directory: true
 ```
 
 ### Outputs

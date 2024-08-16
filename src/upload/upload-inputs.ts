@@ -30,4 +30,9 @@ export interface UploadInputs {
    * Whether or not to replace an existing artifact with the same name
    */
   overwrite: boolean
+
+  /**
+   * Include files in the `.git` directory in the artifact
+   */
+  includeGitDirectory: boolean
 }

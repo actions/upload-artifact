@@ -61,6 +61,12 @@ const lonelyFilePath = path.join(
   'lonely-file.txt'
 )
 
+const gitConfigPath = path.join(root, '.git', 'config')
+const gitHeadPath = path.join(root, '.git', 'HEAD')
+
+const nestedGitConfigPath = path.join(root, 'repository-name', '.git', 'config')
+const nestedGitHeadPath = path.join(root, 'repository-name', '.git', 'HEAD')
+
 describe('Search', () => {
   beforeAll(async () => {
     // mock all output so that there is less noise when running tests
@@ -93,6 +99,11 @@ describe('Search', () => {
       recursive: true
     })
 
+    await fs.mkdir(path.join(root, '.git'))
+    await fs.mkdir(path.join(root, 'repository-name', '.git'), {
+      recursive: true
+    })
+
     await fs.writeFile(searchItem1Path, 'search item1 file')
     await fs.writeFile(searchItem2Path, 'search item2 file')
     await fs.writeFile(searchItem3Path, 'search item3 file')
@@ -110,9 +121,17 @@ describe('Search', () => {
     await fs.writeFile(amazingFileInFolderHPath, 'amazing file')
 
     await fs.writeFile(lonelyFilePath, 'all by itself')
+
+    await fs.writeFile(gitConfigPath, 'git config file')
+    await fs.writeFile(gitHeadPath, 'git head file')
+    await fs.writeFile(nestedGitConfigPath, 'nested git config file')
+    await fs.writeFile(nestedGitHeadPath, 'nested git head file')
     /*
       Directory structure of files that get created:
       root/
+          .git/
+              config
+              HEAD
           folder-a/
               folder-b/
                   folder-c/
@@ -136,6 +155,10 @@ describe('Search', () => {
               folder-j/
                   folder-k/
                       lonely-file.txt
+          repository-name/
+            .git/
+                config
+                HEAD
           search-item5.txt
     */
   })
@@ -351,5 +374,19 @@ describe('Search', () => {
       true
     )
     expect(searchResult.filesToUpload.includes(lonelyFilePath)).toEqual(true)
+  })
+
+  it('Excludes .git directory by default', async () => {
+    const searchResult = await findFilesToUpload(root)
+    expect(searchResult.filesToUpload.length).toEqual(13)
+    expect(searchResult.filesToUpload).not.toContain(gitConfigPath)
+  })
+
+  it('Includes .git directory when includeGitDirectory is true', async () => {
+    const searchResult = await findFilesToUpload(root, {
+      includeGitDirectory: true
+    })
+    expect(searchResult.filesToUpload.length).toEqual(17)
+    expect(searchResult.filesToUpload).toContain(gitConfigPath)
   })
 })

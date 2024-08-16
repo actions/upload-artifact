@@ -62,7 +62,9 @@ export async function run(): Promise<void> {
     options.compressionLevel = inputs.compressionLevel
   }
 
-  const searchResult = await findFilesToUpload(tmpDir)
+  const searchResult = await findFilesToUpload(tmpDir, {
+    includeGitDirectory: inputs.includeGitDirectory
+  })
 
   await uploadArtifact(
     inputs.name,
