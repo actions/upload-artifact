@@ -81,7 +81,7 @@ function getMultiPathLCA(searchPaths: string[]): string {
 export interface SearchOptions {
   /**
    * Indicates whether files in the .git directory should be included in the artifact
-   * 
+   *
    * @default false
    */
   includeGitDirectory: boolean
@@ -89,13 +89,10 @@ export interface SearchOptions {
 
 export async function findFilesToUpload(
   searchPath: string,
-  searchOptions?: SearchOptions,
+  searchOptions?: SearchOptions
 ): Promise<SearchResult> {
   const searchResults: string[] = []
-  const globber = await glob.create(
-    searchPath,
-    getDefaultGlobOptions()
-  )
+  const globber = await glob.create(searchPath, getDefaultGlobOptions())
   const rawSearchResults: string[] = await globber.glob()
 
   /*
