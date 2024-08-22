@@ -237,6 +237,29 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
 
 The retention period must be between 1 and 90 inclusive. For more information see [artifact and log retention policies](https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration#artifact-and-log-retention-policy).
 
+
+### Hidden Files 
+
+By default, hidden files are ignored by this action to avoid unintentionally uploading sensitive information.
+
+In versions of this action before v3.2.0, these hidden files were included by default.
+
+If you need to upload hidden files, you can use the `include-hidden-files` input.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a Hidden File
+        run: echo "hello from a hidden file" > .hidden-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: .hidden-file.txt
+          include-hidden-files: true
+```
+
 ## Where does the upload go?
 
 At the bottom of the workflow summary page, there is a dedicated section for artifacts. Here's a screenshot of something you might see:
