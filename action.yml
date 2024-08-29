@@ -23,6 +23,11 @@ inputs:
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
+  include-hidden-files:
+    description: >
+      If true, hidden files will be included in the uploaded artifact.
+      If false, hidden files will be excluded from the uploaded artifact.
+    default: 'false'
 runs:
   using: 'node20'
   main: 'dist/index.js'
