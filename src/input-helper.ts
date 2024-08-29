@@ -11,6 +11,7 @@ export function getInputs(): UploadInputs {
 
   const ifNoFilesFound = core.getInput(Inputs.IfNoFilesFound)
   const noFileBehavior: NoFileOptions = NoFileOptions[ifNoFilesFound]
+  const includeHiddenFiles = core.getBooleanInput(Inputs.IncludeHiddenFiles)
 
   if (!noFileBehavior) {
     core.setFailed(
@@ -25,7 +26,8 @@ export function getInputs(): UploadInputs {
   const inputs = {
     artifactName: name,
     searchPath: path,
-    ifNoFilesFound: noFileBehavior
+    ifNoFilesFound: noFileBehavior,
+    includeHiddenFiles
   } as UploadInputs
 
   const retentionDaysStr = core.getInput(Inputs.RetentionDays)
