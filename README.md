@@ -64,6 +64,7 @@ There is also a new sub-action, `actions/upload-artifact/merge`. For more info, 
     Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
 
 3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
+4. With `v4.4` and later, hidden files are excluded by default.
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
@@ -107,6 +108,12 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # Does not fail if the artifact does not exist.
     # Optional. Default is 'false'
     overwrite:
+
+    # Whether to include hidden files in the provided path in the artifact
+    # The file contents of any hidden files in the path should be validated before
+    # enabled this to avoid uploading sensitive information.
+    # Optional. Default is 'false'
+    include-hidden-files:
 ```
 
 ### Outputs

@@ -36,6 +36,11 @@ inputs:
       If true, the artifacts that were merged will be deleted.
       If false, the artifacts will still exist.
     default: 'false'
+  include-hidden-files:
+    description: >
+      If true, hidden files will be included in the merged artifact.
+      If false, hidden files will be excluded from the merged artifact.
+    default: 'false'
 
 outputs:
   artifact-id:
