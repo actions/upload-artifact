@@ -11091,7 +11091,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const inputs = (0, input_helper_1.getInputs)();
-            const searchResult = yield (0, search_1.findFilesToUpload)(inputs.searchPath);
+            const searchResult = yield (0, search_1.findFilesToUpload)(inputs.searchPath, inputs.includeHiddenFiles);
             if (searchResult.filesToUpload.length === 0) {
                 // No files were found, different use cases warrant different types of behavior if nothing is found
                 switch (inputs.ifNoFilesFound) {
