@@ -417,6 +417,28 @@ jobs:
           overwrite: true
 ```
 
+### Uploading Hidden Files
+
+By default, hidden files are ignored by this action to avoid unintentionally uploading sensitive information.
+
+If you need to upload hidden files, you can use the `include-hidden-files` input.
+Any files that contain sensitive information that should not be in the uploaded artifact can be excluded
+using the `path`:
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    include-hidden-files: true
+    path: |
+      path/output/
+      !path/output/.production.env
+```
+
+Hidden files are defined as any file beginning with `.` or files within folders beginning with `.`.
+On Windows, files and directories with the hidden attribute are not considered hidden files unless
+they have the `.` prefix.
+
 ## Limitations
 
 ### Number of Artifacts
