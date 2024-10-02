@@ -91,7 +91,7 @@ jobs:
           path: file-${{ matrix.foo }}.txt
 ```
 
-Each of the following examples will use the `needs: upload` as a prerequesite before any merging operations.
+Each of the following examples will use the `needs: upload` as a prerequisite before any merging operations.
 
 ### Combining all artifacts in a workflow run
 
