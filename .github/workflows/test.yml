@@ -46,14 +46,18 @@ jobs:
     - name: Test
       run: npm run test
 
-    # Test end-to-end by uploading two artifacts and then downloading them
+    # Test end-to-end by uploading a few artifacts and then downloading them
     - name: Create artifact files
       run: |
         mkdir -p path/to/dir-1
         mkdir -p path/to/dir-2
         mkdir -p path/to/dir-3
+        mkdir -p symlink/
         echo "Lorem ipsum dolor sit amet" > path/to/dir-1/file1.txt
         echo "Hello world from file #2" > path/to/dir-2/file2.txt
+        echo "Hello from a symlinked file" > symlink/original.txt
+        ln -s $(pwd)/symlink/original.txt symlink/file.txt
+      shell: bash
 
     # Upload a single file artifact
     - name: 'Upload artifact #1'
@@ -78,6 +82,12 @@ jobs:
           path/to/dir-1/*
           path/to/dir-[23]/*
           !path/to/dir-3/*.txt
+
+    - name: 'Upload symlinked artifact'
+      uses: ./
+      with:
+        name: 'Symlinked-Artifact-${{ matrix.runs-on }}'
+        path: symlink/file.txt
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
@@ -138,6 +148,25 @@ jobs:
         if(!((Get-Content $file1) -ceq "Lorem ipsum dolor sit amet") -or !((Get-Content $file2) -ceq "Hello world from file #2"))
         {
             Write-Error "File contents of downloaded artifacts are incorrect"
+        }
+      shell: pwsh
+
+    - name: 'Download symlinked artifact'
+      uses: actions/download-artifact@v4
+      with:
+        name: 'Symlinked-Artifact-${{ matrix.runs-on }}'
+        path: from/symlink
+
+    - name: 'Verify symlinked artifact'
+      run: |
+        $file = "from/symlink/file.txt"
+        if(!(Test-Path -path $file))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $file) -ceq "Hello from a symlinked file"))
+        {
+            Write-Error "File contents of downloaded artifact are incorrect"
         }
       shell: pwsh
 
