@@ -30,4 +30,9 @@ export interface MergeInputs {
    * If false, the artifacts will be merged into the root of the destination.
    */
   separateDirectories: boolean
+
+  /**
+   * Whether or not to include hidden files in the artifact
+   */
+  includeHiddenFiles: boolean
 }

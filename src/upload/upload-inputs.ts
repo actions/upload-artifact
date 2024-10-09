@@ -30,4 +30,9 @@ export interface UploadInputs {
    * Whether or not to replace an existing artifact with the same name
    */
   overwrite: boolean
+
+  /**
+   * Whether or not to include hidden files in the artifact
+   */
+  includeHiddenFiles: boolean
 }

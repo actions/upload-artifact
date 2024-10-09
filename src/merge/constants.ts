@@ -5,5 +5,6 @@ export enum Inputs {
   SeparateDirectories = 'separate-directories',
   RetentionDays = 'retention-days',
   CompressionLevel = 'compression-level',
-  DeleteMerged = 'delete-merged'
+  DeleteMerged = 'delete-merged',
+  IncludeHiddenFiles = 'include-hidden-files'
 }
