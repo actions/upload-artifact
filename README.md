@@ -60,8 +60,9 @@ There is also a new sub-action, `actions/upload-artifact/merge`. For more info, 
 ### Breaking Changes
 
 1. On self hosted runners, additional [firewall rules](https://github.com/actions/toolkit/tree/main/packages/artifact#breaking-changes) may be required.
-2. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
-3. With `v4.4` and later, hidden files are excluded by default.
+2. While it's not possible to upload to the same named artifact multiple times, you can overwrite it and/or merge artifacts into a single one. An example of this breaking change is outlined in [the migration guide](docs/MIGRATION.md#multiple-uploads-to-the-same-named-artifact).
+3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
+4. With `v4.4` and later, hidden files are excluded by default.
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
