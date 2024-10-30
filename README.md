@@ -477,6 +477,6 @@ At the bottom of the workflow summary page, there is a dedicated section for art
 
 <img src="https://user-images.githubusercontent.com/16109154/103645952-223c6880-4f59-11eb-8268-8dca6937b5f9.png" width="700" height="300">
 
-There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
+For users who have write permissions to the repository, there is a trashcan icon that can be used to delete the artifact.
 
 The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload.
