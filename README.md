@@ -452,7 +452,7 @@ You may also be limited by Artifacts if you have exceeded your shared storage qu
 
 ### Zip archives
 
-When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than a Zip or to download individual artifact contents.
+When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than Zip or to download individual artifact contents.
 
 ### Permission Loss
 
