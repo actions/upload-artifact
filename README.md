@@ -87,7 +87,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # Available Options:
     #   warn: Output a warning but do not fail the action
     #   error: Fail the action with an error message
-    #   ignore: Do not output any warnings or errors, the action does not fail
+    #   ignore: Do not output any warnings or errors, does not fail the action
     # Optional. Default is 'warn'
     if-no-files-found:
 
