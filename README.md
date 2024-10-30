@@ -100,7 +100,8 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
     # The level of compression for Zlib to be applied to the artifact archive.
     # The value can range from 0 to 9.
-    # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
+    # For large files that are not easily compressed, a value of 0 is recommended for
+    # significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
 
