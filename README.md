@@ -91,9 +91,10 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
     # Optional. Default is 'warn'
     if-no-files-found:
 
-    # Duration after which artifact will expire in days. 0 means using default retention.
-    # Minimum 1 day.
-    # Maximum 90 days unless changed from the repository settings page.
+    # Duration after which artifact will expire in days.
+    #   0 means use default retention.
+    #   1 is the shortest retention.
+    #   Maximum is based on repository settings (the default is 90 days).
     # Optional. Defaults to repository settings.
     retention-days:
 
