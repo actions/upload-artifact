@@ -122,8 +122,8 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
 | Name | Description | Example |
 | - | - | - |
-| `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
-| `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
+| `artifact-id` | GitHub ID of the Artifact, can be used by the REST API | `1234` |
+| `artifact-url` | URL to download the Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired and the artifact, run, and repository have not been deleted. | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 | `artifact-digest` | SHA-256 digest of an Artifact | 0fde654d4c6e659b45783a725dc92f1bfb0baa6c2de64b34e814dc206ff4aaaf |
 
 ## Examples
