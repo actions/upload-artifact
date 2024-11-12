@@ -1,4 +1,5 @@
 name: Test
+
 on:
   push:
     branches:
@@ -10,7 +11,6 @@ on:
       - '**.md'
 
 jobs:
-
   build:
     name: Build
 
@@ -23,12 +23,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Setup Node 16
-      uses: actions/setup-node@v3
+    - name: Setup Node 20
+      uses: actions/setup-node@v4
       with:
-        node-version: 16.x
+        node-version: 20.x
         cache: 'npm'
 
     - name: Install dependencies
@@ -46,51 +46,57 @@ jobs:
     - name: Test
       run: npm run test
 
-    # Test end-to-end by uploading two artifacts and then downloading them
+    # Test end-to-end by uploading a few artifacts and then downloading them
     - name: Create artifact files
       run: |
         mkdir -p path/to/dir-1
         mkdir -p path/to/dir-2
         mkdir -p path/to/dir-3
+        mkdir -p symlink/
         echo "Lorem ipsum dolor sit amet" > path/to/dir-1/file1.txt
         echo "Hello world from file #2" > path/to/dir-2/file2.txt
-        echo "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip" > path/to/dir-3/gzip.txt
+        echo "Hello from a symlinked file" > symlink/original.txt
+        ln -s $(pwd)/symlink/original.txt symlink/abs.txt
+        ln -s original.txt symlink/rel.txt
+      shell: bash
 
     # Upload a single file artifact
     - name: 'Upload artifact #1'
       uses: ./
       with:
-        name: 'Artifact-A'
+        name: 'Artifact-A-${{ matrix.runs-on }}'
         path: path/to/dir-1/file1.txt
 
-    # Upload using a wildcard pattern, name should default to 'artifact' if not provided
+    # Upload using a wildcard pattern
     - name: 'Upload artifact #2'
       uses: ./
       with:
+        name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: path/**/dir*/
 
-    # Upload a directory that contains a file that will be uploaded with GZip
+    # Upload a multi-path artifact
     - name: 'Upload artifact #3'
       uses: ./
       with:
-        name: 'GZip-Artifact'
-        path: path/to/dir-3/
-
-    # Upload a directory that contains a file that will be uploaded with GZip
-    - name: 'Upload artifact #4'
-      uses: ./
-      with:
-        name: 'Multi-Path-Artifact'
+        name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: |
           path/to/dir-1/*
           path/to/dir-[23]/*
           !path/to/dir-3/*.txt
 
+    - name: 'Upload symlinked artifact'
+      uses: ./
+      with:
+        name: 'Symlinked-Artifact-${{ matrix.runs-on }}'
+        path: |
+          symlink/abs.txt
+          symlink/rel.txt
+
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: 'Artifact-A'
+        name: 'Artifact-A-${{ matrix.runs-on }}'
         path: some/new/path
 
     - name: 'Verify Artifact #1'
@@ -108,9 +114,9 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: 'artifact'
+        name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: some/other/path
 
     - name: 'Verify Artifact #2'
@@ -127,31 +133,11 @@ jobs:
         }
       shell: pwsh
 
-    # Download Artifact #3 and verify the correctness of the content
-    - name: 'Download artifact #3'
-      uses: actions/download-artifact@v3
-      with:
-        name: 'GZip-Artifact'
-        path: gzip/artifact/path
-
-    # Because a directory was used as input during the upload the parent directories, path/to/dir-3/, should not be included in the uploaded artifact
-    - name: 'Verify Artifact #3'
-      run: |
-        $gzipFile = "gzip/artifact/path/gzip.txt"
-        if(!(Test-Path -path $gzipFile))
-        {
-            Write-Error "Expected file do not exist"
-        }
-        if(!((Get-Content $gzipFile) -ceq "This is a going to be a test for a large enough file that should get compressed with GZip. The @actions/artifact package uses GZip to upload files. This text should have a compression ratio greater than 100% so it should get uploaded using GZip"))
-        {
-            Write-Error "File contents of downloaded artifact is incorrect"
-        }
-      shell: pwsh
-
+    # Download Artifact #4 and verify the correctness of the content
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: 'Multi-Path-Artifact'
+        name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: multi/artifact
 
     - name: 'Verify Artifact #4'
@@ -167,3 +153,140 @@ jobs:
             Write-Error "File contents of downloaded artifacts are incorrect"
         }
       shell: pwsh
+
+    - name: 'Download symlinked artifact'
+      uses: actions/download-artifact@v4
+      with:
+        name: 'Symlinked-Artifact-${{ matrix.runs-on }}'
+        path: from/symlink
+
+    - name: 'Verify symlinked artifact'
+      run: |
+        $abs = "from/symlink/abs.txt"
+        if(!(Test-Path -path $abs))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $abs) -ceq "Hello from a symlinked file"))
+        {
+            Write-Error "File contents of downloaded artifact are incorrect"
+        }
+        $rel = "from/symlink/rel.txt"
+        if(!(Test-Path -path $rel))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $rel) -ceq "Hello from a symlinked file"))
+        {
+            Write-Error "File contents of downloaded artifact are incorrect"
+        }
+      shell: pwsh
+
+    - name: 'Alter file 1 content'
+      run: |
+        echo "This file has changed" > path/to/dir-1/file1.txt
+
+    # Replace the contents of Artifact #1
+    - name: 'Overwrite artifact #1'
+      uses: ./
+      with:
+        name: 'Artifact-A-${{ matrix.runs-on }}'
+        path: path/to/dir-1/file1.txt
+        overwrite: true
+
+    # Download replaced Artifact #1 and verify the correctness of the content
+    - name: 'Download artifact #1 again'
+      uses: actions/download-artifact@v4
+      with:
+        name: 'Artifact-A-${{ matrix.runs-on }}'
+        path: overwrite/some/new/path
+
+    - name: 'Verify Artifact #1 again'
+      run: |
+        $file = "overwrite/some/new/path/file1.txt"
+        if(!(Test-Path -path $file))
+        {
+            Write-Error "Expected file does not exist"
+        }
+        if(!((Get-Content $file) -ceq "This file has changed"))
+        {
+            Write-Error "File contents of downloaded artifact are incorrect"
+        }
+      shell: pwsh
+  merge:
+    name: Merge
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Merge all artifacts from previous jobs
+    - name: Merge all artifacts in run
+      uses: ./merge/
+      with:
+        # our matrix produces artifacts with the same file, this prevents "stomping" on each other, also makes it
+        # easier to identify each of the merged artifacts
+        separate-directories: true
+    - name: 'Download merged artifacts'
+      uses: actions/download-artifact@v4
+      with:
+        name: merged-artifacts
+        path: all-merged-artifacts
+    - name: 'Check merged artifact has directories for each artifact'
+      run: |
+        $artifacts = @(
+          "Artifact-A-ubuntu-latest",
+          "Artifact-A-macos-latest",
+          "Artifact-A-windows-latest",
+          "Artifact-Wildcard-ubuntu-latest",
+          "Artifact-Wildcard-macos-latest",
+          "Artifact-Wildcard-windows-latest",
+          "Multi-Path-Artifact-ubuntu-latest",
+          "Multi-Path-Artifact-macos-latest",
+          "Multi-Path-Artifact-windows-latest"
+        )
+
+        foreach ($artifact in $artifacts) {
+          $path = "all-merged-artifacts/$artifact"
+          if (!(Test-Path $path)) {
+            Write-Error "$path does not exist."
+          }
+        }
+      shell: pwsh
+
+    # Merge Artifact-A-* from previous jobs
+    - name: Merge all Artifact-A
+      uses: ./merge/
+      with:
+        name: Merged-Artifact-As
+        pattern: 'Artifact-A-*'
+        separate-directories: true
+
+    # Download merged artifacts and verify the correctness of the content
+    - name: 'Download merged artifacts'
+      uses: actions/download-artifact@v4
+      with:
+        name: Merged-Artifact-As
+        path: merged-artifact-a
+
+    - name: 'Verify merged artifacts'
+      run: |
+        $files = @(
+          "merged-artifact-a/Artifact-A-ubuntu-latest/file1.txt",
+          "merged-artifact-a/Artifact-A-macos-latest/file1.txt",
+          "merged-artifact-a/Artifact-A-windows-latest/file1.txt"
+        )
+
+        foreach ($file in $files) {
+          if (!(Test-Path $file)) {
+            Write-Error "$file does not exist."
+          }
+
+          if (!((Get-Content $file) -ceq "This file has changed")) {
+            Write-Error "$file has incorrect content."
+          }
+        }
+      shell: pwsh
+

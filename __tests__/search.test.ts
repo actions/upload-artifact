@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as path from 'path'
 import * as io from '@actions/io'
 import {promises as fs} from 'fs'
-import {findFilesToUpload} from '../src/search'
+import {findFilesToUpload} from '../src/shared/search'
 
 const root = path.join(__dirname, '_temp', 'search')
 const searchItem1Path = path.join(
@@ -61,6 +61,20 @@ const lonelyFilePath = path.join(
   'lonely-file.txt'
 )
 
+const hiddenFile = path.join(root, '.hidden-file.txt')
+const fileInHiddenFolderPath = path.join(
+  root,
+  '.hidden-folder',
+  'folder-in-hidden-folder',
+  'file.txt'
+)
+const fileInHiddenFolderInFolderA = path.join(
+  root,
+  'folder-a',
+  '.hidden-folder-in-folder-a',
+  'file.txt'
+)
+
 describe('Search', () => {
   beforeAll(async () => {
     // mock all output so that there is less noise when running tests
@@ -93,6 +107,14 @@ describe('Search', () => {
       recursive: true
     })
 
+    await fs.mkdir(
+      path.join(root, '.hidden-folder', 'folder-in-hidden-folder'),
+      {recursive: true}
+    )
+    await fs.mkdir(path.join(root, 'folder-a', '.hidden-folder-in-folder-a'), {
+      recursive: true
+    })
+
     await fs.writeFile(searchItem1Path, 'search item1 file')
     await fs.writeFile(searchItem2Path, 'search item2 file')
     await fs.writeFile(searchItem3Path, 'search item3 file')
@@ -110,10 +132,19 @@ describe('Search', () => {
     await fs.writeFile(amazingFileInFolderHPath, 'amazing file')
 
     await fs.writeFile(lonelyFilePath, 'all by itself')
+
+    await fs.writeFile(hiddenFile, 'hidden file')
+    await fs.writeFile(fileInHiddenFolderPath, 'file in hidden directory')
+    await fs.writeFile(fileInHiddenFolderInFolderA, 'file in hidden directory')
     /*
       Directory structure of files that get created:
       root/
+          .hidden-folder/
+              folder-in-hidden-folder/
+                  file.txt
           folder-a/
+              .hidden-folder-in-folder-a/
+                  file.txt
               folder-b/
                   folder-c/
                       search-item1.txt
@@ -136,6 +167,7 @@ describe('Search', () => {
               folder-j/
                   folder-k/
                       lonely-file.txt
+          .hidden-file.txt
           search-item5.txt
     */
   })
@@ -351,5 +383,25 @@ describe('Search', () => {
       true
     )
     expect(searchResult.filesToUpload.includes(lonelyFilePath)).toEqual(true)
+  })
+
+  it('Hidden files ignored by default', async () => {
+    const searchPath = path.join(root, '**/*')
+    const searchResult = await findFilesToUpload(searchPath)
+
+    expect(searchResult.filesToUpload).not.toContain(hiddenFile)
+    expect(searchResult.filesToUpload).not.toContain(fileInHiddenFolderPath)
+    expect(searchResult.filesToUpload).not.toContain(
+      fileInHiddenFolderInFolderA
+    )
+  })
+
+  it('Hidden files included', async () => {
+    const searchPath = path.join(root, '**/*')
+    const searchResult = await findFilesToUpload(searchPath, true)
+
+    expect(searchResult.filesToUpload).toContain(hiddenFile)
+    expect(searchResult.filesToUpload).toContain(fileInHiddenFolderPath)
+    expect(searchResult.filesToUpload).toContain(fileInHiddenFolderInFolderA)
   })
 })

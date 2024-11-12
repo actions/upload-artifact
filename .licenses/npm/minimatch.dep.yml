@@ -1,16 +1,16 @@
 ---
 name: minimatch
-version: 3.0.4
+version: 9.0.3
 type: npm
-summary: a glob matcher in javascript
-homepage: https://github.com/isaacs/minimatch#readme
+summary: 
+homepage: 
 license: isc
 licenses:
 - sources: LICENSE
   text: |
     The ISC License
 
-    Copyright (c) Isaac Z. Schlueter and Contributors
+    Copyright (c) 2011-2023 Isaac Z. Schlueter and Contributors
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
