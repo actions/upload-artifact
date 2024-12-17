@@ -60,7 +60,8 @@ describe('upload', () => {
 
     jest.spyOn(artifact, 'uploadArtifact').mockResolvedValue({
       size: 123,
-      id: 1337
+      id: 1337,
+      digest: 'facefeed'
     })
   })
 
@@ -95,6 +96,7 @@ describe('upload', () => {
     await run()
 
     expect(core.setOutput).toHaveBeenCalledWith('artifact-id', 1337)
+    expect(core.setOutput).toHaveBeenCalledWith('artifact-digest', 'facefeed')
     expect(core.setOutput).toHaveBeenCalledWith(
       'artifact-url',
       `${github.context.serverUrl}/${github.context.repo.owner}/${
