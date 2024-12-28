@@ -1,9 +1,9 @@
 ---
 name: "@actions/artifact"
-version: 2.1.11
+version: 2.2.0
 type: npm
-summary: 
-homepage: 
+summary: Actions artifact lib
+homepage: https://github.com/actions/toolkit/tree/main/packages/artifact
 license: mit
 licenses:
 - sources: LICENSE.md
