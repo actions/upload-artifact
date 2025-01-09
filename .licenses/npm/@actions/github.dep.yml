@@ -2,8 +2,8 @@
 name: "@actions/github"
 version: 6.0.0
 type: npm
-summary: 
-homepage: 
+summary: Actions github lib
+homepage: https://github.com/actions/toolkit/tree/main/packages/github
 license: mit
 licenses:
 - sources: LICENSE.md
