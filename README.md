@@ -186,7 +186,7 @@ would be flattened and uploaded as =>
 
 If multiple paths are provided as input, the least common ancestor of all the search paths will be used as the root directory of the artifact. Exclude paths do not affect the directory structure.
 
-Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
+Only absolute file paths are allowed. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
 ### Altering compressions level (speed v. size)
 
