@@ -473,8 +473,9 @@ If you must preserve permissions, you can `tar` all of your files together befor
 
 At the bottom of the workflow summary page, there is a dedicated section for artifacts. Here's a screenshot of something you might see:
 
-<img src="https://user-images.githubusercontent.com/16109154/103645952-223c6880-4f59-11eb-8268-8dca6937b5f9.png" width="700" height="300">
+<img src="https://github.com/user-attachments/assets/bcb7120f-f445-4a3e-9596-77f85f7e0af0" width="700" height="300">
+
 
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
 
-The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload.
+The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload. The Digest column will display the SHA256 digest of the artifact being uploaded.
