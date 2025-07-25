@@ -61,5 +61,5 @@ outputs:
     description: >
       SHA-256 digest for the artifact that was just uploaded. Empty if the artifact upload failed.
 runs:
-  using: 'node20'
+  using: 'node24'
   main: '../dist/merge/index.js'
