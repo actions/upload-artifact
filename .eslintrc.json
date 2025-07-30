@@ -4,13 +4,10 @@
     "parserOptions": { "ecmaVersion": 9, "sourceType": "module" },
     "extends": [
       "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended",
       "plugin:import/errors",
       "plugin:import/warnings",
       "plugin:import/typescript",
-      "plugin:prettier/recommended",
-      "prettier/@typescript-eslint"
+      "plugin:prettier/recommended"
     ],
     "rules": {
        "@typescript-eslint/no-empty-function": "off"

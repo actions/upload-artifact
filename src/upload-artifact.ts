@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {create, UploadOptions} from '@actions/artifact'
+import artifact, {UploadArtifactOptions} from '@actions/artifact'
 import {findFilesToUpload} from './search'
 import {getInputs} from './input-helper'
 import {NoFileOptions} from './constants'
@@ -37,39 +37,29 @@ async function run(): Promise<void> {
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
-      if (searchResult.filesToUpload.length > 10000) {
-        core.warning(
-          `There are over 10,000 files in this artifact, consider creating an archive before upload to improve the upload performance.`
-        )
-      }
-
-      const artifactClient = create()
-      const options: UploadOptions = {
-        continueOnError: false
-      }
+      const options: UploadArtifactOptions = {}
       if (inputs.retentionDays) {
         options.retentionDays = inputs.retentionDays
       }
 
-      const uploadResponse = await artifactClient.uploadArtifact(
+      if (typeof inputs.compressionLevel !== 'undefined') {
+        options.compressionLevel = inputs.compressionLevel
+      }
+
+      const uploadResponse = await artifact.uploadArtifact(
         inputs.artifactName,
         searchResult.filesToUpload,
         searchResult.rootDirectory,
         options
       )
 
-      if (uploadResponse.failedItems.length > 0) {
-        core.setFailed(
-          `An error was encountered when uploading ${uploadResponse.artifactName}. There were ${uploadResponse.failedItems.length} items that failed to upload.`
-        )
-      } else {
-        core.info(
-          `Artifact ${uploadResponse.artifactName} has been successfully uploaded!`
-        )
-      }
+      core.info(
+        `Artifact ${inputs.artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}`
+      )
+      core.setOutput('artifact-id', uploadResponse.id)
     }
-  } catch (err) {
-    core.setFailed(err.message)
+  } catch (error) {
+    core.setFailed((error as Error).message)
   }
 }
 
