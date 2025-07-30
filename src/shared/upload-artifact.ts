@@ -19,6 +19,7 @@ export async function uploadArtifact(
     `Artifact ${artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}`
   )
   core.setOutput('artifact-id', uploadResponse.id)
+  core.setOutput('artifact-digest', uploadResponse.digest)
 
   const repository = github.context.repo
   const artifactURL = `${github.context.serverUrl}/${repository.owner}/${repository.repo}/actions/runs/${github.context.runId}/artifacts/${uploadResponse.id}`

@@ -2,8 +2,8 @@
 name: minimatch
 version: 9.0.3
 type: npm
-summary: 
-homepage: 
+summary: a glob matcher in javascript
+homepage:
 license: isc
 licenses:
 - sources: LICENSE

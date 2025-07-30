@@ -68,6 +68,24 @@ There is also a new sub-action, `actions/upload-artifact/merge`. For more info, 
 
 For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 
+## Note
+
+Thank you for your interest in this GitHub repo, however, right now we are not taking contributions. 
+
+We continue to focus our resources on strategic areas that help our customers be successful while making developers' lives easier. While GitHub Actions remains a key part of this vision, we are allocating resources towards other areas of Actions and are not taking contributions to this repository at this time. The GitHub public roadmap is the best place to follow along for any updates on features we’re working on and what stage they’re in.
+
+We are taking the following steps to better direct requests related to GitHub Actions, including:
+
+1. We will be directing questions and support requests to our [Community Discussions area](https://github.com/orgs/community/discussions/categories/actions)
+
+2. High Priority bugs can be reported through Community Discussions or you can report these to our support team https://support.github.com/contact/bug-report.
+
+3. Security Issues should be handled as per our [security.md](SECURITY.md).
+
+We will still provide security updates for this project and fix major breaking changes during this time.
+
+You are welcome to still raise bugs in this repo.
+
 ## Usage
 
 ### Inputs
@@ -122,6 +140,7 @@ For assistance with breaking changes, see [MIGRATION.md](docs/MIGRATION.md).
 | - | - | - |
 | `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
 | `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
+| `artifact-digest` | SHA-256 digest of an Artifact | 0fde654d4c6e659b45783a725dc92f1bfb0baa6c2de64b34e814dc206ff4aaaf |
 
 ## Examples
 
@@ -472,8 +491,9 @@ If you must preserve permissions, you can `tar` all of your files together befor
 
 At the bottom of the workflow summary page, there is a dedicated section for artifacts. Here's a screenshot of something you might see:
 
-<img src="https://user-images.githubusercontent.com/16109154/103645952-223c6880-4f59-11eb-8268-8dca6937b5f9.png" width="700" height="300">
+<img src="https://github.com/user-attachments/assets/bcb7120f-f445-4a3e-9596-77f85f7e0af0" width="700" height="300">
+
 
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
 
-The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload.
+The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload. The Digest column will display the SHA256 digest of the artifact being uploaded.
