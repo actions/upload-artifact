@@ -1,14 +1,14 @@
 ---
 name: yaml
-version: 1.10.2
+version: 2.8.1
 type: npm
 summary: JavaScript parser and stringifier for YAML
-homepage: https://eemeli.org/yaml/v1/
+homepage: https://eemeli.org/yaml/
 license: isc
 licenses:
 - sources: LICENSE
   text: |
-    Copyright 2018 Eemeli Aro <eemeli@gmail.com>
+    Copyright Eemeli Aro <eemeli@gmail.com>
 
     Permission to use, copy, modify, and/or distribute this software for any purpose
     with or without fee is hereby granted, provided that the above copyright notice

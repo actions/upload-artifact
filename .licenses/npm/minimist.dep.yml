@@ -1,6 +1,6 @@
 ---
 name: minimist
-version: 1.2.7
+version: 1.2.8
 type: npm
 summary: parse argument options
 homepage: https://github.com/minimistjs/minimist

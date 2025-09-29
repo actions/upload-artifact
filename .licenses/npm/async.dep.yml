@@ -1,6 +1,6 @@
 ---
 name: async
-version: 3.2.5
+version: 3.2.6
 type: npm
 summary: Higher-order functions and common patterns for asynchronous code
 homepage: https://caolan.github.io/async/
