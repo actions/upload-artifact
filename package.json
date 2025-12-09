@@ -33,10 +33,10 @@
   },
   "dependencies": {
     "@actions/artifact": "file:../packages/artifact",
-    "@actions/core": "^1.11.1",
+    "@actions/core": "file:../packages/core",
     "@actions/github": "^6.0.0",
-    "@actions/glob": "^0.5.0",
-    "@actions/io": "^1.1.2",
+    "@actions/glob": "file:../packages/glob",
+    "@actions/io": "file:../packages/io",
     "minimatch": "^9.0.3"
   },
   "devDependencies": {
