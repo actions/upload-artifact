@@ -1,6 +1,6 @@
 ---
 name: "@actions/artifact"
-version: 3.0.0
+version: 5.0.0
 type: npm
 summary: Actions artifact lib
 homepage: https://github.com/actions/toolkit/tree/main/packages/artifact
