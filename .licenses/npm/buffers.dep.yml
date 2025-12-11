@@ -5,5 +5,7 @@ type: npm
 summary: Treat a collection of Buffers as a single contiguous partially mutable Buffer.
 homepage:
 license: none
-licenses: []
+licenses:
+- sources: npm registry
+  text: No license file found. Package is in reviewed list.
 notices: []
