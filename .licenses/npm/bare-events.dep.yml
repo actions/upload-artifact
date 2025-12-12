@@ -1,6 +1,6 @@
 ---
 name: bare-events
-version: 2.7.0
+version: 2.8.2
 type: npm
 summary: Event emitters for JavaScript
 homepage: https://github.com/holepunchto/bare-events#readme
