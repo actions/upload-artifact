@@ -1,6 +1,6 @@
 ---
 name: "@opentelemetry/api"
-version: 1.7.0
+version: 1.9.0
 type: npm
 summary: Public API for OpenTelemetry
 homepage: https://github.com/open-telemetry/opentelemetry-js/tree/main/api
@@ -217,7 +217,6 @@ licenses:
 
     [discussions-url]: https://github.com/open-telemetry/opentelemetry-js/discussions
     [license-url]: https://github.com/open-telemetry/opentelemetry-js/blob/main/api/LICENSE
-    [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
     [docs-tracing]: https://github.com/open-telemetry/opentelemetry-js/blob/main/doc/tracing.md
     [docs-sdk-registration]: https://github.com/open-telemetry/opentelemetry-js/blob/main/doc/sdk-registration.md
 notices: []

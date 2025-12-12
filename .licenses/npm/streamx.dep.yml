@@ -1,6 +1,6 @@
 ---
 name: streamx
-version: 2.16.1
+version: 2.23.0
 type: npm
 summary: An iteration of the Node.js core streams with a series of improvements
 homepage: https://github.com/mafintosh/streamx

@@ -1,6 +1,6 @@
 ---
 name: cross-spawn
-version: 7.0.3
+version: 7.0.6
 type: npm
 summary: Cross platform child_process#spawn and child_process#spawnSync
 homepage: https://github.com/moxystudio/node-cross-spawn
