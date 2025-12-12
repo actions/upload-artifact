@@ -11,6 +11,7 @@ Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/st
 See also [download-artifact](https://github.com/actions/download-artifact).
 
 - [`@actions/upload-artifact`](#actionsupload-artifact)
+  - [v6 - What's new](#v6---whats-new)
   - [v4 - What's new](#v4---whats-new)
     - [Improvements](#improvements)
     - [Breaking Changes](#breaking-changes)
@@ -37,6 +38,15 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Permission Loss](#permission-loss)
   - [Where does the upload go?](#where-does-the-upload-go)
 
+
+## v6 - What's new
+
+> [!IMPORTANT]
+> actions/download-artifact@v7 now runs on Node.js 24 (`runs.using: node24`) and requires a minimum Actions Runner version of 2.327.1. If you are using self-hosted runners, ensure they are updated before upgrading.
+
+### Node.js 24
+
+This release updates the runtime to Node.js 24. v6 had preliminary support for Node.js 24, however this action was by default still running on Node.js 20. Now this action by default will run on Node.js 24.
 
 ## v4 - What's new
 
