@@ -46,7 +46,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
 
 ### Node.js 24
 
-This release updates the runtime to Node.js 24. v6 had preliminary support for Node.js 24, however this action was by default still running on Node.js 20. Now this action by default will run on Node.js 24.
+This release updates the runtime to Node.js 24. v5 had preliminary support for Node.js 24, however this action was by default still running on Node.js 20. Now this action by default will run on Node.js 24.
 
 ## v4 - What's new
 
