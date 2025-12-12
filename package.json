@@ -32,7 +32,7 @@
     "node": ">=24"
   },
   "dependencies": {
-    "@actions/artifact": "file:../packages/artifact",
+    "@actions/artifact": "^5.0.0",
     "@actions/core": "^2.0.0",
     "@actions/github": "^6.0.0",
     "@actions/glob": "^0.5.0",
