@@ -41,7 +41,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
 ## v4 - What's new
 
 > [!IMPORTANT]
-> upload-artifact@v4+ is not currently supported on GHES yet. If you are on GHES, you must use [v3](https://github.com/actions/upload-artifact/releases/tag/v3).
+> upload-artifact@v4+ is not currently supported on GitHub Enterprise Server (GHES) yet. If you are on GHES, you must use [v3](https://github.com/actions/upload-artifact/releases/tag/v3) (Node 16) or [v3-node20](https://github.com/actions/upload-artifact/releases/tag/v3-node20) (Node 20).
 
 The release of upload-artifact@v4 and download-artifact@v4 are major changes to the backend architecture of Artifacts. They have numerous performance and behavioral improvements.
 
