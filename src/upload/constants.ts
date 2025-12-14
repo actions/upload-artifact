@@ -1,3 +1,5 @@
+import {info, setFailed, warning} from '@actions/core'
+
 /* eslint-disable no-unused-vars */
 export enum Inputs {
   Name = 'name',
@@ -25,3 +27,9 @@ export enum NoFileOptions {
    */
   ignore = 'ignore'
 }
+
+export const NoFileFunctionMap = {
+  [NoFileOptions.error]: setFailed,
+  [NoFileOptions.ignore]: info,
+  [NoFileOptions.warn]: warning
+} as const
