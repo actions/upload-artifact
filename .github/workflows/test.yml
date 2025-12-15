@@ -23,10 +23,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
     - name: Setup Node 20
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: 20.x
         cache: 'npm'
@@ -94,7 +94,7 @@ jobs:
 
     # Download Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: 'Artifact-A-${{ matrix.runs-on }}'
         path: some/new/path
@@ -114,7 +114,7 @@ jobs:
 
     # Download Artifact #2 and verify the correctness of the content
     - name: 'Download artifact #2'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: 'Artifact-Wildcard-${{ matrix.runs-on }}'
         path: some/other/path
@@ -135,7 +135,7 @@ jobs:
 
     # Download Artifact #4 and verify the correctness of the content
     - name: 'Download artifact #4'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: 'Multi-Path-Artifact-${{ matrix.runs-on }}'
         path: multi/artifact
@@ -155,7 +155,7 @@ jobs:
       shell: pwsh
 
     - name: 'Download symlinked artifact'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: 'Symlinked-Artifact-${{ matrix.runs-on }}'
         path: from/symlink
@@ -196,7 +196,7 @@ jobs:
 
     # Download replaced Artifact #1 and verify the correctness of the content
     - name: 'Download artifact #1 again'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: 'Artifact-A-${{ matrix.runs-on }}'
         path: overwrite/some/new/path
@@ -220,7 +220,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
     # Merge all artifacts from previous jobs
     - name: Merge all artifacts in run
@@ -230,7 +230,7 @@ jobs:
         # easier to identify each of the merged artifacts
         separate-directories: true
     - name: 'Download merged artifacts'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: merged-artifacts
         path: all-merged-artifacts
@@ -266,7 +266,7 @@ jobs:
 
     # Download merged artifacts and verify the correctness of the content
     - name: 'Download merged artifacts'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: Merged-Artifact-As
         path: merged-artifact-a
