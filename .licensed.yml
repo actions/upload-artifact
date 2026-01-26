@@ -1,6 +1,9 @@
 sources:
   npm: true
 
+# Force UTF-8 encoding
+encoding: 'utf-8'
+
 allowed:
   - apache-2.0
   - bsd-2-clause
@@ -9,7 +12,30 @@ allowed:
   - mit
   - cc0-1.0
   - unlicense
+  - 0bsd
+  - blueoak-1.0.0
 
 reviewed:
   npm:
   - fs.realpath
+  - "@actions/http-client" # MIT
+  - "@bufbuild/protobuf" # Apache-2.0
+  - "@pkgjs/parseargs" # MIT
+  - "@protobuf-ts/runtime" # Apache-2.0
+  - argparse # Python-2.0
+  - buffers # MIT
+  - chainsaw # MIT
+  - color-convert # MIT
+  - ieee754 # BSD-3-Clause
+  - lodash # MIT
+  - mdurl # MIT
+  - neo-async # MIT
+  - package-json-from-dist # ISC
+  - readable-stream # MIT
+  - sax # ISC
+  - source-map # BSD-3-Clause
+  - string_decoder # MIT
+  - traverse # MIT
+  - tslib # 0BSD
+  - uglify-js # BSD-2-Clause
+  - wordwrap # MIT

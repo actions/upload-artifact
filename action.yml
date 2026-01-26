@@ -40,6 +40,11 @@ inputs:
       If false, the action will fail if an artifact for the given name already exists.
       Does not fail if the artifact does not exist.
     default: 'false'
+  include-hidden-files:
+    description: >
+      If true, hidden files will be included in the artifact.
+      If false, hidden files will be excluded from the artifact.
+    default: 'false'
 
 outputs:
   artifact-id:
@@ -56,6 +61,9 @@ outputs:
 
       This URL will be valid for as long as the artifact exists and the workflow run and repository exists. Once an artifact has expired this URL will no longer work.
       Common uses cases for such a download URL can be adding download links to artifacts in descriptions or comments on pull requests or issues.
+  artifact-digest:
+    description: >
+      SHA-256 digest for the artifact that was just uploaded. Empty if the artifact upload failed.
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/upload/index.js'

@@ -4,6 +4,7 @@
   - [Multiple uploads to the same named Artifact](#multiple-uploads-to-the-same-named-artifact)
   - [Overwriting an Artifact](#overwriting-an-artifact)
   - [Merging multiple artifacts](#merging-multiple-artifacts)
+  - [Hidden files](#hidden-files)
 
 Several behavioral differences exist between Artifact actions `v3` and below vs `v4`. This document outlines common scenarios in `v3`, and how they would be handled in `v4`.
 
@@ -189,20 +190,59 @@ jobs:
       - name: Create a File
         run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+-       uses: actions/upload-artifact@v3
++       uses: actions/upload-artifact@v4
         with:
 -         name: all-my-files
 +         name: my-artifact-${{ matrix.runs-on }}
           path: file-${{ matrix.runs-on }}.txt
-+ merge:
-+   runs-on: ubuntu-latest
-+   needs: upload
-+   steps:
-+     - name: Merge Artifacts
-+       uses: actions/upload-artifact/merge@v4
-+       with:
-+         name: all-my-files
-+         pattern: my-artifact-*
++  merge:
++    runs-on: ubuntu-latest
++    needs: upload
++    steps:
++      - name: Merge Artifacts
++        uses: actions/upload-artifact/merge@v4
++        with:
++          name: all-my-files
++          pattern: my-artifact-*
 ```
 
 Note that this will download all artifacts to a temporary directory and reupload them as a single artifact. For more information on inputs and other use cases for `actions/upload-artifact/merge@v4`, see [the action documentation](../merge/README.md).
+
+## Hidden Files
+
+By default, hidden files are ignored by this action to avoid unintentionally uploading sensitive
+information.
+
+In versions of this action before v4.4.0, these hidden files were included by default.
+
+If you need to upload hidden files, you can use the `include-hidden-files` input.
+
+```yaml
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a Hidden File
+        run: echo "hello from a hidden file" > .hidden-file.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: .hidden-file.txt
+```
+
+
+```diff
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a Hidden File
+        run: echo "hello from a hidden file" > .hidden-file.txt
+      - name: Upload Artifact
+-       uses: actions/upload-artifact@v3
++       uses: actions/upload-artifact@v4
+        with:
+          path: .hidden-file.txt
++         include-hidden-files: true
+```
