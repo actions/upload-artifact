@@ -386,6 +386,7 @@ describe('Search', () => {
   })
 
   it('Hidden files ignored by default', async () => {
+    const warningSpy = jest.spyOn(core, 'warning')
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath)
 
@@ -394,14 +395,19 @@ describe('Search', () => {
     expect(searchResult.filesToUpload).not.toContain(
       fileInHiddenFolderInFolderA
     )
+    expect(warningSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/Set include-hidden-files to true to include these files.$/)
+    )
   })
 
   it('Hidden files included', async () => {
+    const warningSpy = jest.spyOn(core, 'warning')
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath, true)
 
     expect(searchResult.filesToUpload).toContain(hiddenFile)
     expect(searchResult.filesToUpload).toContain(fileInHiddenFolderPath)
     expect(searchResult.filesToUpload).toContain(fileInHiddenFolderInFolderA)
+    expect(warningSpy).not.toHaveBeenCalled()
   })
 })

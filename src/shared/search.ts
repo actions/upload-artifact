@@ -1,6 +1,6 @@
 import * as glob from '@actions/glob'
 import * as path from 'path'
-import {debug, info} from '@actions/core'
+import {debug, info, warning} from '@actions/core'
 import {stat} from 'fs'
 import {dirname} from 'path'
 import {promisify} from 'util'
@@ -89,6 +89,27 @@ export async function findFilesToUpload(
     getDefaultGlobOptions(includeHiddenFiles || false)
   )
   const rawSearchResults: string[] = await globber.glob()
+
+  /*
+    Check for hidden files by comparing results with includeHiddenFiles=true
+  */
+  if (!includeHiddenFiles) {
+    const globberWithHidden = await glob.create(
+      searchPath,
+      getDefaultGlobOptions(true)
+    )
+    const rawSearchResultsWithHidden = await globberWithHidden.glob()
+
+    const hiddenFiles = rawSearchResultsWithHidden.filter(
+      file => !rawSearchResults.includes(file)
+    )
+
+    if (hiddenFiles.length > 0) {
+      warning(
+        `The path "${searchPath}" excluded ${hiddenFiles.length} hidden files. Set include-hidden-files to true to include these files.`
+      )
+    }
+  }
 
   /*
     Files are saved with case insensitivity. Uploading both a.txt and A.txt will files to be overwritten
