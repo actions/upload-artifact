@@ -507,3 +507,5 @@ At the bottom of the workflow summary page, there is a dedicated section for art
 There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
 
 The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload. The Digest column will display the SHA256 digest of the artifact being uploaded.
+- name: Upload Artifact
+  uses: actions/upload-artifact@4.6.2
