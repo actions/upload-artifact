@@ -32,6 +32,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
       - [Example output between steps](#example-output-between-steps)
       - [Example output between jobs](#example-output-between-jobs)
     - [Overwriting an Artifact](#overwriting-an-artifact)
+    - [Uploading Hidden Files](#uploading-hidden-files)
   - [Limitations](#limitations)
     - [Number of Artifacts](#number-of-artifacts)
     - [Zip archives](#zip-archives)
@@ -69,10 +70,7 @@ There is also a new sub-action, `actions/upload-artifact/merge`. For more info, 
 ### Breaking Changes
 
 1. On self hosted runners, additional [firewall rules](https://github.com/actions/toolkit/tree/main/packages/artifact#breaking-changes) may be required.
-2. Uploading to the same named Artifact multiple times.
-
-    Due to how Artifacts are created in this new version, it is no longer possible to upload to the same named Artifact multiple times. You must either split the uploads into multiple Artifacts with different names, or only upload once. Otherwise you _will_ encounter an error.
-
+2. While it's not possible to upload to the same named artifact multiple times, you can overwrite it and/or merge artifacts into a single one. An example of this breaking change is outlined in [the migration guide](docs/MIGRATION.md#multiple-uploads-to-the-same-named-artifact).
 3. Limit of Artifacts for an individual job. Each job in a workflow run now has a limit of 500 artifacts.
 4. With `v4.4` and later, hidden files are excluded by default.
 
@@ -146,9 +144,9 @@ You are welcome to still raise bugs in this repo.
 
 ### Outputs
 
-| Name | Description | Example |
-| - | - | - |
-| `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
+| Name           | Description                                                                                                                                                                                                                                                                                   | Example                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `artifact-id`  | GitHub ID of an Artifact, can be used by the REST API                                                                                                                                                                                                                                         | `1234`                                                                      |
 | `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 | `artifact-digest` | SHA-256 digest of an Artifact | 0fde654d4c6e659b45783a725dc92f1bfb0baa6c2de64b34e814dc206ff4aaaf |
 
