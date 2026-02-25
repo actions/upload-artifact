@@ -72,6 +72,7 @@ const mockInputs = (
     [Inputs.RetentionDays]: 0,
     [Inputs.CompressionLevel]: 6,
     [Inputs.Overwrite]: false,
+    [Inputs.Archive]: true,
     ...overrides
   }
 
@@ -272,5 +273,58 @@ describe('upload', () => {
     expect(core.debug).toHaveBeenCalledWith(
       `Skipping deletion of '${fixtures.artifactName}', it does not exist`
     )
+  })
+
+  test('passes skipArchive when archive is false', async () => {
+    mockInputs({
+      [Inputs.Archive]: false
+    })
+
+    mockFindFilesToUpload.mockResolvedValue({
+      filesToUpload: [fixtures.filesToUpload[0]],
+      rootDirectory: fixtures.rootDirectory
+    })
+
+    await run()
+
+    expect(artifact.default.uploadArtifact).toHaveBeenCalledWith(
+      fixtures.artifactName,
+      [fixtures.filesToUpload[0]],
+      fixtures.rootDirectory,
+      {compressionLevel: 6, skipArchive: true}
+    )
+  })
+
+  test('does not pass skipArchive when archive is true', async () => {
+    mockInputs({
+      [Inputs.Archive]: true
+    })
+
+    mockFindFilesToUpload.mockResolvedValue({
+      filesToUpload: [fixtures.filesToUpload[0]],
+      rootDirectory: fixtures.rootDirectory
+    })
+
+    await run()
+
+    expect(artifact.default.uploadArtifact).toHaveBeenCalledWith(
+      fixtures.artifactName,
+      [fixtures.filesToUpload[0]],
+      fixtures.rootDirectory,
+      {compressionLevel: 6}
+    )
+  })
+
+  test('fails when archive is false and multiple files are provided', async () => {
+    mockInputs({
+      [Inputs.Archive]: false
+    })
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      `When 'archive' is set to false, only a single file can be uploaded. Found ${fixtures.filesToUpload.length} files to upload.`
+    )
+    expect(artifact.default.uploadArtifact).not.toHaveBeenCalled()
   })
 })
