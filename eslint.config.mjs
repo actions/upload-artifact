@@ -25,7 +25,6 @@ export default [
       'github/filenames-match-regex': 'off',
       'github/array-foreach': 'off',
       'import/no-namespace': 'off',
-      'import/no-commonjs': 'off',
       'import/named': 'off',
       'import/no-unresolved': 'off',
       'i18n-text/no-en': 'off',
