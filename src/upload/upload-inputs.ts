@@ -1,4 +1,4 @@
-import {NoFileOptions} from './constants'
+import {NoFileOptions} from './constants.js'
 
 export interface UploadInputs {
   /**

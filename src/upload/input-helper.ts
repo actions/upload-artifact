@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
-import {Inputs, NoFileOptions} from './constants'
-import {UploadInputs} from './upload-inputs'
+import {Inputs, NoFileOptions} from './constants.js'
+import {UploadInputs} from './upload-inputs.js'
 
 /**
  * Helper to get all the inputs for the action

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
-import {Inputs} from './constants'
-import {MergeInputs} from './merge-inputs'
+import {Inputs} from './constants.js'
+import {MergeInputs} from './merge-inputs.js'
 
 /**
  * Helper to get all the inputs for the action

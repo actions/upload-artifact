@@ -1,3 +1,4 @@
 node_modules/
 lib/
 __tests__/_temp/
+.DS_Store
