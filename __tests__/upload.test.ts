@@ -39,9 +39,8 @@ jest.unstable_mockModule('@actions/core', () => ({
 }))
 
 // Mock shared search module
-const mockFindFilesToUpload = jest.fn<
-  () => Promise<{filesToUpload: string[]; rootDirectory: string}>
->()
+const mockFindFilesToUpload =
+  jest.fn<() => Promise<{filesToUpload: string[]; rootDirectory: string}>>()
 jest.unstable_mockModule('../src/shared/search.js', () => ({
   findFilesToUpload: mockFindFilesToUpload
 }))

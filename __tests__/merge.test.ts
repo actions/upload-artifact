@@ -42,15 +42,15 @@ jest.unstable_mockModule('@actions/core', () => ({
 const actualFsPromises = await import('fs/promises')
 jest.unstable_mockModule('fs/promises', () => ({
   ...actualFsPromises,
-  mkdtemp:
-    jest.fn<() => Promise<string>>().mockResolvedValue('/tmp/merge-artifact'),
+  mkdtemp: jest
+    .fn<() => Promise<string>>()
+    .mockResolvedValue('/tmp/merge-artifact'),
   rm: jest.fn<() => Promise<void>>().mockResolvedValue(undefined)
 }))
 
 // Mock shared search module
-const mockFindFilesToUpload = jest.fn<
-  () => Promise<{filesToUpload: string[]; rootDirectory: string}>
->()
+const mockFindFilesToUpload =
+  jest.fn<() => Promise<{filesToUpload: string[]; rootDirectory: string}>>()
 jest.unstable_mockModule('../src/shared/search.js', () => ({
   findFilesToUpload: mockFindFilesToUpload
 }))

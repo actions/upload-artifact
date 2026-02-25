@@ -315,7 +315,7 @@ describe('Search', () => {
     const searchPath1 = path.join(root, 'folder-a')
     const searchPath2 = path.join(root, 'folder-d')
 
-    const searchPaths = searchPath1 + '\n' + searchPath2
+    const searchPaths = `${searchPath1}\n${searchPath2}`
     const searchResult = await findFilesToUpload(searchPaths)
 
     expect(searchResult.rootDirectory).toEqual(root)
@@ -341,7 +341,7 @@ describe('Search', () => {
     const searchPath3 = path.join(root, 'folder-a', 'folder-b', '**/extra*.txt')
 
     // negating the third search path
-    const searchPaths = searchPath1 + '\n' + searchPath2 + '\n!' + searchPath3
+    const searchPaths = `${searchPath1}\n${searchPath2}\n!${searchPath3}`
     const searchResult = await findFilesToUpload(searchPaths)
 
     expect(searchResult.rootDirectory).toEqual(root)
