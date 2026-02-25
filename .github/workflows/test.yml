@@ -385,3 +385,44 @@ jobs:
         }
       shell: pwsh
 
+  cleanup:
+    name: Cleanup Artifacts
+    needs: [build, merge]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node 24
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Delete test artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifactClient = require('@actions/artifact');
+          const artifact = artifactClient.default || artifactClient;
+
+          const {artifacts} = await artifact.listArtifacts({latest: true});
+          const keep = ['report.html'];
+
+          for (const a of artifacts) {
+            if (keep.includes(a.name)) {
+              console.log(`Keeping artifact '${a.name}'`);
+              continue;
+            }
+            try {
+              await artifact.deleteArtifact(a.name);
+              console.log(`Deleted artifact '${a.name}'`);
+            } catch (err) {
+              console.log(`Could not delete artifact '${a.name}': ${err.message}`);
+            }
+          }
+
