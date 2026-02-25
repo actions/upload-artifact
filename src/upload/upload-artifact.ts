@@ -57,6 +57,14 @@ export async function run(): Promise<void> {
     )
     core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
+    // Validate that only a single file is uploaded when archive is false
+    if (!inputs.archive && searchResult.filesToUpload.length > 1) {
+      core.setFailed(
+        `When 'archive' is set to false, only a single file can be uploaded. Found ${searchResult.filesToUpload.length} files to upload.`
+      )
+      return
+    }
+
     if (inputs.overwrite) {
       await deleteArtifactIfExists(inputs.artifactName)
     }
@@ -68,6 +76,10 @@ export async function run(): Promise<void> {
 
     if (typeof inputs.compressionLevel !== 'undefined') {
       options.compressionLevel = inputs.compressionLevel
+    }
+
+    if (!inputs.archive) {
+      options.skipArchive = true
     }
 
     await uploadArtifact(

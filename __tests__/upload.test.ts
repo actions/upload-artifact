@@ -72,6 +72,7 @@ const mockInputs = (
     [Inputs.RetentionDays]: 0,
     [Inputs.CompressionLevel]: 6,
     [Inputs.Overwrite]: false,
+    [Inputs.Archive]: true,
     ...overrides
   }
 
