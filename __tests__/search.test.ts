@@ -1,8 +1,37 @@
-import * as core from '@actions/core'
+import {jest, describe, test, expect, beforeAll} from '@jest/globals'
 import * as path from 'path'
 import * as io from '@actions/io'
 import {promises as fs} from 'fs'
-import {findFilesToUpload} from '../src/shared/search'
+import {fileURLToPath} from 'url'
+
+// Mock @actions/core to suppress output during tests
+jest.unstable_mockModule('@actions/core', () => ({
+  getInput: jest.fn(),
+  getBooleanInput: jest.fn(),
+  setOutput: jest.fn(),
+  setFailed: jest.fn(),
+  setSecret: jest.fn(),
+  info: jest.fn(),
+  warning: jest.fn(),
+  debug: jest.fn(),
+  error: jest.fn(),
+  notice: jest.fn(),
+  startGroup: jest.fn(),
+  endGroup: jest.fn(),
+  isDebug: jest.fn(() => false),
+  getState: jest.fn(),
+  saveState: jest.fn(),
+  exportVariable: jest.fn(),
+  addPath: jest.fn(),
+  group: jest.fn((name: string, fn: () => Promise<unknown>) => fn()),
+  toPlatformPath: jest.fn((p: string) => p),
+  toWin32Path: jest.fn((p: string) => p),
+  toPosixPath: jest.fn((p: string) => p)
+}))
+
+const {findFilesToUpload} = await import('../src/shared/search.js')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const root = path.join(__dirname, '_temp', 'search')
 const searchItem1Path = path.join(
@@ -77,11 +106,8 @@ const fileInHiddenFolderInFolderA = path.join(
 
 describe('Search', () => {
   beforeAll(async () => {
-    // mock all output so that there is less noise when running tests
+    // mock console.log to reduce noise
     jest.spyOn(console, 'log').mockImplementation(() => {})
-    jest.spyOn(core, 'debug').mockImplementation(() => {})
-    jest.spyOn(core, 'info').mockImplementation(() => {})
-    jest.spyOn(core, 'warning').mockImplementation(() => {})
 
     // clear temp directory
     await io.rmRF(root)
@@ -136,43 +162,9 @@ describe('Search', () => {
     await fs.writeFile(hiddenFile, 'hidden file')
     await fs.writeFile(fileInHiddenFolderPath, 'file in hidden directory')
     await fs.writeFile(fileInHiddenFolderInFolderA, 'file in hidden directory')
-    /*
-      Directory structure of files that get created:
-      root/
-          .hidden-folder/
-              folder-in-hidden-folder/
-                  file.txt
-          folder-a/
-              .hidden-folder-in-folder-a/
-                  file.txt
-              folder-b/
-                  folder-c/
-                      search-item1.txt
-                      extraSearch-item1.txt
-                      extra-file-in-folder-c.txt
-                  folder-e/
-          folder-d/
-              search-item2.txt
-              search-item3.txt
-              search-item4.txt
-              extraSearch-item2.txt
-          folder-f/
-              extraSearch-item3.txt
-          folder-g/
-          folder-h/
-              amazing-item.txt
-              folder-i/
-                  extraSearch-item4.txt
-                  extraSearch-item5.txt
-              folder-j/
-                  folder-k/
-                      lonely-file.txt
-          .hidden-file.txt
-          search-item5.txt
-    */
   })
 
-  it('Single file search - Absolute Path', async () => {
+  test('Single file search - Absolute Path', async () => {
     const searchResult = await findFilesToUpload(extraFileInFolderCPath)
     expect(searchResult.filesToUpload.length).toEqual(1)
     expect(searchResult.filesToUpload[0]).toEqual(extraFileInFolderCPath)
@@ -181,7 +173,7 @@ describe('Search', () => {
     )
   })
 
-  it('Single file search - Relative Path', async () => {
+  test('Single file search - Relative Path', async () => {
     const relativePath = path.join(
       '__tests__',
       '_temp',
@@ -200,7 +192,7 @@ describe('Search', () => {
     )
   })
 
-  it('Single file using wildcard', async () => {
+  test('Single file using wildcard', async () => {
     const expectedRoot = path.join(root, 'folder-h')
     const searchPath = path.join(root, 'folder-h', '**/*lonely*')
     const searchResult = await findFilesToUpload(searchPath)
@@ -209,7 +201,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(expectedRoot)
   })
 
-  it('Single file using directory', async () => {
+  test('Single file using directory', async () => {
     const searchPath = path.join(root, 'folder-h', 'folder-j')
     const searchResult = await findFilesToUpload(searchPath)
     expect(searchResult.filesToUpload.length).toEqual(1)
@@ -217,7 +209,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(searchPath)
   })
 
-  it('Directory search - Absolute Path', async () => {
+  test('Directory search - Absolute Path', async () => {
     const searchPath = path.join(root, 'folder-h')
     const searchResult = await findFilesToUpload(searchPath)
     expect(searchResult.filesToUpload.length).toEqual(4)
@@ -236,7 +228,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(searchPath)
   })
 
-  it('Directory search - Relative Path', async () => {
+  test('Directory search - Relative Path', async () => {
     const searchPath = path.join('__tests__', '_temp', 'search', 'folder-h')
     const expectedRootDirectory = path.join(root, 'folder-h')
     const searchResult = await findFilesToUpload(searchPath)
@@ -256,7 +248,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(expectedRootDirectory)
   })
 
-  it('Wildcard search - Absolute Path', async () => {
+  test('Wildcard search - Absolute Path', async () => {
     const searchPath = path.join(root, '**/*[Ss]earch*')
     const searchResult = await findFilesToUpload(searchPath)
     expect(searchResult.filesToUpload.length).toEqual(10)
@@ -285,7 +277,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(root)
   })
 
-  it('Wildcard search - Relative Path', async () => {
+  test('Wildcard search - Relative Path', async () => {
     const searchPath = path.join(
       '__tests__',
       '_temp',
@@ -319,7 +311,7 @@ describe('Search', () => {
     expect(searchResult.rootDirectory).toEqual(root)
   })
 
-  it('Multi path search - root directory', async () => {
+  test('Multi path search - root directory', async () => {
     const searchPath1 = path.join(root, 'folder-a')
     const searchPath2 = path.join(root, 'folder-d')
 
@@ -343,7 +335,7 @@ describe('Search', () => {
     )
   })
 
-  it('Multi path search - with exclude character', async () => {
+  test('Multi path search - with exclude character', async () => {
     const searchPath1 = path.join(root, 'folder-a')
     const searchPath2 = path.join(root, 'folder-d')
     const searchPath3 = path.join(root, 'folder-a', 'folder-b', '**/extra*.txt')
@@ -363,7 +355,7 @@ describe('Search', () => {
     )
   })
 
-  it('Multi path search - non root directory', async () => {
+  test('Multi path search - non root directory', async () => {
     const searchPath1 = path.join(root, 'folder-h', 'folder-i')
     const searchPath2 = path.join(root, 'folder-h', 'folder-j', 'folder-k')
     const searchPath3 = amazingFileInFolderHPath
@@ -385,7 +377,7 @@ describe('Search', () => {
     expect(searchResult.filesToUpload.includes(lonelyFilePath)).toEqual(true)
   })
 
-  it('Hidden files ignored by default', async () => {
+  test('Hidden files ignored by default', async () => {
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath)
 
@@ -396,7 +388,7 @@ describe('Search', () => {
     )
   })
 
-  it('Hidden files included', async () => {
+  test('Hidden files included', async () => {
     const searchPath = path.join(root, '**/*')
     const searchResult = await findFilesToUpload(searchPath, true)
 

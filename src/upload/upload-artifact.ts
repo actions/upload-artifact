@@ -3,10 +3,10 @@ import artifact, {
   UploadArtifactOptions,
   ArtifactNotFoundError
 } from '@actions/artifact'
-import {findFilesToUpload} from '../shared/search'
-import {getInputs} from './input-helper'
-import {NoFileOptions} from './constants'
-import {uploadArtifact} from '../shared/upload-artifact'
+import {findFilesToUpload} from '../shared/search.js'
+import {getInputs} from './input-helper.js'
+import {NoFileOptions} from './constants.js'
+import {uploadArtifact} from '../shared/upload-artifact.js'
 
 async function deleteArtifactIfExists(artifactName: string): Promise<void> {
   try {
