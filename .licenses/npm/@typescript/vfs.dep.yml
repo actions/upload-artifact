@@ -1,6 +1,6 @@
 ---
 name: "@typescript/vfs"
-version: 1.6.2
+version: 1.6.4
 type: npm
 summary:
 homepage: https://github.com/microsoft/TypeScript-Website

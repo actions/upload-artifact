@@ -1,6 +1,6 @@
 ---
 name: text-decoder
-version: 1.2.3
+version: 1.2.7
 type: npm
 summary: Streaming text decoder that preserves multibyte Unicode characters
 homepage: https://github.com/holepunchto/text-decoder#readme
