@@ -404,7 +404,7 @@ jobs:
       run: npm ci
 
     - name: Delete test artifacts
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const artifactClient = require('@actions/artifact');
