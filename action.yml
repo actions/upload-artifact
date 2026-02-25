@@ -3,7 +3,7 @@ description: 'Upload a build artifact that can be used by subsequent workflow st
 author: 'GitHub'
 inputs:
   name:
-    description: 'Artifact name. If the "archive" input is `false`, the name of the file uploaded will be the artifact name.'
+    description: 'Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.'
     default: 'artifact'
   path:
     description: 'A file, directory or wildcard pattern that describes what to upload.'
@@ -49,7 +49,7 @@ inputs:
     description: >
       If true, the artifact will be archived (zipped) before uploading.
       If false, the artifact will be uploaded as-is without archiving.
-      When archive is false, only a single file can be uploaded. The name of the file will be used as the artifact name.
+      When `archive` is `false`, only a single file can be uploaded. The name of the file will be used as the artifact name (ignoring the `name` parameter).
     default: 'true'
 
 outputs:
