@@ -10,6 +10,10 @@ on:
     paths-ignore:
       - '**.md'
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     name: Build
@@ -391,27 +395,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Node 24
-      uses: actions/setup-node@v4
-      with:
-        node-version: 24.x
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci
-
     - name: Delete test artifacts
       uses: actions/github-script@v8
       with:
         script: |
-          const artifactClient = require('@actions/artifact');
-          const artifact = artifactClient.default || artifactClient;
-
-          const {artifacts} = await artifact.listArtifacts({latest: true});
           const keep = ['report.html'];
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+          const runId = context.runId;
+
+          const {data: {artifacts}} = await github.rest.actions.listWorkflowRunArtifacts({
+            owner,
+            repo,
+            run_id: runId
+          });
 
           for (const a of artifacts) {
             if (keep.includes(a.name)) {
@@ -419,10 +416,13 @@ jobs:
               continue;
             }
             try {
-              await artifact.deleteArtifact(a.name);
+              await github.rest.actions.deleteArtifact({
+                owner,
+                repo,
+                artifact_id: a.id
+              });
               console.log(`Deleted artifact '${a.name}'`);
             } catch (err) {
               console.log(`Could not delete artifact '${a.name}': ${err.message}`);
             }
           }
-
