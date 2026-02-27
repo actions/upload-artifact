@@ -115,19 +115,21 @@ You are welcome to still raise bugs in this repo.
     # Available Options:
     #   warn: Output a warning but do not fail the action
     #   error: Fail the action with an error message
-    #   ignore: Do not output any warnings or errors, the action does not fail
+    #   ignore: Do not output any warnings or errors, does not fail the action
     # Optional. Default is 'warn'
     if-no-files-found:
 
-    # Duration after which artifact will expire in days. 0 means using default retention.
-    # Minimum 1 day.
-    # Maximum 90 days unless changed from the repository settings page.
+    # Duration after which artifact will expire in days.
+    #   0 means use default retention.
+    #   1 is the shortest retention.
+    #   Maximum is based on repository settings (the default is 90 days).
     # Optional. Defaults to repository settings.
     retention-days:
 
     # The level of compression for Zlib to be applied to the artifact archive.
     # The value can range from 0 to 9.
-    # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
+    # For large files that are not easily compressed, a value of 0 is recommended for
+    # significantly faster uploads.
     # Optional. Default is '6'
     compression-level:
 
@@ -137,9 +139,9 @@ You are welcome to still raise bugs in this repo.
     # Optional. Default is 'false'
     overwrite:
 
-    # Whether to include hidden files in the provided path in the artifact
+    # Whether to include hidden files in the provided path in the artifact.
     # The file contents of any hidden files in the path should be validated before
-    # enabled this to avoid uploading sensitive information.
+    # enabling this to avoid uploading sensitive information.
     # Optional. Default is 'false'
     include-hidden-files:
 ```
@@ -148,8 +150,8 @@ You are welcome to still raise bugs in this repo.
 
 | Name | Description | Example |
 | - | - | - |
-| `artifact-id` | GitHub ID of an Artifact, can be used by the REST API | `1234` |
-| `artifact-url` | URL to download an Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired or the artifact, run or repository have not been deleted | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
+| `artifact-id` | GitHub ID of the Artifact, can be used by the REST API | `1234` |
+| `artifact-url` | URL to download the Artifact. Can be used in many scenarios such as linking to artifacts in issues or pull requests. Users must be logged-in in order for this URL to work. This URL is valid as long as the artifact has not expired and the artifact, run, and repository have not been deleted. | `https://github.com/example-org/example-repo/actions/runs/1/artifacts/1234` |
 | `artifact-digest` | SHA-256 digest of an Artifact | 0fde654d4c6e659b45783a725dc92f1bfb0baa6c2de64b34e814dc206ff4aaaf |
 
 ## Examples
@@ -478,7 +480,7 @@ You may also be limited by Artifacts if you have exceeded your shared storage qu
 
 ### Zip archives
 
-When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than a Zip or to download individual artifact contents.
+When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than Zip or to download individual artifact contents.
 
 ### Permission Loss
 
@@ -504,6 +506,6 @@ At the bottom of the workflow summary page, there is a dedicated section for art
 <img src="https://github.com/user-attachments/assets/bcb7120f-f445-4a3e-9596-77f85f7e0af0" width="700" height="300">
 
 
-There is a trashcan icon that can be used to delete the artifact. This icon will only appear for users who have write permissions to the repository.
+For users who have write permissions to the repository, there is a trashcan icon that can be used to delete the artifact.
 
 The size of the artifact is denoted in bytes. The displayed artifact size denotes the size of the zip that `upload-artifact` creates during upload. The Digest column will display the SHA256 digest of the artifact being uploaded.
