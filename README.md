@@ -1,9 +1,9 @@
 # `@actions/upload-artifact`
 
 > [!WARNING]
-> actions/upload-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
-> Similarly, v1/v2 are scheduled for deprecation on **June 30, 2024**.
-> Please update your workflow to use v4 of the artifact actions.
+> actions/upload-artifact@v3 was deprecated on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
+> Similarly, v1/v2 were deprecated on **June 30, 2024**.
+> Please update your workflow to use at least v4 of the artifact actions.
 > This deprecation will not impact any existing versions of GitHub Enterprise Server being used by customers.
 
 Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts) from your Workflow Runs. Internally powered by [@actions/artifact](https://github.com/actions/toolkit/tree/main/packages/artifact) package.
@@ -11,6 +11,7 @@ Upload [Actions Artifacts](https://docs.github.com/en/actions/using-workflows/st
 See also [download-artifact](https://github.com/actions/download-artifact).
 
 - [`@actions/upload-artifact`](#actionsupload-artifact)
+  - [v7 - What's new](#v7---whats-new)
   - [v6 - What's new](#v6---whats-new)
   - [v4 - What's new](#v4---whats-new)
     - [Improvements](#improvements)
@@ -23,6 +24,7 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Upload an Entire Directory](#upload-an-entire-directory)
     - [Upload using a Wildcard Pattern](#upload-using-a-wildcard-pattern)
     - [Upload using Multiple Paths and Exclusions](#upload-using-multiple-paths-and-exclusions)
+    - [Upload a file without compressing it](#upload-a-file-without-compressing-it)
     - [Altering compressions level (speed v. size)](#altering-compressions-level-speed-v-size)
     - [Customization if no files are found](#customization-if-no-files-are-found)
     - [(Not) Uploading to the same artifact](#not-uploading-to-the-same-artifact)
@@ -38,6 +40,10 @@ See also [download-artifact](https://github.com/actions/download-artifact).
     - [Permission Loss](#permission-loss)
   - [Where does the upload go?](#where-does-the-upload-go)
 
+
+## v7 - What's new
+
+This version adds support for uploading a file directly without compressing it.
 
 ## v6 - What's new
 
@@ -101,9 +107,10 @@ You are welcome to still raise bugs in this repo.
 ### Inputs
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     # Name of the artifact to upload.
+    # If the `archive` input is `false`, the name of the file uploaded will be the artifact name. 
     # Optional. Default is 'artifact'
     name:
 
@@ -142,6 +149,12 @@ You are welcome to still raise bugs in this repo.
     # enabled this to avoid uploading sensitive information.
     # Optional. Default is 'false'
     include-hidden-files:
+
+    # If true, the artifact will be archived (zipped) before uploading.
+    # If false, the artifact will be uploaded as-is without archiving.
+    # When `archive` is `false`, only a single file can be uploaded. The name of the file will be used as the artifact name (ignoring the `name` parameter).
+    # Optional. Default is 'true'
+    archive:
 ```
 
 ### Outputs
@@ -160,7 +173,7 @@ You are welcome to still raise bugs in this repo.
 steps:
 - run: mkdir -p path/to/artifact
 - run: echo hello > path/to/artifact/world.txt
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: path/to/artifact/world.txt
@@ -169,7 +182,7 @@ steps:
 ### Upload an Entire Directory
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: path/to/artifact/ # or path/to/artifact
@@ -178,7 +191,7 @@ steps:
 ### Upload using a Wildcard Pattern
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: path/**/[abc]rtifac?/*
@@ -187,7 +200,7 @@ steps:
 ### Upload using Multiple Paths and Exclusions
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@7
   with:
     name: my-artifact
     path: |
@@ -216,6 +229,16 @@ If multiple paths are provided as input, the least common ancestor of all the se
 
 Relative and absolute file paths are both allowed. Relative paths are rooted against the current working directory. Paths that begin with a wildcard character should be quoted to avoid being interpreted as YAML aliases.
 
+### Upload a file without compressing it
+
+```yaml
+- uses: actions/upload-artifact@v7
+  with:
+    name: my-artifact
+    path: path/to/artifact/example.pdf   # single file only
+    archive: false  # do not compress file into Zip archive
+```
+
 ### Altering compressions level (speed v. size)
 
 If you are uploading large or easily compressable data to your artifact, you may benefit from tweaking the compression level. By default, the compression level is `6`, the same as GNU Gzip.
@@ -235,7 +258,7 @@ For instance, if you are uploading random binary data, you can save a lot of tim
 - name: Make a 1GB random binary file
   run: |
     dd if=/dev/urandom of=my-1gb-file bs=1M count=1000
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: my-1gb-file
@@ -248,7 +271,7 @@ But, if you are uploading data that is easily compressed (like plaintext, code, 
 - name: Make a file with a lot of repeated text
   run: |
     for i in {1..100000}; do echo -n 'foobar' >> foobar.txt; done
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: foobar.txt
@@ -260,7 +283,7 @@ But, if you are uploading data that is easily compressed (like plaintext, code, 
 If a path (or paths), result in no files being found for the artifact, the action will succeed but print out a warning. In certain scenarios it may be desirable to fail the action or suppress the warning. The `if-no-files-found` option allows you to customize the behavior of the action if no files are found:
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     path: path/to/artifact/
@@ -273,13 +296,13 @@ Unlike earlier versions of `upload-artifact`, uploading to the same artifact via
 
 ```yaml
 - run: echo hi > world.txt
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@7
   with:
     # implicitly named as 'artifact'
     path: world.txt
 
 - run: echo howdy > extra-file.txt
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     # also implicitly named as 'artifact', will fail here!
     path: extra-file.txt
@@ -305,7 +328,7 @@ jobs:
     - name: Build
       run: ./some-script --version=${{ matrix.version }} > my-binary
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@7
       with:
         name: binary-${{ matrix.os }}-${{ matrix.version }}
         path: my-binary
@@ -323,7 +346,7 @@ You can use `~` in the path input as a substitute for `$HOME`. Basic tilde expan
   - run: |
       mkdir -p ~/new/artifact
       echo hello > ~/new/artifact/world.txt
-  - uses: actions/upload-artifact@v4
+  - uses: actions/upload-artifact@v7
     with:
       name: my-artifacts
       path: ~/new/**/*
@@ -338,7 +361,7 @@ Environment variables along with context expressions can also be used for input.
     - run: |
         mkdir -p ${{ github.workspace }}/artifact
         echo hello > ${{ github.workspace }}/artifact/world.txt
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ env.name }}-name
         path: ${{ github.workspace }}/artifact/**/*
@@ -352,7 +375,7 @@ For environment variables created in other steps, make sure to use the `env` exp
         mkdir testing
         echo "This is a file to upload" > testing/file.txt
         echo "artifactPath=testing/file.txt" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: artifact
         path: ${{ env.artifactPath }} # this will resolve to testing/file.txt at runtime
@@ -367,7 +390,7 @@ Artifacts are retained for 90 days by default. You can specify a shorter retenti
     run: echo "I won't live long" > my_file.txt
 
   - name: Upload Artifact
-    uses: actions/upload-artifact@v4
+    uses: actions/upload-artifact@v7
     with:
       name: my-artifact
       path: my_file.txt
@@ -383,7 +406,7 @@ If an artifact upload is successful then an `artifact-id` output is available. T
 #### Example output between steps
 
 ```yml
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       id: artifact-upload-step
       with:
         name: my-artifact
@@ -402,7 +425,7 @@ jobs:
     outputs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         id: artifact-upload-step
         with:
           name: my-artifact
@@ -428,7 +451,7 @@ jobs:
       - name: Create a file
         run: echo "hello world" > my-file.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: my-artifact # NOTE: same artifact name
           path: my-file.txt
@@ -439,7 +462,7 @@ jobs:
       - name: Create a different file
         run: echo "goodbye world" > my-file.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: my-artifact # NOTE: same artifact name
           path: my-file.txt
@@ -455,7 +478,7 @@ Any files that contain sensitive information that should not be in the uploaded 
 using the `path`:
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: my-artifact
     include-hidden-files: true
@@ -478,7 +501,7 @@ You may also be limited by Artifacts if you have exceeded your shared storage qu
 
 ### Zip archives
 
-When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than a Zip or to download individual artifact contents.
+When an Artifact is uploaded, the file(s) are assembled into an immutable Zip archive by default. If you want to upload a file uncompressed, set the flag `archive` to `false`. Currently, uncompressed upload works for one single file only. When uploading multiple files as Zip archive, there is currently no way to download individual artifact contents.
 
 ### Permission Loss
 
@@ -491,7 +514,7 @@ If you must preserve permissions, you can `tar` all of your files together befor
   run: tar -cvf my_files.tar /path/to/my/directory
 
 - name: 'Upload Artifact'
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@@v4
   with:
     name: my-artifact
     path: my_files.tar
