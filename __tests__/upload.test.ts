@@ -327,4 +327,26 @@ describe('upload', () => {
     )
     expect(artifact.default.uploadArtifact).not.toHaveBeenCalled()
   })
+
+  test('overwrite artifact by filename when archive is false', async () => {
+    mockInputs({
+      [Inputs.Archive]: false,
+      [Inputs.Overwrite]: true
+    })
+
+    mockFindFilesToUpload.mockResolvedValue({
+      filesToUpload: [fixtures.filesToUpload[0]],
+      rootDirectory: fixtures.rootDirectory
+    })
+
+    jest.spyOn(artifact.default, 'deleteArtifact').mockResolvedValue({
+      id: 1337
+    })
+
+    await run()
+
+    expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
+      fixtures.filesToUpload[0].split('/').pop() || ''
+    )
+  })
 })
