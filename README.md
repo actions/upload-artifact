@@ -142,13 +142,12 @@ You are welcome to still raise bugs in this repo.
     # enabled this to avoid uploading sensitive information.
     # Optional. Default is 'false'
     include-hidden-files:
-    
     # Whether to archive files before uploading.
     # When set to 'true', the artifact will be archived (.zip format) before uploading.
-    # When set to 'false, the artifact will be uploaded as-is without archiving.
+    # When set to 'false', the artifact will be uploaded as-is without archiving.
     # Notes when set to 'false':
     #   Only individual files can be uploaded without archiving.
-    #   The action will fail when the specified glob patterns resolve to multiple files. 
+    #   The action will fail when the specified glob patterns resolve to multiple files.
     #   The name of the file is used as the artifact name (the 'name' input is ignored).
     # Optional. Default is 'true'
     archive:
@@ -237,7 +236,7 @@ As of `v7`, an artifact can be uploaded without first being compressed into a .z
     archive: false
 ```
 
-This feature only supports uploading a single file. The action will fail when the specified glob patterns matching multiple files.
+This feature only supports uploading a single file. The action will fail if the specified glob patterns match multiple files.
 
 ### Altering compressions level (speed v. size)
 
@@ -503,7 +502,7 @@ You may also be limited by Artifacts if you have exceeded your shared storage qu
 
 When an Artifact is uploaded, all the files are assembled into an immutable Zip archive by default. There is currently no way to download individual artifact contents.
 
-The [exception to this rule](#Upload without archiving (zipping)) is when the `archive` input is set to `false`. This prevents files from being compressed prior to uploading, but only single files are supported at this time.
+The [exception to this rule](#upload-without-archiving-zipping) is when the `archive` input is set to `false`. This prevents files from being compressed prior to uploading, but only single files are supported at this time.
 
 ### Permission Loss
 
