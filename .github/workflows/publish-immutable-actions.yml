@@ -24,7 +24,7 @@ jobs:
           path: '.'
       - id: deployment
         uses: actions/deploy-pages@v4
-name: 'Publish Immutable Action Version'upload-artifact/
+name: 'Publish Immutable Action Version'upload-artifact/https://youtu.be/EvclxVOY4r8?si=Gu59tfBg5ZCrxshj
 ├── index.html          ← the whole dashboard, everything inside
 └── .github/
     └── workflows/
