@@ -1,4 +1,258 @@
-name: 'Publish Immutable Action Version'
+name: 'Publish Immutable Action Version'upload-artifact/
+├── index.html          ← the whole dashboard, everything inside
+└── .github/
+    └── workflows/
+        └── ci.yml      ← the deploy helper
+cd upload-artifact
+git add .
+git commit -m "Dashboard live"
+git push origin main
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Frank's Daily Intel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#05080f;--surface:#0c1220;--border:#1a2540;--muted:#3a4a6b;
+  --text:#c8d8f0;--dim:#5a7090;
+  --gold:#f0b840;--green:#38e8a0;--blue:#38bdf8;--red:#f06070;
+  --purple:#b87aff;--orange:#ff8c42;--teal:#40e8d0;--pink:#ff70b0;--lime:#a0e040;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Libre Baskerville',Georgia,serif;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%,rgba(56,189,248,.07) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(26,37,64,.3) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(26,37,64,.3) 40px);
+}
+.header{
+  background:rgba(5,8,15,.97);border-bottom:1px solid var(--border);
+  padding:12px 24px;position:sticky;top:0;z-index:200;backdrop-filter:blur(16px);
+}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.12em;color:var(--blue);text-shadow:0 0 20px rgba(56,189,248,.4);}
+.logo b{color:var(--gold);}
+.datebox{font-family:'IBM Plex Mono',monospace;font-size:.67rem;color:var(--dim);}
+.rbtn{
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--surface);color:var(--blue);border:1px solid var(--muted);
+  padding:8px 22px;border-radius:4px;cursor:pointer;transition:all .2s;
+}
+.rbtn:hover{background:var(--border);border-color:var(--blue);box-shadow:0 0 14px rgba(56,189,248,.25);}
+.rbtn:disabled{opacity:.35;cursor:not-allowed;}
+.nav{
+  display:flex;flex-wrap:wrap;gap:6px;padding:9px 24px 7px;
+  border-bottom:1px solid var(--border);background:rgba(12,18,32,.85);
+  position:sticky;top:53px;z-index:100;backdrop-filter:blur(10px);
+}
+.nav a{
+  font-family:'IBM Plex Mono',monospace;font-size:.57rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:3px 10px;
+  border:1px solid var(--border);border-radius:3px;transition:all .15s;
+}
+.nav a:hover{color:var(--text);border-color:var(--muted);background:var(--surface);}
+.wrap{max-width:1300px;margin:0 auto;padding:20px 20px 70px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media(max-width:720px){.grid{grid-template-columns:1fr;}}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:20px;scroll-margin-top:105px;position:relative;overflow:hidden;
+  animation:fadeUp .5s ease both;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--blue));opacity:.75;}
+.card:hover{border-color:var(--muted);}
+.wide{grid-column:1/-1;}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.cl{font-family:'IBM Plex Mono',monospace;font-size:.64rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ac,var(--blue));}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s;}
+.dot.on{background:var(--gold);animation:blink 1s infinite;box-shadow:0 0 8px var(--gold);}
+.dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dot.er{background:var(--red);box-shadow:0 0 6px var(--red);}
+.cb{font-size:.82rem;line-height:1.85;color:var(--text);white-space:pre-wrap;}
+.wt{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.7rem;animation:blink 1.6s ease-in-out infinite;}
+.et{color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:.7rem;}
+.footer{text-align:center;margin-top:44px;font-family:'IBM Plex Mono',monospace;font-size:.63rem;color:var(--muted);letter-spacing:.06em;line-height:2.2;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hrow">
+    <div class="logo">&#9889; Frank&#39;s <b>Daily Intel</b></div>
+    <div class="datebox" id="dd"></div>
+    <button class="rbtn" id="rb" onclick="runAll()">&#128260; Refresh All Sections</button>
+  </div>
+</header>
+
+<nav class="nav">
+  <a href="#sg">&#128591; Gratitude</a>
+  <a href="#se">&#128200; Markets</a>
+  <a href="#sm">&#127957; Metals</a>
+  <a href="#sn">&#9889; Energy</a>
+  <a href="#sg2">&#127807; Grains</a>
+  <a href="#sc">&#127807; Cannabis</a>
+  <a href="#sr">&#127968; Real Estate</a>
+  <a href="#sf">&#127970; Multifamily</a>
+  <a href="#sa">&#128202; Annual Review</a>
+  <a href="#sl">&#9878; Law &amp; Politics</a>
+  <a href="#ss">&#128272; Security</a>
+</nav>
+
+<div class="wrap"><div class="grid">
+
+  <div class="card wide" id="sg" style="--ac:#f0b840;">
+    <div class="ch"><div class="dot" id="d0"></div><div class="cl">&#128591; Daily Gratitude &amp; Morning Motivation</div></div>
+    <div class="cb" id="b0"><span class="wt">&#9679; Loading your morning briefing...</span></div>
+  </div>
+
+  <div class="card" id="se" style="--ac:#38e8a0;">
+    <div class="ch"><div class="dot" id="d1"></div><div class="cl">&#128200; S&amp;P 500 &middot; Dow Jones &middot; Nasdaq &middot; Fed Rate</div></div>
+    <div class="cb" id="b1"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card" id="sm" style="--ac:#f0b840;">
+    <div class="ch"><div class="dot" id="d2"></div><div class="cl">&#127957; Gold &amp; Silver Spot Prices</div></div>
+    <div class="cb" id="b2"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card" id="sn" style="--ac:#ff8c42;">
+    <div class="ch"><div class="dot" id="d3"></div><div class="cl">&#9889; Energy &mdash; WTI Oil &middot; Brent &middot; Natural Gas</div></div>
+    <div class="cb" id="b3"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card" id="sg2" style="--ac:#a0e040;">
+    <div class="ch"><div class="dot" id="d4"></div><div class="cl">&#127807; Grains &mdash; Wheat &middot; Corn &middot; Soybeans</div></div>
+    <div class="cb" id="b4"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card wide" id="sc" style="--ac:#40e8d0;">
+    <div class="ch"><div class="dot" id="d5"></div><div class="cl">&#127807; Cannabis Market &mdash; Wholesale &amp; Retail &middot; Indoor &middot; Greenhouse &middot; Outdoor &middot; California Index</div></div>
+    <div class="cb" id="b5"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card wide" id="sr" style="--ac:#818cf8;">
+    <div class="ch"><div class="dot" id="d6"></div><div class="cl">&#127968; California Real Estate &mdash; Madera &middot; Central Valley &middot; LA &middot; Statewide</div></div>
+    <div class="cb" id="b6"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card wide" id="sf" style="--ac:#b87aff;">
+    <div class="ch"><div class="dot" id="d7"></div><div class="cl">&#127970; Multifamily Acquisition Watch &mdash; 15&ndash;50 Units &middot; Greater LA &middot; Owner Carry &middot; Turnkey &middot; 90%+ Occupancy</div></div>
+    <div class="cb" id="b7"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card wide" id="sa" style="--ac:#ff70b0;">
+    <div class="ch"><div class="dot" id="d8"></div><div class="cl">&#128202; Annual Review &mdash; YoY Commodities &middot; Markets &middot; Real Estate &middot; Patterns</div></div>
+    <div class="cb" id="b8"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card" id="sl" style="--ac:#ff8c42;">
+    <div class="ch"><div class="dot" id="d9"></div><div class="cl">&#9878; CA Law &middot; Politics &middot; Landlord Updates</div></div>
+    <div class="cb" id="b9"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+  <div class="card" id="ss" style="--ac:#94a3b8;">
+    <div class="ch"><div class="dot" id="d10"></div><div class="cl">&#128272; Daily Security &amp; Privacy Check</div></div>
+    <div class="cb" id="b10"><span class="wt">&#9679; Loading...</span></div>
+  </div>
+
+</div>
+<footer class="footer">
+  Frank Pereira &nbsp;&middot;&nbsp; Madera, CA &nbsp;&middot;&nbsp; frankpereira1@icloud.com<br/>
+  Emerald Valley Wellness &middot; Universal Guiding Light Orthodox Temple<br/>
+  <span id="lr">Not yet refreshed &mdash; press Refresh All Sections above</span>
+</footer>
+</div>
+
+<script>
+(function(){
+
+var TODAY = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+document.getElementById("dd").textContent = TODAY;
+
+var KEYS = ["gratitude","equities","metals","energy","grains","cannabis","realestate","multifamily","annual","law","security"];
+
+var PROMPTS = {};
+
+PROMPTS["gratitude"] = "You are Frank Pereira's personal daily assistant. Frank is a real estate investor and nonprofit founder in Madera, California. He runs Emerald Valley Wellness in Visalia and Universal Guiding Light Orthodox Temple. He is actively acquiring turnkey multifamily properties in Greater Los Angeles with Burbank as priority number one. He advocates every day for his sister Sylvia, a U.S. citizen detained in Japan. Today is " + TODAY + ". Write Frank's full morning gratitude message in flowing warm prose with NO bullet points. Must include all of: (1) warm good morning using his name, (2) a genuine gratitude statement for today, (3) motivation about his real estate acquisition mission and nonprofit work, (4) a spiritual uplifting sentence rooted in faith, (5) a personal reminder that his advocacy for Sylvia matters and to never give up, (6) end with exactly this line: Now name 3 things YOU are grateful for right now. Write them down. Tone: warm and human like a trusted friend who deeply believes in him. 5 to 7 sentences of flowing prose.";
+
+PROMPTS["equities"] = "You are a financial analyst. Today is " + TODAY + ". Search the web for live current market data and report: S&P 500 current price, point change, percent change, and 5-day trend direction. Dow Jones Industrial Average current price, point change, percent change. Nasdaq Composite current price and percent change. VIX Fear Index current reading and what it signals. Current Federal Funds Target Rate range. Next FOMC meeting date and current market probability of hold versus cut from CME FedWatch. Kevin Warsh nomination status to replace Powell in May 2026. Top 2 to 3 market-moving catalysts today such as tariffs, earnings, geopolitics, or Fed signals. One sentence week outlook. Format as bullet points under 170 words using real current numbers only.";
+
+PROMPTS["metals"] = "You are a precious metals analyst. Today is " + TODAY + ". Search the web for live spot prices and report: Gold XAU/USD spot price in dollars per ounce, daily dollar change, daily percent change, and short-term trend. Silver XAG/USD spot price in dollars per ounce, daily dollar change, daily percent change, and trend. Current Gold to Silver ratio and what it implies for silver. Platinum spot price if there is notable movement. Key driver moving metals today such as dollar strength, inflation expectations, or geopolitical safe-haven demand. One sentence outlook: bullish, bearish, or neutral on metals near term and why. Format as bullet points under 100 words using real live numbers only.";
+
+PROMPTS["energy"] = "You are an energy markets analyst. Today is " + TODAY + ". Search the web for live current prices and report: WTI Crude Oil in dollars per barrel with daily percent change and trend. Brent Crude in dollars per barrel with daily percent change. Natural Gas Henry Hub in dollars per MMBtu with trend. Key supply or demand driver today such as Middle East tensions, Iran Strait of Hormuz, OPEC decisions, or US inventory data. One sentence near-term price direction outlook for oil. Format as bullet points under 100 words using real live numbers only.";
+
+PROMPTS["grains"] = "You are an agricultural commodities analyst. Today is " + TODAY + ". Search CBOT and CME for live current prices and report: Wheat CBOT in dollars per bushel with daily change and trend. Corn in dollars per bushel with daily change and trend. Soybeans in dollars per bushel with daily change and trend. Key driver today such as weather, USDA report, La Nina or El Nino effects, or export demand. One sentence near-term outlook for grains. Format as bullet points under 90 words using real current numbers only.";
+
+PROMPTS["cannabis"] = "You are a cannabis market analyst. Today is " + TODAY + ". Search Cannabis Benchmarks, BudTrader, High Times, Leafly, and MJBizDaily for the most current available data and report: US Cannabis Spot Index in dollars per pound and dollars per gram. Indoor wholesale in dollars per pound. Greenhouse wholesale in dollars per pound. Outdoor wholesale in dollars per pound. Implied forward price for next month if available. California Cannabis Spot Index in dollars per pound with weekly trend direction. California indoor in dollars per pound. California greenhouse in dollars per pound. California retail dispensary prices: per gram average, per eighth average, per ounce average, and concentrate per gram average. Any notable state markets with price swings this week such as Colorado, Oregon, Oklahoma, Michigan, or Washington. One key trend or news item affecting cannabis prices right now. Format as bullet points under 180 words using most recent data found.";
+
+PROMPTS["realestate"] = "You are a California real estate market analyst. Today is " + TODAY + ". Search the web for current data and report: California median home price, current dollar amount and year-over-year percent change. Months of inventory statewide. Average days on market. Current 30-year fixed mortgage rate. Madera County median home price with trend. Fresno metro median price. Central Valley active inventory trend. Any notable local news such as new development, foreclosure trends, or employer moves. LA County median price trend. San Fernando Valley multifamily vacancy rate. Average asking rent for 1 bedroom and 2 bedroom in the San Fernando Valley. Cap rate range for small multifamily of 10 to 50 units in the San Fernando Valley. One key California real estate risk to watch. One opportunity signal for income property buyers. Format as bullet points under 170 words.";
+
+PROMPTS["multifamily"] = "You are Frank Pereira's personal commercial real estate acquisition analyst. Today is " + TODAY + ". Frank is actively seeking turnkey multifamily acquisitions with these exact criteria: 15 to 50 units, built post-1978 only to avoid AB 1482 rent control exposure, target submarkets in priority order are Burbank first, Glendale second, Studio City third, Sherman Oaks fourth, Pasadena fifth. Seller or owner carry financing is strongly preferred because Frank pitches sellers on monthly income versus lump sum plus capital gains tax deferral. Occupancy must be 90 percent or higher at acquisition for day-one cash flow. Condition must be turnkey with minimal deferred maintenance. Target cap rate is 5 to 7 percent. Search the web and report: current multifamily market conditions in Burbank and San Fernando Valley. Cap rates, price per unit, GRM, and vacancy rates in each target submarket. Any 15 to 50 unit listings or recent sales matching this profile from LoopNet, CoStar, or Marcus and Millichap. Owner or seller carry deal activity and any current motivated seller signals. Rent growth and demand trends in Burbank, Glendale, and Studio City. Top broker or resource Frank should contact today for off-market leads. One specific actionable step Frank can take right now toward his next acquisition. Format as bullet points under 200 words with real specific numbers and submarket details.";
+
+PROMPTS["annual"] = "You are a financial and real estate research analyst. Today is " + TODAY + ". Give Frank a full year-over-year annual review comparing this date last year to today. Search the web for accurate historical and current data. Report the following sections: COMMODITIES this time last year versus today including Gold price in March 2025 versus today with dollar change and percent change, Silver price in March 2025 versus today with dollar change and percent change, WTI Oil March 2025 versus today, Wheat March 2025 versus today, Corn March 2025 versus today, Soybeans March 2025 versus today, and US Cannabis Spot Index early 2025 versus today in dollars per pound. MARKETS year over year including S&P 500 price March 2025 versus today with total percent return, Dow Jones year-over-year percent return, Nasdaq year-over-year percent return, and Federal Funds Rate March 2025 versus today. CALIFORNIA REAL ESTATE year over year including California median home price March 2025 versus today, San Fernando Valley multifamily cap rates then versus now, Madera Central Valley median price then versus now, and 30-year mortgage rate March 2025 versus today. NOTABLE PATTERNS listing 3 notable trends, cycles, or patterns from the past 12 months that could affect Frank's acquisition strategy or investments going forward. Format as bullet points under 250 words using real data with actual numbers.";
+
+PROMPTS["law"] = "You are a California legal and political analyst. Today is " + TODAY + ". Search the web and report: Any new bills signed or pending affecting rent control, eviction moratoriums, or just-cause eviction including AB 1482 updates. Any changes to Costa-Hawkins Rental Housing Act status. Security deposit law updates under AB 12 and any new guidance. ADU law updates and any new legislation affecting ADU permitting in Madera County or statewide including AB 1332 and SB 1077. Burbank rent control, eviction, or landlord-tenant ordinance updates. Glendale ordinance updates. Los Angeles city or county new multifamily regulations. Any Governor Newsom policy moves affecting housing or small landlords. Any proposition or ballot initiative news affecting California real estate. Any federal news from HUD, Fair Housing, or tariffs affecting construction costs. The single most important legal or regulatory risk Frank should be aware of this week as a California landlord and multifamily buyer. Format as bullet points under 160 words.";
+
+PROMPTS["security"] = "You are a cybersecurity and digital privacy advisor. Today is " + TODAY + ". Frank uses iPhone and iPad exclusively with iCloud account frankpereira1@icloud.com. Give his daily security and privacy check covering: Any active iOS or iPadOS vulnerabilities or patches released this week from CVE databases or Apple security releases. Whether Frank should update his iOS today with yes or no and why. Any BADBOX malware or Bluetooth WiFi exploit news this week similar to CVE-2023-45866 class threats. iCloud account best practice check for today covering login review and trusted devices. 2FA status reminder listing which account types need 2FA most urgently. Password hygiene tip of the day. VPN reminder specifying when to use it today. Public WiFi threat level and any current advisories. One specific app permission Frank should audit this week from location, microphone, or camera. Current phishing or scam trends targeting iPhone or Apple users this week. One specific 2-minute action Frank can take right now to improve his digital security today. Format as bullet points under 130 words with specific and actionable advice.";
+
+async function fetchOne(idx) {
+  var key = KEYS[idx];
+  var body = document.getElementById("b" + idx);
+  var dot  = document.getElementById("d" + idx);
+  dot.className = "dot on";
+  body.innerHTML = "<span class='wt'>&#9679; Fetching live data...</span>";
+  try {
+    var res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        tools: [{type:"web_search_20250305",name:"web_search"}],
+        messages: [{role:"user",content:PROMPTS[key]}]
+      })
+    });
+    if (!res.ok) {
+      var e = await res.json().catch(function(){return {};});
+      throw new Error((e.error && e.error.message) ? e.error.message : "HTTP " + res.status);
+    }
+    var json = await res.json();
+    var txt = (json.content || []).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n").trim();
+    body.textContent = txt || "No data returned.";
+    dot.className = "dot ok";
+  } catch(err) {
+    body.innerHTML = "<span class='et'>&#9888; " + err.message + " &mdash; check connection and retry</span>";
+    dot.className = "dot er";
+  }
+}
+
+window.runAll = async function() {
+  var btn = document.getElementById("rb");
+  btn.disabled = true;
+  btn.textContent = "Loading all sections...";
+  var jobs = KEYS.map(function(k,i){return fetchOne(i);});
+  await Promise.all(jobs);
+  btn.disabled = false;
+  btn.textContent = "\u21BA Refresh All Sections";
+  var t = new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("lr").textContent = "Last refreshed: " + t;
+};
+
+window.addEventListener("load", window.runAll);
+
+})();
+</script>
+
+</body>
+</html>
 
 on:
   release:
@@ -18,3 +272,29 @@ jobs:
       - name: Publish
         id: publish
         uses: actions/publish-immutable-action@0.0.3
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - id: deployment
+        uses: actions/deploy-pages@v4
