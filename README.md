@@ -1,4 +1,4 @@
-⚡ DAILY INTEL
+⚡ https://github.com/example-org/example-repo/actionsDAILY INTEL
 Saturday, March 21, 2026
 🔄 Refresh Briefing
 🙏 Daily Gratitude
