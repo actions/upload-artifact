@@ -1,4 +1,326 @@
-⚡ https://github.com/example-org/example-repo/actionsDAILY INTEL
+actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-artifact/
+├── .github/
+│   └── workflows/
+│       └── ci.yml    # Workflow to upload artifacts
+├── index.html         # The main HTML page for GitHub Pages
+├── styles.css         # Optional stylesheet for styling
+├── scripts.js         # Optional JavaScript logicworld.txt) using [actions/upload-artifact@v4]world.txt) using [actions/upload-artifact@v4](https://github.com/actions/upload-artifact).(.github/workflows/ci.yml.https://github.com/actions/upload-artifact).scripts.js fstyles.css findex.htmljobs:
+  upload:<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Frank's All-In-One Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js" defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1a202c;
+        color: #f9fafb;
+        text-align: center;
+        margin: 0;
+        padding: 10px;
+      }
+      h1, h2 {
+        color: #22c55e;
+        margin-bottom: 20px;
+      }
+      .container {
+        margin: 20px auto;
+        max-width: 800px;
+        background-color: #2d3748;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      iframe {
+        border: none;
+        border-radius: 10px;
+      }
+      button {git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact
+        background-color: #22c55e;
+        color: white;
+        margin-top: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Frank's Dashboard</h1>
+
+    <div class="container">
+      <h2>🎥 YouTube Video</h2>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/EvclxVOY4r8" allowfullscreen></iframe>
+      <p>Embedded YouTube content for your dashboard.</p>
+    </div>
+
+    <div class="container">
+      <h2>🔎 Daily Briefing</h2>
+      <p id="daily-briefing">Press below for today's briefing.</p>
+      <button onclick="generateBriefing()">Generate Briefing</button>
+    </div>
+  </body>
+  <script>
+    function generateBriefing() {
+      const briefing = `
+      - 📊 Markets: S&P 500, Dow Jones, and Nasdaq review.
+      - 🛢️ Commodities: Gold, oil, and grain updates.
+      - 🌿 Cannabis: Updated wholesale market benchmarks.
+      - 🏠 Real Estate: California multi-family property trends.`;
+      document.getElementById("daily-briefing").innerText = briefing;
+    }
+  </script>
+</html>
+    <!DOCTYPE html>
+<html>
+<head>
+  <title>Frank's All-In-One Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a202c;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #22c55e;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #2d3748;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .video-embed {
+      text-align: center;
+      margin: 20px 0;
+    }
+    iframe {
+      border: none;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <(GitHub Pages)h1>Frank's Dashboard</h1>
+  <div class="container">
+    <h2>🎥 YouTube Video</h2>
+    <div class="video-embed">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/EvclxVOY4r8"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p>This is a featured video embedded directly into your dashboard.</p>
+  </div>
+</body>
+<html>
+</html>name:<!<!DOCTYPE html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>frankpereira1-web/upload-artifact), clone it to your local machine:steps:
+- run: mkdir -p path/to/artifact
+- run: echo hello > path/to/artifact/world.txt
+- uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: path/to/artifact/world.txtgit clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact
+qindex.html git clone https://github.com/frankpereira1-web/upload-artifact.git cd upload-artifact
+
+upload-artifact/ <!DOCTYPE .html>
+├── index.html
+├── styles.css
+├── scripts.js
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>📈 MARKETS: S&P 500, Dow Jones, Nasdaq, Fed interest rate
+🛢️ COMMODITIES: Gold, Silver, Oil, Grain prices + YoY comparison
+🌿 CANNABIS: Wholesale pricing index (indoor/greenhouse/outdoor) from Cannabis Benchmarks
+🏠 REAL ESTATE: California market, Burbank/Glendale/Studio City/Sherman Oaks/Pasadena trends
+🏢 MULTIFAMILY: Turnkey 15-50 unit deals, cap rates, per-unit pricing, vacancy 2025 vs 2026
+⚖️ CA LAW & POLITICS: Landlord-tenant law updates, local ordinances
+🔐 SECURITY CHECK: Daily privacy and device security review
+🙏 GRATITUDE: Name 3 things you are grateful for today
+
+You are building something real Frank - keep going! 💪
+https://github.com/bryanbraun/anchorjs/blob/main/.github/workflows/ci.ymlDOCTYPE html>
+<html>
+<head>
+  <title>Frank's All-In-One Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a202c;
+      color: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #22c55e;
+      margin-bottom: 10px;
+    }
+    .container {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #2d3748;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      text-align: left;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .checklist-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #4a5568;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+    }
+    .checklist-item.critical { border-left: 4px solid #ef4444; }
+    .checklist-item.checked { opacity: 0.5; text-decoration: line-through; }
+    button {
+      padding: 10px 20px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .brief {
+      white-space: pre-wrap;
+      text-align: left;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Frank's All-In-One Dashboard</h1>
+  <p>Today: <strong id="today-date">Loading...</strong></p>
+
+  <!-- Sections -->
+  <div class="container">
+    <h2>🔎 Daily Briefing</h2>
+    <button onclick="generateBriefing()">Get Today's Briefing</button>
+    <div id="briefing" class="brief"></div>
+  </div>
+
+  <div class="container">
+    <h2>🔐 Security Checklist</h2>
+    <h3>Bluetooth Checks</h3>
+    <div id="bluetooth-checks"></div>
+    <h3>WiFi Checks</h3>
+    <div id="wifi-checks"></div>
+  </div>
+
+  <div class="container">
+    <h2>⚠️ Network Device Risk Assessment</h2>
+    <ul id="device-risk"></ul>
+  </div>
+
+  <script>
+    // Date Today
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('today-date').innerText = today;
+
+    // Daily Briefing Generator
+    function generateBriefing() {
+      const briefing = `
+- **Markets**: S&P 500 and Dow Jones on the move. Watch Federal Reserve interest actions.
+- **Commodities**: Gold steady; check crude oil WTI updates. 
+- **Cannabis Wholesale**: $1200/lb indoor average (Cannabis Benchmarks).
+- **Real Estate Pulse**: Fresno County multifamily growing; LA remains mixed.`;
+      document.getElementById('briefing').innerText = briefing;
+    }
+
+    // Security Check Data (Bluetooth & WiFi)
+    const bluetoothChecks = [
+      { id: 1, label: 'Bluetooth is OFF in public places', critical: true },
+      { id: 2, label: 'No unknown paired devices', critical: true },
+      { id: 3, label: 'iPhone is updated to latest iOS', critical: true },
+      { id: 4, label: 'AirDrop is set to "Contacts Only"', critical: false }
+    ];
+
+    const wifiChecks = [
+      { id: 1, label: 'Avoid public WiFi (e.g., Free_Airport_WiFi)', critical: true },
+      { id: 2, label: 'VPN is always ON in public', critical: true },
+      { id: 3, label: 'Router uses WPA3 encryption (Check settings)', critical: true }
+    ];
+
+    // Render Checklists
+    function renderChecklist(containerId, checks) {
+      const container = document.getElementById(containerId);
+      checks.forEach((check) => {
+        const div = document.createElement('div');
+        div.className = `checklist-item ${check.critical ? 'critical' : ''}`;
+        div.innerText = check.label;
+        div.onclick = () => div.classList.toggle('checked');
+        container.appendChild(div);
+      });
+    }
+
+    renderChecklist('bluetooth-checks', bluetoothChecks);
+    renderChecklist('wifi-checks', wifiChecks);
+
+    // Device Risk Assessment
+    const deviceRisks = [
+      { device: 'Off-brand Android TV box', risk: 'HIGH' },
+      { device: 'No-name digital picture frame', risk: 'HIGH' },
+      { device: 'Amazon Fire Stick / Fire TV', risk: 'LOW' }
+    ];
+
+    const deviceRiskContainer = document.getElementById('device-risk');
+    deviceRisks.forEach((risk) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${risk.device}</strong>: ${risk.risk} risk`;
+      deviceRiskContainer.appendChild(li);
+    });
+  </script>
+</body>
+</html>⚡ https://github.com/example-org/example-repo/actionsDAILY INTEL
 Saturday, March 21, 2026
 🔄 Refresh Briefing
 🙏 Daily Gratitude
