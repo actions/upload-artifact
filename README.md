@@ -1,5 +1,54 @@
-actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-artifact/
-├── .github/
+actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frank's Daily Briefing</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #0d1117; color: #e6edf3; padding: 20px; max-width: 900px; margin: auto; }
+  h1 { color: #58a6ff; text-align: center; }
+  #today-date { text-align: center; color: #8b949e; margin-bottom: 20px; }
+  button { background: #238636; color: white; border: none; padding: 12px 28px; border-radius: 6px; font-size: 16px; cursor: pointer; display: block; margin: 0 auto 24px; }
+  button:hover { background: #2ea043; }
+  #briefing-out { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; white-space: pre-wrap; line-height: 1.7; min-height: 200px; }
+  .loading { color: #8b949e; font-style: italic; }
+</style>
+</head>
+<body>
+<h1>🌅 Frank's Daily Briefing</h1>
+<p id="today-date"></p>
+<button onclick="generateBriefing()">Get My Daily Briefing</button>
+<div id="briefing-out" class="loading">Click the button to load your briefing...</div>
+
+<script>
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+async function generateBriefing() {
+  const out = document.getElementById('briefing-out');
+  out.textContent = 'Loading your briefing... please wait ⏳';
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Give me my detailed daily briefing for today covering: S&P 500 and Dow Jones, Fed interest rate, silver and gold prices, grain commodities, California real estate trends, a security/privacy tip, and end with a daily gratitude reminder. Format it cleanly with emoji section headers.`
+        }]
+      })
+    });
+    const data = await response.json();
+    out.textContent = data.content[0].text;
+  } catch (err) {
+    out.textContent = 'Error loading briefing. Check your connection and try again.\n\n' + err;
+  }
+}
+</script>
+</body>
+</html>
+.github/
 │   └── workflows/
 │       └── ci.yml    # Workflow to upload artifacts
 ├── index.html         # The main HTML page for GitHub Pages
