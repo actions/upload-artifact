@@ -1,4 +1,99 @@
-name: Deploy to GitHub Pages
+name: input.htmlhttps://frankpereira1-web.github.io/upload-artifact/https:/.github/workflows/test.ymlupload-artifact/
+├── .github/
+│   └── workflows/
+│       └── ci.yml         # GitHub Actions workflow to upload artifact
+├── index.html             # Main dashboard for GitHub Pages
+├── styles.css             # CSS for styling
+├── scripts.js             # JavaScript functionalityname: Upload Artifact
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Create Artifacts
+        run: |
+          mkdir -p path/to/artifact
+          echo "Hello World!" > path/to/artifact/world.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: path/to/artifact/world.txthttps://youtu.be/EvclxVOY4r8?si=Lfw_-Y5JY5SNRfzp
+world.txtstyles.css)  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frank's All-In-One Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js" defer></script>
+</head>
+<body>
+  <h1>Frank's Dashboard</h1>
+  <p id="today-date">Loading today’s date...</p>v
+
+  <div class="container">
+    <h2>🎥 YouTube Video</h2>
+    <iframe 
+      width="560" 
+      height="315" 
+      src=l"https://www.youtube.com/embed/EvclxVOY4r8" 
+      frameborder="0" 
+      allowfullscreen>
+    </iframe>
+    <p>Embedded YouTube video.</p>
+  </div>
+
+  <div class="container">
+    <h2>🔎 Daily Briefing</h2>
+    <p id="daily-briefing">Press below to get your daily briefing.</p>
+    <button onclick="generateBriefing()">Generate Briefing</button>
+  </div>
+</body>
+</html>scripts.js)body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #dedede;
+  margin: 0;
+  padding: 20px;
+}
+h1, h2 {
+  text-align: center;
+  color: #22c55e;
+}
+.container {
+  background: #2d3748;
+  margin: 20px auto;
+  border-radius: 10px;
+  padding: 20px;
+  width: 80%;
+  box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.1);
+}
+button {
+  background-color: #22c55e;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifactindex.html, styles.css, and scripts.js in the root directory.
+
+• Place ci.yml in .github/workflows/.
+
+3. Commit and Push Changes:git add .
+git commit -m "Added GitHub Pages Dashboard and CI Workflow"
+git push origin mainhttps://github.com/frankpereira1-web/upload-artifactDeploy to GitHub Pages
 on:
   push:
     branches: [main]
