@@ -4,6 +4,12 @@ actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/
 │       └── ci.yml    # Workflow to upload artifacts
 ├── index.html         # The main HTML page for GitHub Pages
 ├── styles.css         # Optional stylesheet for styling
+├── scripts.js         # Optional JavaScript logicworld.txt) using [actions/upload-artifact@v4]world.txt) using [actions/upload-artifact@v4](https://github.com/actions/upload-artifact).(.github/workflows/ci.yml.https://github.com/actions/upload-artifactactions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-artifact/
+├── .github/
+│   └── workflows/
+│       └── ci.yml    # Workflow to upload artifacts
+├── index.html         # The main HTML page for GitHub Pages
+├── styles.css         # Optional stylesheet for styling
 ├── scripts.js         # Optional JavaScript logicworld.txt) using [actions/upload-artifact@v4]world.txt) using [actions/upload-artifact@v4](https://github.com/actions/upload-artifact).(.github/workflows/ci.yml.https://github.com/actions/upload-artifact).scripts.js fstyles.css findex.htmljobs:
   upload:<!DOCTYPE html>
 <html lang="en">
