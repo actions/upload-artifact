@@ -1,4 +1,5 @@
-actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-<!DOCTYPE html>
+actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-<!DOCTYPE html>github.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
