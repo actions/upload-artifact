@@ -1,8 +1,10 @@
-actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-<!DOCTYPE html>
+actions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-<!DOCTYPE html>github.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" contentgithub.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
+="width=device-width, initial-scale=1.0">
 <title>Frank's Daily Briefing</title>
 <style>
   body { font-family: Arial, sans-serif; background: #0d1117; color: #e6edf3; padding: 20px; max-width: 900px; margin: auto; }
