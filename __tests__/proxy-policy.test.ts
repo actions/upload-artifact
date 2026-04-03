@@ -127,7 +127,7 @@ describe('proxyPolicy', () => {
     expect(Object.keys(headerObj).length).toBe(0)
   })
 
-  test('does not leak application headers into HttpProxyAgent CONNECT request', async () => {
+  test('selects HttpProxyAgent for plain HTTP requests without leaking headers', async () => {
     const policy = proxyPolicy()
     const next = createCapturingNext()
 
