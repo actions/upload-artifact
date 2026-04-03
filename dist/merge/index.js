@@ -89375,16 +89375,22 @@ function setProxyAgentOnRequest(request, cachedAgents, proxyUrl) {
     if (request.tlsSettings) {
         log_logger.warning("TLS settings are not supported in combination with custom Proxy, certificates provided to the client will be ignored.");
     }
-    const headers = request.headers.toJSON();
+    // Do NOT pass application-level request headers to the proxy agent.
+    // The `headers` option in HttpsProxyAgent/HttpProxyAgent specifies headers
+    // to include in the HTTP CONNECT request to the proxy server.  Leaking
+    // application headers (Content-Type, x-ms-version, etc.) into the CONNECT
+    // handshake violates RFC 7231 §4.3.6 and causes strict proxies (e.g.
+    // Fortinet, Zscaler) to reject the tunnel, resulting in ECONNRESET.
+    // See: https://github.com/actions/upload-artifact/issues/XXX
     if (isInsecure) {
         if (!cachedAgents.httpProxyAgent) {
-            cachedAgents.httpProxyAgent = new http_proxy_agent_dist.HttpProxyAgent(proxyUrl, { headers });
+            cachedAgents.httpProxyAgent = new http_proxy_agent_dist.HttpProxyAgent(proxyUrl);
         }
         request.agent = cachedAgents.httpProxyAgent;
     }
     else {
         if (!cachedAgents.httpsProxyAgent) {
-            cachedAgents.httpsProxyAgent = new dist.HttpsProxyAgent(proxyUrl, { headers });
+            cachedAgents.httpsProxyAgent = new dist.HttpsProxyAgent(proxyUrl);
         }
         request.agent = cachedAgents.httpsProxyAgent;
     }
