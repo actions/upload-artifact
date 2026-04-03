@@ -12,10 +12,10 @@ import {describe, test, expect, beforeEach, afterEach} from '@jest/globals'
 
 import {
   createPipelineRequest,
+  proxyPolicy,
   type PipelineRequest,
   type SendRequest
 } from '@typespec/ts-http-runtime'
-import {proxyPolicy} from '@typespec/ts-http-runtime/internal/policies'
 import {HttpsProxyAgent} from 'https-proxy-agent'
 import {HttpProxyAgent} from 'http-proxy-agent'
 
