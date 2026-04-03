@@ -12,47 +12,53 @@ import {describe, test, expect, beforeEach, afterEach} from '@jest/globals'
 
 import {
   createPipelineRequest,
-  proxyPolicy,
   type PipelineRequest,
   type SendRequest
 } from '@typespec/ts-http-runtime'
+import {proxyPolicy} from '@typespec/ts-http-runtime/internal/policies'
 import {HttpsProxyAgent} from 'https-proxy-agent'
 import {HttpProxyAgent} from 'http-proxy-agent'
 
 describe('proxyPolicy', () => {
   const PROXY_URL = 'http://corporate-proxy.example.com:3128'
 
-  let savedHttpsProxy: string | undefined
-  let savedHttpProxy: string | undefined
-  let savedNoProxy: string | undefined
+  // The runtime checks both uppercase and lowercase proxy env vars, so we
+  // must save/clear/restore both casings to keep tests hermetic.
+  const PROXY_ENV_KEYS = [
+    'HTTPS_PROXY',
+    'https_proxy',
+    'HTTP_PROXY',
+    'http_proxy',
+    'NO_PROXY',
+    'no_proxy'
+  ] as const
+
+  let savedEnv: Record<string, string | undefined>
 
   beforeEach(() => {
-    // Save and set proxy env vars
-    savedHttpsProxy = process.env['HTTPS_PROXY']
-    savedHttpProxy = process.env['HTTP_PROXY']
-    savedNoProxy = process.env['NO_PROXY']
+    // Save all proxy env vars
+    savedEnv = {}
+    for (const key of PROXY_ENV_KEYS) {
+      savedEnv[key] = process.env[key]
+    }
 
+    // Set uppercase, delete lowercase to avoid ambiguity
     process.env['HTTPS_PROXY'] = PROXY_URL
     process.env['HTTP_PROXY'] = PROXY_URL
+    delete process.env['https_proxy']
+    delete process.env['http_proxy']
     delete process.env['NO_PROXY']
+    delete process.env['no_proxy']
   })
 
   afterEach(() => {
     // Restore original env
-    if (savedHttpsProxy !== undefined) {
-      process.env['HTTPS_PROXY'] = savedHttpsProxy
-    } else {
-      delete process.env['HTTPS_PROXY']
-    }
-    if (savedHttpProxy !== undefined) {
-      process.env['HTTP_PROXY'] = savedHttpProxy
-    } else {
-      delete process.env['HTTP_PROXY']
-    }
-    if (savedNoProxy !== undefined) {
-      process.env['NO_PROXY'] = savedNoProxy
-    } else {
-      delete process.env['NO_PROXY']
+    for (const key of PROXY_ENV_KEYS) {
+      if (savedEnv[key] !== undefined) {
+        process.env[key] = savedEnv[key]
+      } else {
+        delete process.env[key]
+      }
     }
   })
 
