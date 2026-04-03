@@ -6,7 +6,7 @@
  * to send in the CONNECT request to the proxy server. When Azure SDK request
  * headers (Content-Type, x-ms-version, x-ms-blob-type, etc.) are passed here,
  * strict corporate proxies (Fortinet, Zscaler) reject the tunnel — causing
- * ECONNRESET.  See: https://github.com/actions/upload-artifact/issues/XXX
+ * ECONNRESET.  See: https://github.com/actions/upload-artifact/issues/747
  */
 import {describe, test, expect, beforeEach, afterEach} from '@jest/globals'
 
