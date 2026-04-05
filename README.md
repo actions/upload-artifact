@@ -1,8 +1,4 @@
-
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" contentgithub.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
+<contentgithub.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
 ="width=device-width, initial-scale=1.0">
 <title>Frank's Daily Briefing</title>
 <style>
