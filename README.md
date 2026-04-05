@@ -1,18 +1,4 @@
-<contentgithub.com/frankpereira1-web/daily-briefing/blob/main/briefs/2026-03-25-daily-briefing.pdf
-="width=device-width, initial-scale=1.0">
-<title>Frank's Daily Briefing</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #0d1117; color: #e6edf3; padding: 20px; max-width: 900px; margin: auto; }
-  h1 { color: #58a6ff; text-align: center; }
-  #today-date { text-align: center; color: #8b949e; margin-bottom: 20px; }
-  button { background: #238636; color: white; border: none; padding: 12px 28px; border-radius: 6px; font-size: 16px; cursor: pointer; display: block; margin: 0 auto 24px; }
-  button:hover { background: #2ea043; }
-  #briefing-out { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; white-space: pre-wrap; line-height: 1.7; min-height: 200px; }
-  .loading { color: #8b949e; font-style: italic; }
-</style>
-</head>
-<body>
-<h1>🌅 Frank's Daily Briefing</h1>
+<contentgithub.com/frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
 <p id="today-date"></p>
 <button onclick="generateBriefing()">Get My Daily Briefing</button>
 <div id="briefing-out" class="loading">Click the button to load your briefing...</div>
