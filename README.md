@@ -1,4 +1,5 @@
-<contentgithub.com/frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
+<$ git clone https://github.com/openssl/openssl.git
+contentgithub.com/frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
 <p id="today-date"></p>
 <button onclick="generateBriefing()">Get My Daily Briefing</button>
 <div id="briefing-out" class="loading">Click the button to load your briefing...</div>
