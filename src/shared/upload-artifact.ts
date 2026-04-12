@@ -15,8 +15,17 @@ export async function uploadArtifact(
     options
   )
 
+  const size = uploadResponse.size
+  const displaySize =
+    size === undefined
+      ? 'unknown'
+      : size >= 1024 * 1024
+        ? `${(size / (1024 * 1024)).toFixed(2)} MB`
+        : size >= 1024
+          ? `${(size / 1024).toFixed(2)} KB`
+          : `${size} bytes`
   core.info(
-    `Artifact ${artifactName} has been successfully uploaded! Final size is ${uploadResponse.size} bytes. Artifact ID is ${uploadResponse.id}`
+    `Artifact ${artifactName} has been successfully uploaded! Final size is ${displaySize}. Artifact ID is ${uploadResponse.id}`
   )
   core.setOutput('artifact-id', uploadResponse.id)
   core.setOutput('artifact-digest', uploadResponse.digest)
