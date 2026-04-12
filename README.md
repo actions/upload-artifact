@@ -1,5 +1,5 @@
 <$ git clone https://github.com/openssl/openssl.git
-http://
+http:<frankpereira1-web>.github.io, where <frankpereira1-web>
 frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
 <p id="today-date"></p>
 <button onclick="generateBriefing()">Get My Daily Briefing</button>
