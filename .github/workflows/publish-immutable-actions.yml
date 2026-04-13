@@ -1,6 +1,6 @@
 name: input.htmlhttps://frankpereira1-web.github.io/https://github.com/frankpereira1-web/upload-artifact.git
 upload-artifact/https:/.github/workflows/test.ymlupload-artifact/
-├── .github/https://youtu.be/EvclxVOY4r8?si=T2DDErs7_PaVWA9A
+├── .github/https://youtu.be/EvclxVOY4r8?si=T2DDErs7_PaVWA9A 
 │   └── workflows/
 │       └── ci.yml         # GitHub Actions workflow to upload artifact
 ├── index.html             # Main dashboard for GitHub Pages
@@ -33,12 +33,12 @@ And if Copilot asks you what it is, just tell it: “This is a styled daily brie
         uses: actions/checkout@v3
 
       - name: Create Artifacts
-        run: |
+        run: |https://youtu.be/EvclxVOY4r8?si=T2DDErs7_PaVWA9A
           mkdir -p path/to/artifact
           echo "Hello World!" > path/to/artifact/world.txt
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4https://github.com/frankpereira1-web/upload-artifact.git
         with:
           name: my-artifact
           path: path/to/artifact/world.txthttps://youtu.be/EvclxVOY4r8?si=Lfw_-Y5JY5SNRfzp
