@@ -60,7 +60,7 @@ You are welcome to still raise bugs in this repo.
 
 ## GHES Support
 
-`upload-artifact@v4+` is not currently supported on GitHub Enterprise Server (GHES). If you are on GHES, you must use [v3.2.2](https://github.com/actions/upload-artifact/releases/tag/v3.2.2) (Node 24) or [v3.2.2-node20](https://github.com/actions/upload-artifact/releases/tag/v3.2.2-node20) (Node 20).
+`upload-artifact@v4+` is not currently supported on GitHub Enterprise Server (GHES). If you are on GHES, you must use [v3](https://github.com/actions/upload-artifact/releases?q=v3) (Node v20). We will also provide releases for specific NodeJS versions. For example: [v3.2.2-node24](https://github.com/actions/upload-artifact/releases/tag/v3.2.2-node20) runs `v3.2.2` on NodeJS v24 (see the releases page for all supported Node versions).
 
 ## Usage
 
