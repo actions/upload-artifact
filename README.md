@@ -1,12 +1,9 @@
-on.workflow_call.inputs on.workflow_call.secrets.
-jobs:secret
-  reusable_workflow_job:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/labeler@v6
-      with:
-        repo-token: ${{ secrets.personal_access_token }}
-        configuration-path: ${{ inputs.config-path }}
+jobs:
+  workflowB-calls-workflowC:
+    uses: different-org/example-repo/.github/workflows/C.yml@main
+    secrets:
+      repo-token: ${{ secrets.personal_access_token }} # pass just this secret
+configuration-path: ${{ inputs.config-path }}
 #run daily review
 https://frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
 <p id="today-date"></p>
