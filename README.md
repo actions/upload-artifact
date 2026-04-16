@@ -1,7 +1,8 @@
-jobs:
+jobs:CODEOWNERS
+.github/workflows, 
   workflowB-calls-workflowC:
     uses: different-org/example-repo/.github/workflows/C.yml@main
-    secrets:
+    secrets: in
       repo-token: ${{ secrets.personal_access_token }} # pass just this secret
 configuration-path: ${{ inputs.config-path }}
 #run daily review
