@@ -1,4 +1,4 @@
-<$ git clone https://github.com/openssl/openssl.git
+
 http://
 frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
 <p id="today-date"></p>
