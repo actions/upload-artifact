@@ -1,4 +1,75 @@
+<!DOCTYPE html>frankpereira1-web.github.io
+<html>index.html 
+<head>
+  <title>Daily Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #eee;
+      padding: 20px;
+    }
+    h1 { color: #00ffcc; }
+    .box {
+      background: #1c1c1c;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    a {
+      color: #4da6ff;
+      text-decoration: none;
+      display: block;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
 
+<h1>🌅 Daily Market + Gratitude Reset</h1>
+
+<div class="box">
+  <h2>🧠 Gratitude</h2>
+  <p>I control my focus and decisions.<br>
+  I act on data, not emotion.<br>
+  I build long-term leverage.</p>
+</div>
+
+<div class="box">
+  <h2>📊 Live Markets</h2>
+  <a href="https://www.google.com/finance/quote/.INX:INDEXSP" target="_blank">S&P 500</a>
+  <a href="https://www.google.com/finance/quote/XAUUSD" target="_blank">Gold</a>
+  <a href="https://www.google.com/finance/quote/CLW00" target="_blank">Oil</a>
+</div>
+
+<div class="box">
+  <h2>🌿 Cannabis Check</h2>
+  <a href="https://www.google.com/search?q=california+cannabis+wholesale+price" target="_blank">
+    Check Pricing
+  </a>
+</div>
+
+<div class="box">
+  <h2>🔁 Core Patterns</h2>
+  <p>
+  Conflict → Oil ↑ → Inflation ↑ → Markets shift<br><br>
+  Oversupply → Crash → Consolidation → Recovery
+  </p>
+</div>
+
+<div class="box">
+  <h2>🧭 Strategy</h2>
+  <p>
+  Focus on assets<br>
+  Track regulation<br>
+  Stay adaptive<br>
+  Execute daily
+  </p>
+</div>
+
+</body>
+</html>
 The MIT License (MIT)
 
 Copyright (c) 2018 GitHub, Inc. and contributors
