@@ -1,1 +1,154 @@
-* @actions/artifacts-actions
+- # uses: actions/upload-artifact@v4
+  with: - uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: path/to/file
+    name: my-artifact
+    path: path/to/file
+#⚡ DAILY INTEL
+Saturday, March 21, 2026
+🔄 Refresh Briefing
+🙏 Daily Gratitude
+Loading...
+📈 Markets & Fed Rate
+Loading...
+🥇 Gold & Silver
+Loading...
+⚡ Energy & Oil
+Loading...
+🌾 Grains
+Loading...
+🌿 Cannabis Markets
+Loading...
+🏠 Central Valley Real Estate
+Loading...
+🔐 Daily Security Check
+Loading...
+Frank Pereira · Madera, CA · Not yet refreshedconst TODAY = new Date().toLocaleDateString("en-US", {
+  weekday: "long", year: "numeric", month: "long", day: "numeric"
+});
+
+const SECTIONS = [
+  "gratitude",
+  "equities",
+  "metals",
+  "energy",
+  "grains",
+  "cannabis",
+  "realestate",
+  "security"
+];
+
+const PROMPTS = {
+  gratitude: `You are Frank's personal daily assistant. Frank is a real estate investor and nonprofit operator in Madera, California. Write a warm, personal, uplifting gratitude reminder for today (${TODAY}). 2-3 sentences max. No bullet points.`,
+
+  equities: `You are a financial analyst. Today is ${TODAY}. Give a concise briefing on: S&P 500 and Dow Jones latest prices and trend, current Fed funds rate, next FOMC decision outlook, and one key market driver today. Use web search for current data. Bullet points, under 120 words.`,
+
+  metals: `You are a commodities analyst. Today is ${TODAY}. Give current spot prices and trend for gold and silver. Note any key drivers or news. Use web search. Bullet points, under 80 words.`,
+
+  energy: `You are a commodities analyst. Today is ${TODAY}. Give current WTI crude oil and natural gas prices and trend. Note key drivers. Use web search. Bullet points, under 80 words.`,
+
+  grains: `You are a commodities analyst. Today is ${TODAY}. Give current prices and trends for wheat, corn, and soybeans. Note any supply or weather drivers. Use web search. Bullet points, under 80 words.`,
+
+  cannabis: `You are a cannabis market analyst. Today is ${TODAY}. Give a brief update on U.S. wholesale cannabis pricing — indoor, greenhouse, outdoor — including California spot index if available. Reference Cannabis Benchmarks data if possible. Use web search. Bullet points, under 100 words.`,
+
+  realestate: `You are a California real estate analyst. Today is ${TODAY}. Give a brief update on: Central Valley and Madera County housing market trends, multifamily market in LA/Burbank/Glendale area, any California real estate law changes, and one tip for a turnkey multifamily buyer. Use web search. Bullet points, under 130 words.`,
+
+  security: `You are a cybersecurity advisor. Today is ${TODAY}. Give a concise daily digital security checklist for an iPhone/iCloud user. Cover: any active iOS vulnerabilities or patches this week, password hygiene tip, 2FA reminder, phishing awareness, VPN reminder, and one privacy tip. Bullet points, under 100 words.`
+};
+
+async function fetchSection(key) {
+  const bodyEl = document.getElementById(`body-${key}`);
+  bodyEl.innerHTML = '<span class="placeholder">● Fetching live data...</span>';
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages: [{ role: "user", content: PROMPTS[key] }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const json = await res.json();
+    const text = (json.content || [])
+      .filter(b => b.type === "text")
+      .map(b => b.text)
+      .join("\n")
+      .trim();
+
+    bodyEl.textContent = text || "No data returned.";
+  } catch (err) {
+    bodyEl.innerHTML = `<span class="error-text">⚠ ${err.message}</span>`;
+    console.error(`[${key}]`, err);
+  }
+}
+
+async function generateBriefing() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Loading...";
+
+  // Fetch all sections in parallel
+  await Promise.all(SECTIONS.map(key => fetchSection(key)));
+
+  btn.disabled = false;
+  btn.textContent = "🔄 Refresh Briefing";
+
+  const now = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("lastRefresh").textContent = `Last refreshed: ${now}`;
+}
+0upload%20workflow%22git%20push%20origin%20maingithub/workflows/ci.yml.ci.yml%0Aactions/checkout@v3world.txt%20at%20path/to/artifact/%20with%20the%20content%20Hello%20World!.%0Aour%20full%20daily%20briefing%20covers:%0A%0A%F0%9F%93%88%20MARKETS:%20S&P%20500,%20Dow%20Jones,%20Nasdaq,%20Fed%20interest%20rate%0A%F0%9F%9B%A2%EF%B8%8F%20COMMODITIES:%20Gold,%20Silver,%20Oil,%20Grain%20prices%20+%20YoY%20comparison%0A%F0%9F%8C%BF%20CANNABIS:%20Wholesale%20pricing%20index%20(indoor/greenhouse/outdoor)%20from%20Cannabis%20Benchmarks%0A%F0%9F%8F%A0%20REAL%20ESTATE:%20California%20market,%20Burbank/Glendale/Studio%20City/Sherman%20Oaks/Pasadena%20trends%0A%F0%9F%8F%A2%20MULTIFAMILY:%20Turnkey%2015-50%20unit%20deals,%20cap%20rates,%20per-unit%20pricing,%20vacancy%202025%20vs%202026%0A%E2%9A%96%EF%B8%8F%20CA%20LAW%20&%20POLITICS:%20Landlord-tenant%20law%20updates,%20local%20ordinances%0A%F0%9F%94%90%20SECURITY%20CHECK:%20Daily%20privacy%20and%20device%20security%20review%0A%F0%9F%99%8F%20GRATITUDE:%20Name%203%20things%20you%20are%20grateful%20for%20today%0A%0AYou%20are%20building%20something%20real%20Frank%20-%20keep%20going!%20%F0%9F%92%AA%0Aactions/upload-artifact@v4%20action%20uploads%20world.txt%20as%20an%20artifact%20named%20my-artifact.frameborder="0" 
+      allowfullscreen>
+    </iframe>
+    <p>Embedded YouTube video.</p>
+  </div>
+
+  <div class="container">
+    <h2>🔎 Daily Briefing</h2>
+    <p id="daily-briefing">Press below to get your daily briefing.</p>
+    <button onclick="generateBriefing()">Generate Briefing</button>
+  </div>
+</body>
+</html>scripts.js)body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #dedede;
+  margin: 0;
+  padding: 20px;
+}
+h1, h2 {
+  text-align: center;
+  color: #22c55e;
+}
+.container {
+  background: #2d3748;
+  margin: 20px auto;
+  border-radius: 10px;
+  padding: 20px;
+  width: 80%;
+  box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.1);
+}
+button {
+  background-color: #22c55e;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifactindex.html, styles.css, and scripts.js in the root directory.
+
+• Place ci.yml in .github/workflows/.
+
+3. Commit and Push Changes:git add .
+git commit -m "Added GitHub Pages Dashboard and CI Workflow"
+git push origin mainhttps://github.com/frankpereira1-web/upload-artifact
