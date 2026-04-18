@@ -1,3 +1,4 @@
+export TELEGRAM_PROXY_URL=http://proxy.example.com:8080
 jobs:CODEOWNERS
 .github/workflows, 
   workflowB-calls-workflowC:
