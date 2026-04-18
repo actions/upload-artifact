@@ -1,4 +1,8 @@
 export TELEGRAM_PROXY_URL=http://proxy.example.com:8080
+remote_questions:
+  channel: telegram
+  channel_id: "123456789"
+  proxy_url: http://proxy.example.com:8080
 jobs:CODEOWNERS
 .github/workflows, 
   workflowB-calls-workflowC:
