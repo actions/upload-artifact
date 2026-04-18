@@ -1,5 +1,589 @@
-# `@actions/upload-artifact`
+<$ git clone https://github.com/openssl/openssl.git
+http://
+frankpereira1-web/daily-briefing/blob/🌅 Frank's Daily Briefing</h1>
+<p id="today-date"></p>
+<button onclick="generateBriefing()">Get My Daily Briefing</button>
+<div id="briefing-out" class="loading">Click the button to load your briefing...</div>
 
+<script>
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+async function generateBriefing() {
+  const out = document.getElementById('briefing-out');
+  out.textContent = 'Loading your briefing... please wait ⏳';
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Give me my detailed daily briefing for today covering: S&P 500 and Dow Jones, Fed interest rate, silver and gold prices, grain commodities, California real estate trends, a security/privacy tip, and end with a daily gratitude reminder. Format it cleanly with emoji section headers.`
+        }]
+      })
+    });
+    const data = await response.json();
+    out.textContent = data.content[0].text;
+  } catch (err) {
+    out.textContent = 'Error loading briefing. Check your connection and try again.\n\n' + err;
+  }
+}
+</script>
+</body>
+</html>
+.github/
+│   └── workflows/
+│       └── ci.yml    # Workflow to upload artifacts
+├── index.html         # The main HTML page for GitHub Pages
+├── styles.css         # Optional stylesheet for styling
+├── scripts.js         # Optional JavaScript logicworld.txt) using [actions/upload-artifact@v4]world.txt) using [actions/upload-artifact@v4](https://github.com/actions/upload-artifact).(.github/workflows/ci.yml.https://github.com/actions/upload-artifactactions/artifacts-actionshttps://github.com/actions/download-artifact/blob/main/.github/CODEOWNERSupload-artifact/:https://frankpereira1-web.github.io/upload-artifact/
+├── .github/
+│   └── workflows/
+│       └── ci.yml    # Workflow to upload artifacts
+├── index.html         # The main HTML page for GitHub Pages
+├── styles.css         # Optional stylesheet for styling
+├── scripts.js         # Optional JavaScript logicworld.txt) using [actions/upload-artifact@v4]world.txt) using [actions/upload-artifact@v4](https://github.com/actions/upload-artifact).(.github/workflows/ci.yml.https://github.com/actions/upload-artifact).scripts.js fstyles.css findex.htmljobs:
+  upload:<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Frank's All-In-One Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js" defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1a202c;
+        color: #f9fafb;
+        text-align: center;
+        margin: 0;
+        padding: 10px;
+      }
+      h1, h2 {
+        color: #22c55e;
+        margin-bottom: 20px;
+      }
+      .container {
+        margin: 20px auto;
+        max-width: 800px;
+        background-color: #2d3748;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      iframe {
+        border: none;
+        border-radius: 10px;
+      }
+      button {git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact
+        background-color: #22c55e;
+        color: white;
+        margin-top: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Frank's Dashboard</h1>
+
+    <div class="container">
+      <h2>🎥 YouTube Video</h2>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/EvclxVOY4r8" allowfullscreen></iframe>
+      <p>Embedded YouTube content for your dashboard.</p>
+    </div>
+
+    <div class="container">
+      <h2>🔎 Daily Briefing</h2>
+      <p id="daily-briefing">Press below for today's briefing.</p>
+      <button onclick="generateBriefing()">Generate Briefing</button>
+    </div>
+  </body>
+  <script>
+    function generateBriefing() {
+      const briefing = `
+      - 📊 Markets: S&P 500, Dow Jones, and Nasdaq review.
+      - 🛢️ Commodities: Gold, oil, and grain updates.
+      - 🌿 Cannabis: Updated wholesale market benchmarks.
+      - 🏠 Real Estate: California multi-family property trends.`;
+      document.getElementById("daily-briefing").innerText = briefing;
+    }
+  </script>
+</html>
+    <!DOCTYPE html>
+<html>
+<head>
+  <title>Frank's All-In-One Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a202c;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #22c55e;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #2d3748;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .video-embed {
+      text-align: center;
+      margin: 20px 0;
+    }
+    iframe {
+      border: none;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <(GitHub Pages)h1>Frank's Dashboard</h1>
+  <div class="container">
+    <h2>🎥 YouTube Video</h2>
+    <div class="video-embed">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/EvclxVOY4r8"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p>This is a featured video embedded directly into your dashboard.</p>
+  </div>
+</body>
+<html>
+</html>name:<!<!DOCTYPE html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>frankpereira1-web/upload-artifact), clone it to your local machine:steps:
+- run: mkdir -p path/to/artifact
+- run: echo hello > path/to/artifact/world.txt
+- uses: actions/upload-artifact@v4
+  with:
+    name: my-artifact
+    path: path/to/artifact/world.txtgit clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact
+qindex.html git clone https://github.com/frankpereira1-web/upload-artifact.git cd upload-artifact
+
+upload-artifact/ <!DOCTYPE .html>
+├── index.html
+├── styles.css
+├── scripts.js
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Project!</h1>
+    <script src="scripts.js"></script>
+</body>
+</html>📈 MARKETS: S&P 500, Dow Jones, Nasdaq, Fed interest rate
+🛢️ COMMODITIES: Gold, Silver, Oil, Grain prices + YoY comparison
+🌿 CANNABIS: Wholesale pricing index (indoor/greenhouse/outdoor) from Cannabis Benchmarks
+🏠 REAL ESTATE: California market, Burbank/Glendale/Studio City/Sherman Oaks/Pasadena trends
+🏢 MULTIFAMILY: Turnkey 15-50 unit deals, cap rates, per-unit pricing, vacancy 2025 vs 2026
+⚖️ CA LAW & POLITICS: Landlord-tenant law updates, local ordinances
+🔐 SECURITY CHECK: Daily privacy and device security review
+🙏 GRATITUDE: Name 3 things you are grateful for today
+
+You are building something real Frank - keep going! 💪
+https://github.com/bryanbraun/anchorjs/blob/main/.github/workflows/ci.ymlDOCTYPE html>
+<html>
+<head>
+  <title>Frank's All-In-One Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a202c;
+      color: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #22c55e;
+      margin-bottom: 10px;
+    }
+    .container {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #2d3748;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      text-align: left;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .checklist-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #4a5568;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+    }
+    .checklist-item.critical { border-left: 4px solid #ef4444; }
+    .checklist-item.checked { opacity: 0.5; text-decoration: line-through; }
+    button {
+      padding: 10px 20px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .brief {
+      white-space: pre-wrap;
+      text-align: left;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Frank's All-In-One Dashboard</h1>
+  <p>Today: <strong id="today-date">Loading...</strong></p>
+
+  <!-- Sections -->
+  <div class="container">
+    <h2>🔎 Daily Briefing</h2>
+    <button onclick="generateBriefing()">Get Today's Briefing</button>
+    <div id="briefing" class="brief"></div>
+  </div>
+
+  <div class="container">
+    <h2>🔐 Security Checklist</h2>
+    <h3>Bluetooth Checks</h3>
+    <div id="bluetooth-checks"></div>
+    <h3>WiFi Checks</h3>
+    <div id="wifi-checks"></div>
+  </div>
+
+  <div class="container">
+    <h2>⚠️ Network Device Risk Assessment</h2>
+    <ul id="device-risk"></ul>
+  </div>
+
+  <script>
+    // Date Today
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('today-date').innerText = today;
+
+    // Daily Briefing Generator
+    function generateBriefing() {
+      const briefing = `
+- **Markets**: S&P 500 and Dow Jones on the move. Watch Federal Reserve interest actions.
+- **Commodities**: Gold steady; check crude oil WTI updates. 
+- **Cannabis Wholesale**: $1200/lb indoor average (Cannabis Benchmarks).
+- **Real Estate Pulse**: Fresno County multifamily growing; LA remains mixed.`;
+      document.getElementById('briefing').innerText = briefing;
+    }
+
+    // Security Check Data (Bluetooth & WiFi)
+    const bluetoothChecks = [
+      { id: 1, label: 'Bluetooth is OFF in public places', critical: true },
+      { id: 2, label: 'No unknown paired devices', critical: true },
+      { id: 3, label: 'iPhone is updated to latest iOS', critical: true },
+      { id: 4, label: 'AirDrop is set to "Contacts Only"', critical: false }
+    ];
+
+    const wifiChecks = [
+      { id: 1, label: 'Avoid public WiFi (e.g., Free_Airport_WiFi)', critical: true },
+      { id: 2, label: 'VPN is always ON in public', critical: true },
+      { id: 3, label: 'Router uses WPA3 encryption (Check settings)', critical: true }
+    ];
+
+    // Render Checklists
+    function renderChecklist(containerId, checks) {
+      const container = document.getElementById(containerId);
+      checks.forEach((check) => {
+        const div = document.createElement('div');
+        div.className = `checklist-item ${check.critical ? 'critical' : ''}`;
+        div.innerText = check.label;
+        div.onclick = () => div.classList.toggle('checked');
+        container.appendChild(div);
+      });
+    }
+
+    renderChecklist('bluetooth-checks', bluetoothChecks);
+    renderChecklist('wifi-checks', wifiChecks);
+
+    // Device Risk Assessment
+    const deviceRisks = [
+      { device: 'Off-brand Android TV box', risk: 'HIGH' },
+      { device: 'No-name digital picture frame', risk: 'HIGH' },
+      { device: 'Amazon Fire Stick / Fire TV', risk: 'LOW' }
+    ];
+
+    const deviceRiskContainer = document.getElementById('device-risk');
+    deviceRisks.forEach((risk) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${risk.device}</strong>: ${risk.risk} risk`;
+      deviceRiskContainer.appendChild(li);
+    });
+  </script>
+</body>
+</html>⚡ https://github.com/example-org/example-repo/actionsDAILY INTEL
+Saturday, March 21, 2026
+🔄 Refresh Briefing
+🙏 Daily Gratitude
+Loading...
+📈 Markets & Fed Rate
+Loading...
+🥇 Gold & Silver
+Loading...
+⚡ Energy & Oil
+Loading...
+🌾 Grains
+Loading...
+🌿 Cannabis Markets
+Loading...
+🏠 Central Valley Real Estate
+Loading...
+🔐 Daily Security Check
+Loading...
+Frank Pereira · Madera, CA · Not yet refreshedconst TODAY = new Date().toLocaleDateString("en-US", {
+  weekday: "long", year: "numeric", month: "long", day: "numeric"
+});
+
+const SECTIONS = [
+  "gratitude",
+  "equities",
+  "metals",
+  "energy",
+  "grains",
+  "cannabis",
+  "realestate",
+  "security"
+];
+
+const PROMPTS = {
+  gratitude: `You are Frank's personal daily assistant. Frank is a real estate investor and nonprofit operator in Madera, California. Write a warm, personal, uplifting gratitude reminder for today (${TODAY}). 2-3 sentences max. No bullet points.`,
+
+  equities: `You are a financial analyst. Today is ${TODAY}. Give a concise briefing on: S&P 500 and Dow Jones latest prices and trend, current Fed funds rate, next FOMC decision outlook, and one key market driver today. Use web search for current data. Bullet points, under 120 words.`,
+
+  metals: `You are a commodities analyst. Today is ${TODAY}. Give current spot prices and trend for gold and silver. Note any key drivers or news. Use web search. Bullet points, under 80 words.`,
+
+  energy: `You are a commodities analyst. Today is ${TODAY}. Give current WTI crude oil and natural gas prices and trend. Note key drivers. Use web search. Bullet points, under 80 words.`,
+
+  grains: `You are a commodities analyst. Today is ${TODAY}. Give current prices and trends for wheat, corn, and soybeans. Note any supply or weather drivers. Use web search. Bullet points, under 80 words.`,
+
+  cannabis: `You are a cannabis market analyst. Today is ${TODAY}. Give a brief update on U.S. wholesale cannabis pricing — indoor, greenhouse, outdoor — including California spot index if available. Reference Cannabis Benchmarks data if possible. Use web search. Bullet points, under 100 words.`,
+
+  realestate: `You are a California real estate analyst. Today is ${TODAY}. Give a brief update on: Central Valley and Madera County housing market trends, multifamily market in LA/Burbank/Glendale area, any California real estate law changes, and one tip for a turnkey multifamily buyer. Use web search. Bullet points, under 130 words.`,
+
+  security: `You are a cybersecurity advisor. Today is ${TODAY}. Give a concise daily digital security checklist for an iPhone/iCloud user. Cover: any active iOS vulnerabilities or patches this week, password hygiene tip, 2FA reminder, phishing awareness, VPN reminder, and one privacy tip. Bullet points, under 100 words.`
+};
+
+async function fetchSection(key) {
+  const bodyEl = document.getElementById(`body-${key}`);
+  bodyEl.innerHTML = '<span class="placeholder">● Fetching live data...</span>';
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages: [{ role: "user", content: PROMPTS[key] }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const json = await res.json();
+    const text = (json.content || [])
+      .filter(b => b.type === "text")
+      .map(b => b.text)
+      .join("\n")
+      .trim();
+
+    bodyEl.textContent = text || "No data returned.";
+  } catch (err) {
+    bodyEl.innerHTML = `<span class="error-text">⚠ ${err.message}</span>`;
+    console.error(`[${key}]`, err);
+  }
+}
+
+async function generateBriefing() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Loading...";
+
+  // Fetch all sections in parallel
+  await Promise.all(SECTIONS.map(key => fetchSection(key)));
+
+  btn.disabled = false;
+  btn.textContent = "🔄 Refresh Briefing";
+
+  const now = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("lastRefresh").textContent = `Last refreshed: ${now}`;
+}
+0upload%20workflow%22git%20push%20origin%20maingithub/workflows/ci.yml.ci.yml%0Aactions/checkout@v3world.txt%20at%20path/to/artifact/%20with%20the%20content%20Hello%20World!.%0Aour%20full%20daily%20briefing%20covers:%0A%0A%F0%9F%93%88%20MARKETS:%20S&P%20500,%20Dow%20Jones,%20Nasdaq,%20Fed%20interest%20rate%0A%F0%9F%9B%A2%EF%B8%8F%20COMMODITIES:%20Gold,%20Silver,%20Oil,%20Grain%20prices%20+%20YoY%20comparison%0A%F0%9F%8C%BF%20CANNABIS:%20Wholesale%20pricing%20index%20(indoor/greenhouse/outdoor)%20from%20Cannabis%20Benchmarks%0A%F0%9F%8F%A0%20REAL%20ESTATE:%20California%20market,%20Burbank/Glendale/Studio%20City/Sherman%20Oaks/Pasadena%20trends%0A%F0%9F%8F%A2%20MULTIFAMILY:%20Turnkey%2015-50%20unit%20deals,%20cap%20rates,%20per-unit%20pricing,%20vacancy%202025%20vs%202026%0A%E2%9A%96%EF%B8%8F%20CA%20LAW%20&%20POLITICS:%20Landlord-tenant%20law%20updates,%20local%20ordinances%0A%F0%9F%94%90%20SECURITY%20CHECK:%20Daily%20privacy%20and%20device%20security%20review%0A%F0%9F%99%8F%20GRATITUDE:%20Name%203%20things%20you%20are%20grateful%20for%20today%0A%0AYou%20are%20building%20something%20real%20Frank%20-%20keep%20going!%20%F0%9F%92%AA%0Aactions/upload-artifact@v4%20action%20uploads%20world.txt%20as%20an%20artifact%20named%20my-artifact.jobs:
+  upload:
+    name:
+https://youtu.be/EvclxVOY4r8?si=lYrvv2J3cv-u_zPL
+
+ upload 
+
+(frankpereira1-web/upload-artifact),
+
+git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact# `@actions/upload-artifact`
+⚡ DAILY INTEL
+Saturday, March 21, 2026
+🔄 Refresh Briefing
+🙏 Daily Gratitude
+Loading...
+📈 Markets & Fed Rate
+Loading...
+🥇 Gold & Silver
+Loading...
+⚡ Energy & Oil
+Loading...
+🌾 Grains
+Loading...
+🌿 Cannabis Markets
+Loading...
+🏠 Central Valley Real Estate
+Loading...
+🔐 Daily Security Check
+Loading...
+Frank Pereira · Madera, CA · Not yet refreshedconst TODAY = new Date().toLocaleDateString("en-US", {
+  weekday: "long", year: "numeric", month: "long", day: "numeric"
+});
+
+const SECTIONS = [
+  "gratitude",
+  "equities",
+  "metals",
+  "energy",
+  "grains",
+  "cannabis",
+  "realestate",
+  "security"
+];
+
+const PROMPTS = {
+  gratitude: `You are Frank's personal daily assistant. Frank is a real estate investor and nonprofit operator in Madera, California. Write a warm, personal, uplifting gratitude reminder for today (${TODAY}). 2-3 sentences max. No bullet points.`,
+
+  equities: `You are a financial analyst. Today is ${TODAY}. Give a concise briefing on: S&P 500 and Dow Jones latest prices and trend, current Fed funds rate, next FOMC decision outlook, and one key market driver today. Use web search for current data. Bullet points, under 120 words.`,
+
+  metals: `You are a commodities analyst. Today is ${TODAY}. Give current spot prices and trend for gold and silver. Note any key drivers or news. Use web search. Bullet points, under 80 words.`,
+
+  energy: `You are a commodities analyst. Today is ${TODAY}. Give current WTI crude oil and natural gas prices and trend. Note key drivers. Use web search. Bullet points, under 80 words.`,
+
+  grains: `You are a commodities analyst. Today is ${TODAY}. Give current prices and trends for wheat, corn, and soybeans. Note any supply or weather drivers. Use web search. Bullet points, under 80 words.`,
+
+  cannabis: `You are a cannabis market analyst. Today is ${TODAY}. Give a brief update on U.S. wholesale cannabis pricing — indoor, greenhouse, outdoor — including California spot index if available. Reference Cannabis Benchmarks data if possible. Use web search. Bullet points, under 100 words.`,
+
+  realestate: `You are a California real estate analyst. Today is ${TODAY}. Give a brief update on: Central Valley and Madera County housing market trends, multifamily market in LA/Burbank/Glendale area, any California real estate law changes, and one tip for a turnkey multifamily buyer. Use web search. Bullet points, under 130 words.`,
+
+  security: `You are a cybersecurity advisor. Today is ${TODAY}. Give a concise daily digital security checklist for an iPhone/iCloud user. Cover: any active iOS vulnerabilities or patches this week, password hygiene tip, 2FA reminder, phishing awareness, VPN reminder, and one privacy tip. Bullet points, under 100 words.`
+};
+
+async function fetchSection(key) {
+  const bodyEl = document.getElementById(`body-${key}`);
+  bodyEl.innerHTML = '<span class="placeholder">● Fetching live data...</span>';
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages: [{ role: "user", content: PROMPTS[key] }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const json = await res.json();
+    const text = (json.content || [])
+      .filter(b => b.type === "text")
+      .map(b => b.text)
+      .join("\n")
+      .trim();
+
+    bodyEl.textContent = text || "No data returned.";
+  } catch (err) {
+    bodyEl.innerHTML = `<span class="error-text">⚠ ${err.message}</span>`;
+    console.error(`[${key}]`, err);
+  }
+}
+
+async function generateBriefing() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Loading...";
+
+  // Fetch all sections in parallel
+  await Promise.all(SECTIONS.map(key => fetchSection(key)));
+
+  btn.disabled = false;
+  btn.textContent = "🔄 Refresh Briefing";
+
+  const now = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("lastRefresh").textContent = `Last refreshed: ${now}`;
+}
+0upload%20workflow%22git%20push%20origin%20maingithub/workflows/ci.yml.ci.yml%0Aactions/checkout@v3world.txt%20at%20path/to/artifact/%20with%20the%20content%20Hello%20World!.%0Aour%20full%20daily%20briefing%20covers:%0A%0A%F0%9F%93%88%20MARKETS:%20S&P%20500,%20Dow%20Jones,%20Nasdaq,%20Fed%20interest%20rate%0A%F0%9F%9B%A2%EF%B8%8F%20COMMODITIES:%20Gold,%20Silver,%20Oil,%20Grain%20prices%20+%20YoY%20comparison%0A%F0%9F%8C%BF%20CANNABIS:%20Wholesale%20pricing%20index%20(indoor/greenhouse/outdoor)%20from%20Cannabis%20Benchmarks%0A%F0%9F%8F%A0%20REAL%20ESTATE:%20California%20market,%20Burbank/Glendale/Studio%20City/Sherman%20Oaks/Pasadena%20trends%0A%F0%9F%8F%A2%20MULTIFAMILY:%20Turnkey%2015-50%20unit%20deals,%20cap%20rates,%20per-unit%20pricing,%20vacancy%202025%20vs%202026%0A%E2%9A%96%EF%B8%8F%20CA%20LAW%20&%20POLITICS:%20Landlord-tenant%20law%20updates,%20local%20ordinances%0A%F0%9F%94%90%20SECURITY%20CHECK:%20Daily%20privacy%20and%20device%20security%20review%0A%F0%9F%99%8F%20GRATITUDE:%20Name%203%20things%20you%20are%20grateful%20for%20today%0A%0AYou%20are%20building%20something%20real%20Frank%20-%20keep%20going!%20%F0%9F%92%AA%0Aactions/upload-artifact@v4%20action%20uploads%20world.txt%20as%20an%20artifact%20named%20my-artifact.jobs:
+  upload:
+    name:
+https://youtu.be/EvclxVOY4r8?si=lYrvv2J3cv-u_zPL
+
+ upload 
+
+(frankpereira1-web/upload-artifact),
+
+git clone https://github.com/frankpereira1-web/upload-artifact.git
+cd upload-artifact
 > [!WARNING]
 > actions/upload-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
 > Similarly, v1/v2 are scheduled for deprecation on **June 30, 2024**.
