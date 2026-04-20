@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download All Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: my-artifact
           path: my-artifact
@@ -61,7 +61,7 @@ jobs:
     - name: Create a File
       run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
     - name: Upload Artifact
--     uses: actions/upload-artifact@v3
+-     uses: actions/upload-artifact@v4
 +     uses: actions/upload-artifact@v4
       with:
 -       name: my-artifact
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download All Artifacts
--     uses: actions/download-artifact@v3
+-     uses: actions/download-artifact@v4
 +     uses: actions/download-artifact@v4
       with:
 -       name: my-artifact
@@ -96,7 +96,7 @@ jobs:
       - name: Create a file
         run: echo "hello world" > my-file.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-artifact # NOTE: same artifact name
           path: my-file.txt
@@ -107,7 +107,7 @@ jobs:
       - name: Create a different file
         run: echo "goodbye world" > my-file.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-artifact # NOTE: same artifact name
           path: my-file.txt
@@ -125,7 +125,7 @@ jobs:
       - name: Create a file
         run: echo "hello world" > my-file.txt
       - name: Upload Artifact
--       uses: actions/upload-artifact@v3
+-       uses: actions/upload-artifact@v4
 +       uses: actions/upload-artifact@v4
         with:
           name: my-artifact # NOTE: same artifact name
@@ -137,7 +137,7 @@ jobs:
       - name: Create a different file
         run: echo "goodbye world" > my-file.txt
       - name: Upload Artifact
--       uses: actions/upload-artifact@v3
+-       uses: actions/upload-artifact@v4
 +       uses: actions/upload-artifact@v4
         with:
           name: my-artifact # NOTE: same artifact name
@@ -162,7 +162,7 @@ jobs:
       - name: Create a File
         run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: all-my-files # NOTE: same artifact name
           path: file-${{ matrix.runs-on }}.txt
@@ -190,7 +190,7 @@ jobs:
       - name: Create a File
         run: echo "hello from ${{ matrix.runs-on }}" > file-${{ matrix.runs-on }}.txt
       - name: Upload Artifact
--       uses: actions/upload-artifact@v3
+-       uses: actions/upload-artifact@v4
 +       uses: actions/upload-artifact@v4
         with:
 -         name: all-my-files
@@ -226,7 +226,7 @@ jobs:
       - name: Create a Hidden File
         run: echo "hello from a hidden file" > .hidden-file.txt
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: .hidden-file.txt
 ```
@@ -240,7 +240,7 @@ jobs:
       - name: Create a Hidden File
         run: echo "hello from a hidden file" > .hidden-file.txt
       - name: Upload Artifact
--       uses: actions/upload-artifact@v3
+-       uses: actions/upload-artifact@v4
 +       uses: actions/upload-artifact@v4
         with:
           path: .hidden-file.txt
