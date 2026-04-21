@@ -86,7 +86,7 @@ You are welcome to still raise bugs in this repo.
     if-no-files-found:
 
     # Duration after which artifact will expire in days. 0 means using default retention.
-    # Minimum 1 day.
+    # Minimum 0 days when using repository defaults, otherwise 1 day.
     # Maximum 90 days unless changed from the repository settings page.
     # Optional. Defaults to repository settings.
     retention-days:
