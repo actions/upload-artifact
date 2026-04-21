@@ -1,8 +1,8 @@
 # `@actions/upload-artifact`
 
 > [!WARNING]
-> actions/upload-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
-> Similarly, v1/v2 are scheduled for deprecation on **June 30, 2024**.
+> actions/upload-artifact@v3 was deprecated on **January 30, 2025**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
+> Similarly, v1/v2 were deprecated on **June 30, 2024**.
 > Please update your workflow to use v4 of the artifact actions.
 > This deprecation will not impact any existing versions of GitHub Enterprise Server being used by customers.
 
