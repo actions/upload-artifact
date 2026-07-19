@@ -1,9 +1,9 @@
 ---
 name: "@actions/glob"
-version: 0.5.0
+version: 0.6.1
 type: npm
-summary: 
-homepage: 
+summary: Actions glob lib
+homepage: https://github.com/actions/toolkit/tree/main/packages/glob
 license: mit
 licenses:
 - sources: LICENSE.md

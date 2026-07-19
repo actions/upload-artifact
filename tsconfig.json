@@ -1,17 +1,13 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "outDir": "./lib",
-      "rootDir": "./src",
-      "strict": true,
-      "noImplicitAny": false,
-      "moduleResolution": "node",
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true,
-      "declaration": false,
-      "sourceMap": true,
-      "lib": ["es6"]
-    },
-    "exclude": ["node_modules", "**/*.test.ts"]
-  }
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": true,
+    "noImplicitAny": false,
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules", "**/*.test.ts", "jest.config.ts", "__tests__"]
+}

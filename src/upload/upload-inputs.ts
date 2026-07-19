@@ -1,4 +1,4 @@
-import {NoFileOptions} from './constants'
+import {NoFileOptions} from './constants.js'
 
 export interface UploadInputs {
   /**
@@ -35,4 +35,10 @@ export interface UploadInputs {
    * Whether or not to include hidden files in the artifact
    */
   includeHiddenFiles: boolean
+
+  /**
+   * Whether or not to archive (zip) the artifact before uploading.
+   * When false, only a single file can be uploaded.
+   */
+  archive: boolean
 }
