@@ -40,17 +40,16 @@ export async function run(): Promise<void> {
     core.info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`)
   })
 
-  const downloadPromises = artifacts.map(artifact =>
-    artifactClient.downloadArtifact(artifact.id, {
-      path: inputs.separateDirectories
-        ? path.join(tmpDir, artifact.name)
-        : tmpDir
-    })
-  )
-
-  const chunkedPromises = chunk(downloadPromises, PARALLEL_DOWNLOADS)
-  for (const chunk of chunkedPromises) {
-    await Promise.all(chunk)
+  const chunkedArtifacts = chunk(artifacts, PARALLEL_DOWNLOADS)
+  for (const artifactChunk of chunkedArtifacts) {
+    const downloadPromises = artifactChunk.map(artifact =>
+      artifactClient.downloadArtifact(artifact.id, {
+        path: inputs.separateDirectories
+          ? path.join(tmpDir, artifact.name)
+          : tmpDir
+      })
+    )
+    await Promise.all(downloadPromises)
   }
 
   const options: UploadArtifactOptions = {}

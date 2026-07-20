@@ -81569,14 +81569,14 @@ function run() {
         artifacts.forEach(artifact => {
             core.info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`);
         });
-        const downloadPromises = artifacts.map(artifact => artifact_1.default.downloadArtifact(artifact.id, {
-            path: inputs.separateDirectories
-                ? path.join(tmpDir, artifact.name)
-                : tmpDir
-        }));
-        const chunkedPromises = (0, exports.chunk)(downloadPromises, PARALLEL_DOWNLOADS);
-        for (const chunk of chunkedPromises) {
-            yield Promise.all(chunk);
+        const chunkedArtifacts = (0, exports.chunk)(artifacts, PARALLEL_DOWNLOADS);
+        for (const artifactChunk of chunkedArtifacts) {
+            const downloadPromises = artifactChunk.map(artifact => artifact_1.default.downloadArtifact(artifact.id, {
+                path: inputs.separateDirectories
+                    ? path.join(tmpDir, artifact.name)
+                    : tmpDir
+            }));
+            yield Promise.all(downloadPromises);
         }
         const options = {};
         if (inputs.retentionDays) {
