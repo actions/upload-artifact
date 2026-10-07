@@ -1,6 +1,6 @@
 {
   "name": "upload-artifact",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "Upload an Actions Artifact in a workflow run",
   "type": "module",
   "main": "dist/upload/index.js",
