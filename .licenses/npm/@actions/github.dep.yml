@@ -1,9 +1,9 @@
 ---
 name: "@actions/github"
-version: 9.0.0
+version: 9.1.1
 type: npm
-summary: Actions github lib
-homepage: https://github.com/actions/toolkit/tree/main/packages/github
+summary:
+homepage:
 license: mit
 licenses:
 - sources: LICENSE.md
