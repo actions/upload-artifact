@@ -66,7 +66,16 @@ export async function run(): Promise<void> {
     }
 
     if (inputs.overwrite) {
-      await deleteArtifactIfExists(inputs.artifactName)
+      if (!inputs.archive) {
+        if (searchResult.filesToUpload.length > 0) {
+          const fileName = searchResult.filesToUpload[0].split('/').pop()
+          if (fileName) {
+            deleteArtifactIfExists(fileName)
+          }
+        }
+      } else {
+        await deleteArtifactIfExists(inputs.artifactName)
+      }
     }
 
     const options: UploadArtifactOptions = {}
