@@ -100,7 +100,7 @@ jobs:
           exit 1
         fi
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Create artifact file
       run: |
         mkdir -p test-artifacts
