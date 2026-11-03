@@ -1,10 +1,7 @@
 import * as glob from '@actions/glob'
 import * as path from 'path'
 import {debug, info} from '@actions/core'
-import {stat} from 'fs'
 import {dirname} from 'path'
-import {promisify} from 'util'
-const stats = promisify(stat)
 
 export interface SearchResult {
   filesToUpload: string[]
@@ -14,6 +11,7 @@ export interface SearchResult {
 function getDefaultGlobOptions(includeHiddenFiles: boolean): glob.GlobOptions {
   return {
     followSymbolicLinks: true,
+    matchDirectories: false,
     implicitDescendants: true,
     omitBrokenSymbolicLinks: true,
     excludeHiddenFiles: !includeHiddenFiles
@@ -96,29 +94,17 @@ export async function findFilesToUpload(
   */
   const set = new Set<string>()
 
-  /*
-    Directories will be rejected if attempted to be uploaded. This includes just empty
-    directories so filter any directories out from the raw search results
-  */
   for (const searchResult of rawSearchResults) {
-    const fileStats = await stats(searchResult)
-    // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
-    if (!fileStats.isDirectory()) {
-      debug(`File:${searchResult} was found using the provided searchPath`)
-      searchResults.push(searchResult)
+    debug(`File:${searchResult} was found using the provided searchPath`)
+    searchResults.push(searchResult)
 
-      // detect any files that would be overwritten because of case insensitivity
-      if (set.has(searchResult.toLowerCase())) {
-        info(
-          `Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`
-        )
-      } else {
-        set.add(searchResult.toLowerCase())
-      }
-    } else {
-      debug(
-        `Removing ${searchResult} from rawSearchResults because it is a directory`
+    // detect any files that would be overwritten because of case insensitivity
+    if (set.has(searchResult.toLowerCase())) {
+      info(
+        `Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`
       )
+    } else {
+      set.add(searchResult.toLowerCase())
     }
   }
 
