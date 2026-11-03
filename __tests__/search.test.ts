@@ -396,4 +396,38 @@ describe('Search', () => {
     expect(searchResult.filesToUpload).toContain(fileInHiddenFolderPath)
     expect(searchResult.filesToUpload).toContain(fileInHiddenFolderInFolderA)
   })
+
+  test('Empty directories do not become upload files', async () => {
+    const directory = path.join(root, 'empty-upload')
+    await fs.mkdir(directory)
+    expect(await findFilesToUpload(directory)).toEqual({
+      filesToUpload: [],
+      rootDirectory: directory
+    })
+  })
+
+  if (process.platform !== 'win32') {
+    test('Follows file and directory symlinks and omits broken links', async () => {
+      const directory = path.join(root, 'symlink-upload')
+      const target = path.join(directory, 'target')
+      await fs.mkdir(target, {recursive: true})
+      await fs.writeFile(path.join(target, 'payload.txt'), 'payload')
+      const fileLink = path.join(directory, 'file-link')
+      const directoryLink = path.join(directory, 'directory-link')
+      const brokenLink = path.join(directory, 'broken-link')
+      await fs.symlink(path.join(target, 'payload.txt'), fileLink)
+      await fs.symlink(target, directoryLink)
+      await fs.symlink(path.join(directory, 'missing'), brokenLink)
+
+      const result = await findFilesToUpload(directory)
+      expect(result.filesToUpload.sort()).toEqual(
+        [
+          path.join(directoryLink, 'payload.txt'),
+          fileLink,
+          path.join(target, 'payload.txt')
+        ].sort()
+      )
+      expect(result.rootDirectory).toBe(directory)
+    })
+  }
 })

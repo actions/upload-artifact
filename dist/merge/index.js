@@ -132885,12 +132885,10 @@ function glob_hashFiles(patterns_1) {
 
 
 
-
-
-const stats = (0,external_util_.promisify)(external_fs_.stat);
 function getDefaultGlobOptions(includeHiddenFiles) {
     return {
         followSymbolicLinks: true,
+        matchDirectories: false,
         implicitDescendants: true,
         omitBrokenSymbolicLinks: true,
         excludeHiddenFiles: !includeHiddenFiles
@@ -132956,26 +132954,15 @@ async function findFilesToUpload(searchPath, includeHiddenFiles) {
       Detect any files that could be overwritten for user awareness
     */
     const set = new Set();
-    /*
-      Directories will be rejected if attempted to be uploaded. This includes just empty
-      directories so filter any directories out from the raw search results
-    */
     for (const searchResult of rawSearchResults) {
-        const fileStats = await stats(searchResult);
-        // isDirectory() returns false for symlinks if using fs.lstat(), make sure to use fs.stat() instead
-        if (!fileStats.isDirectory()) {
-            core_debug(`File:${searchResult} was found using the provided searchPath`);
-            searchResults.push(searchResult);
-            // detect any files that would be overwritten because of case insensitivity
-            if (set.has(searchResult.toLowerCase())) {
-                info(`Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`);
-            }
-            else {
-                set.add(searchResult.toLowerCase());
-            }
+        core_debug(`File:${searchResult} was found using the provided searchPath`);
+        searchResults.push(searchResult);
+        // detect any files that would be overwritten because of case insensitivity
+        if (set.has(searchResult.toLowerCase())) {
+            info(`Uploads are case insensitive: ${searchResult} was detected that it will be overwritten by another file with the same path`);
         }
         else {
-            core_debug(`Removing ${searchResult} from rawSearchResults because it is a directory`);
+            set.add(searchResult.toLowerCase());
         }
     }
     // Calculate the root directory for the artifact using the search paths that were utilized
