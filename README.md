@@ -149,6 +149,11 @@ steps:
     archive: false
 ```
 
+If `archive: false` reports more than one match, enable
+[step debug logging](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging)
+and look for the `File:... was found using the provided searchPath` lines in the
+upload step. Use that list to narrow `path` to a single file.
+
 ### Upload an Entire Directory
 
 ```yaml
