@@ -133020,23 +133020,102 @@ const chunk = (arr, n) => arr.reduce((acc, cur, i) => {
     acc[index] = [...(acc[index] || []), cur];
     return acc;
 }, []);
+function isArtifactNotFoundError(error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+    return (error instanceof ArtifactNotFoundError ||
+        message.includes('(404)') ||
+        message.includes('artifact does not exist') ||
+        message.includes('artifact not found'));
+}
+async function deleteArtifact(artifactName) {
+    try {
+        await lib_artifact.deleteArtifact(artifactName);
+    }
+    catch (error) {
+        if (!isArtifactNotFoundError(error)) {
+            throw error;
+        }
+        info(`Artifact '${artifactName}' has already been deleted`);
+    }
+}
+function latestByName(artifacts) {
+    const latest = new Map();
+    for (const artifact of artifacts) {
+        const previous = latest.get(artifact.name);
+        if (!previous || artifact.id > previous.id) {
+            latest.set(artifact.name, artifact);
+        }
+    }
+    return [...latest.values()];
+}
+async function deleteArtifacts(artifacts) {
+    for (const artifact of artifacts) {
+        await deleteArtifact(artifact.name);
+    }
+}
 async function run() {
     const inputs = getInputs();
-    const tmpDir = await (0,promises_namespaceObject.mkdtemp)('merge-artifact');
     const listArtifactResponse = await lib_artifact.listArtifacts({
-        latest: true
+        latest: false
     });
     const matcher = new Minimatch(inputs.pattern);
-    const artifacts = listArtifactResponse.artifacts.filter(artifact => matcher.match(artifact.name));
-    core_debug(`Filtered from ${listArtifactResponse.artifacts.length} to ${artifacts.length} artifacts`);
-    if (artifacts.length === 0) {
+    const recoveryArtifactName = `${inputs.name}-merge-recovery`;
+    const sourceArtifacts = listArtifactResponse.artifacts.filter(artifact => artifact.name !== inputs.name &&
+        artifact.name !== recoveryArtifactName &&
+        matcher.match(artifact.name));
+    const artifacts = latestByName(sourceArtifacts);
+    const mergedArtifacts = listArtifactResponse.artifacts
+        .filter(artifact => artifact.name === inputs.name)
+        .sort((a, b) => b.id - a.id);
+    const recoveryArtifacts = listArtifactResponse.artifacts
+        .filter(artifact => artifact.name === recoveryArtifactName)
+        .sort((a, b) => b.id - a.id);
+    const mergedArtifact = mergedArtifacts[0];
+    const recoveryArtifact = recoveryArtifacts[0];
+    const previousArtifact = mergedArtifact ?? recoveryArtifact;
+    let recoveryUploaded = false;
+    const options = {};
+    if (inputs.retentionDays) {
+        options.retentionDays = inputs.retentionDays;
+    }
+    if (typeof inputs.compressionLevel !== 'undefined') {
+        options.compressionLevel = inputs.compressionLevel;
+    }
+    core_debug(`Filtered from ${listArtifactResponse.artifacts.length} to ${sourceArtifacts.length} source artifacts`);
+    if (!previousArtifact && artifacts.length === 0) {
         throw new Error(`No artifacts found matching pattern '${inputs.pattern}'`);
     }
+    const artifactsToMerge = previousArtifact
+        ? artifacts.filter(artifact => artifact.id > previousArtifact.id)
+        : artifacts;
+    if (mergedArtifact && artifactsToMerge.length === 0) {
+        if (inputs.deleteMerged && artifacts.length > 0) {
+            await deleteArtifacts(sourceArtifacts);
+        }
+        if (recoveryArtifacts.length > 0) {
+            await deleteArtifacts(recoveryArtifacts);
+        }
+        info(`Artifact '${inputs.name}' has already been merged`);
+        return;
+    }
+    const tmpDir = await (0,promises_namespaceObject.mkdtemp)('merge-artifact');
     info(`Preparing to download the following artifacts:`);
-    artifacts.forEach(artifact => {
+    if (previousArtifact) {
+        info(`- ${previousArtifact.name} (ID: ${previousArtifact.id}, Size: ${previousArtifact.size})`);
+    }
+    artifactsToMerge.forEach(artifact => {
         info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`);
     });
-    const downloadPromises = artifacts.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
+    if (previousArtifact) {
+        await lib_artifact.downloadArtifact(previousArtifact.id, { path: tmpDir });
+    }
+    if (mergedArtifact && artifactsToMerge.length > 0) {
+        const previousSearchResult = await findFilesToUpload(tmpDir, inputs.includeHiddenFiles);
+        await deleteArtifacts(recoveryArtifacts);
+        await upload_artifact_uploadArtifact(recoveryArtifactName, previousSearchResult.filesToUpload, previousSearchResult.rootDirectory, options);
+        recoveryUploaded = true;
+    }
+    const downloadPromises = artifactsToMerge.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
         path: inputs.separateDirectories
             ? external_path_.join(tmpDir, artifact.name)
             : tmpDir
@@ -133045,20 +133124,21 @@ async function run() {
     for (const chunk of chunkedPromises) {
         await Promise.all(chunk);
     }
-    const options = {};
-    if (inputs.retentionDays) {
-        options.retentionDays = inputs.retentionDays;
-    }
-    if (typeof inputs.compressionLevel !== 'undefined') {
-        options.compressionLevel = inputs.compressionLevel;
-    }
     const searchResult = await findFilesToUpload(tmpDir, inputs.includeHiddenFiles);
+    if (mergedArtifacts.length > 0) {
+        await deleteArtifacts(mergedArtifacts);
+    }
     await upload_artifact_uploadArtifact(inputs.name, searchResult.filesToUpload, searchResult.rootDirectory, options);
-    info(`The ${artifacts.length} artifact(s) have been successfully merged!`);
+    info(`The ${artifactsToMerge.length + (previousArtifact ? 1 : 0)} artifact(s) have been successfully merged!`);
     if (inputs.deleteMerged) {
-        const deletePromises = artifacts.map(artifact => lib_artifact.deleteArtifact(artifact.name));
-        await Promise.all(deletePromises);
-        info(`The ${artifacts.length} artifact(s) have been deleted`);
+        await deleteArtifacts(sourceArtifacts);
+        info(`The ${sourceArtifacts.length} artifact(s) have been deleted`);
+    }
+    if (recoveryUploaded) {
+        await deleteArtifact(recoveryArtifactName);
+    }
+    else if (recoveryArtifacts.length > 0) {
+        await deleteArtifacts(recoveryArtifacts);
     }
     try {
         await (0,promises_namespaceObject.rm)(tmpDir, { recursive: true });
