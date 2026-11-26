@@ -94,6 +94,12 @@ const fixtures = {
     id: 10,
     size: 300,
     createdAt: new Date('2024-01-02T00:00:00Z')
+  },
+  recoveryArtifact: {
+    name: 'my-merged-artifact-merge-recovery',
+    id: 12,
+    size: 300,
+    createdAt: new Date('2024-01-03T00:00:00Z')
   }
 }
 
@@ -151,8 +157,7 @@ describe('merge', () => {
       .spyOn(artifact.default, 'deleteArtifact')
       .mockImplementation(async (artifactName: string) => {
         const found = fixtures.artifacts.find(a => a.name === artifactName)
-        if (!found) throw new Error(`Artifact ${artifactName} not found`)
-        return {id: found.id}
+        return {id: found?.id ?? 1337}
       })
   })
 
@@ -252,6 +257,27 @@ describe('merge', () => {
     }
   })
 
+  test('deletes all duplicate inputs from earlier attempts', async () => {
+    mockInputs({
+      [Inputs.DeleteMerged]: true
+    })
+    const duplicate = {...fixtures.artifacts[0], id: 4}
+    jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
+      artifacts: [duplicate, ...fixtures.artifacts, fixtures.mergedArtifact]
+    })
+
+    await run()
+
+    expect(
+      artifact.default.deleteArtifact as jest.MockedFunction<
+        typeof artifact.default.deleteArtifact
+      >
+    ).toHaveBeenCalledTimes(fixtures.artifacts.length + 1)
+    expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
+      fixtures.artifacts[0].name
+    )
+  })
+
   test('replaces an existing merge when inputs are newer', async () => {
     const newArtifact = {...fixtures.artifacts[0], id: 11}
     jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
@@ -280,19 +306,92 @@ describe('merge', () => {
     expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
       fixtures.mergedArtifact.name
     )
-    expect(artifact.default.uploadArtifact).toHaveBeenCalled()
+    expect(artifact.default.uploadArtifact).toHaveBeenNthCalledWith(
+      1,
+      fixtures.recoveryArtifact.name,
+      fixtures.filesToUpload,
+      fixtures.tmpDirectory,
+      {compressionLevel: 6}
+    )
+    expect(artifact.default.uploadArtifact).toHaveBeenNthCalledWith(
+      2,
+      fixtures.artifactName,
+      fixtures.filesToUpload,
+      fixtures.tmpDirectory,
+      {compressionLevel: 6}
+    )
     expect(
       (
         artifact.default.deleteArtifact as jest.MockedFunction<
           typeof artifact.default.deleteArtifact
         >
-      ).mock.invocationCallOrder[0]
+      ).mock.invocationCallOrder.find(
+        (_, index) =>
+          (
+            artifact.default.deleteArtifact as jest.MockedFunction<
+              typeof artifact.default.deleteArtifact
+            >
+          ).mock.calls[index][0] === fixtures.mergedArtifact.name
+      )
     ).toBeLessThan(
       (
         artifact.default.uploadArtifact as jest.MockedFunction<
           typeof artifact.default.uploadArtifact
         >
-      ).mock.invocationCallOrder[0]
+      ).mock.invocationCallOrder[1]
+    )
+  })
+
+  test('retains a recovery artifact when replacement upload fails', async () => {
+    const newArtifact = {...fixtures.artifacts[0], id: 11}
+    jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
+      artifacts: [newArtifact, fixtures.mergedArtifact]
+    })
+    jest
+      .spyOn(artifact.default, 'uploadArtifact')
+      .mockResolvedValueOnce({size: 123, id: fixtures.recoveryArtifact.id})
+      .mockRejectedValueOnce(new Error('Upload failed'))
+
+    await expect(run()).rejects.toThrow('Upload failed')
+
+    expect(artifact.default.uploadArtifact).toHaveBeenNthCalledWith(
+      1,
+      fixtures.recoveryArtifact.name,
+      fixtures.filesToUpload,
+      fixtures.tmpDirectory,
+      {compressionLevel: 6}
+    )
+    expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
+      fixtures.mergedArtifact.name
+    )
+    expect(artifact.default.deleteArtifact).not.toHaveBeenCalledWith(
+      fixtures.recoveryArtifact.name
+    )
+  })
+
+  test('restores a merged artifact from recovery after an interrupted retry', async () => {
+    mockInputs({
+      [Inputs.DeleteMerged]: true
+    })
+    jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
+      artifacts: [fixtures.recoveryArtifact, fixtures.artifacts[0]]
+    })
+
+    await run()
+
+    expect(artifact.default.downloadArtifact).toHaveBeenCalledWith(
+      fixtures.recoveryArtifact.id,
+      {path: fixtures.tmpDirectory}
+    )
+    expect(artifact.default.uploadArtifact).toHaveBeenCalledTimes(1)
+    expect(artifact.default.uploadArtifact).toHaveBeenCalledWith(
+      fixtures.artifactName,
+      fixtures.filesToUpload,
+      fixtures.tmpDirectory,
+      {compressionLevel: 6}
+    )
+    expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
+      fixtures.recoveryArtifact.name
     )
   })
 

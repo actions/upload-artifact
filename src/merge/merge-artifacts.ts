@@ -40,36 +40,77 @@ async function deleteArtifact(artifactName: string): Promise<void> {
   }
 }
 
+function latestByName<T extends {name: string; id: number}>(
+  artifacts: T[]
+): T[] {
+  const latest = new Map<string, T>()
+  for (const artifact of artifacts) {
+    const previous = latest.get(artifact.name)
+    if (!previous || artifact.id > previous.id) {
+      latest.set(artifact.name, artifact)
+    }
+  }
+  return [...latest.values()]
+}
+
+async function deleteArtifacts(
+  artifacts: Array<{name: string}>
+): Promise<void> {
+  for (const artifact of artifacts) {
+    await deleteArtifact(artifact.name)
+  }
+}
+
 export async function run(): Promise<void> {
   const inputs = getInputs()
 
   const listArtifactResponse = await artifactClient.listArtifacts({
-    latest: true
+    latest: false
   })
   const matcher = new Minimatch(inputs.pattern)
-  const artifacts = listArtifactResponse.artifacts.filter(
-    artifact => artifact.name !== inputs.name && matcher.match(artifact.name)
+  const recoveryArtifactName = `${inputs.name}-merge-recovery`
+  const sourceArtifacts = listArtifactResponse.artifacts.filter(
+    artifact =>
+      artifact.name !== inputs.name &&
+      artifact.name !== recoveryArtifactName &&
+      matcher.match(artifact.name)
   )
-  const mergedArtifact = listArtifactResponse.artifacts.find(
-    artifact => artifact.name === inputs.name
-  )
+  const artifacts = latestByName(sourceArtifacts)
+  const mergedArtifacts = listArtifactResponse.artifacts
+    .filter(artifact => artifact.name === inputs.name)
+    .sort((a, b) => b.id - a.id)
+  const recoveryArtifacts = listArtifactResponse.artifacts
+    .filter(artifact => artifact.name === recoveryArtifactName)
+    .sort((a, b) => b.id - a.id)
+  const mergedArtifact = mergedArtifacts[0]
+  const recoveryArtifact = recoveryArtifacts[0]
+  const previousArtifact = mergedArtifact ?? recoveryArtifact
+  let recoveryUploaded = false
+  const options: UploadArtifactOptions = {}
+  if (inputs.retentionDays) {
+    options.retentionDays = inputs.retentionDays
+  }
+  if (typeof inputs.compressionLevel !== 'undefined') {
+    options.compressionLevel = inputs.compressionLevel
+  }
   core.debug(
-    `Filtered from ${listArtifactResponse.artifacts.length} to ${artifacts.length} artifacts`
+    `Filtered from ${listArtifactResponse.artifacts.length} to ${sourceArtifacts.length} source artifacts`
   )
 
-  if (!mergedArtifact && artifacts.length === 0) {
+  if (!previousArtifact && artifacts.length === 0) {
     throw new Error(`No artifacts found matching pattern '${inputs.pattern}'`)
   }
 
-  const artifactsToMerge = mergedArtifact
-    ? artifacts.filter(artifact => artifact.id > mergedArtifact.id)
+  const artifactsToMerge = previousArtifact
+    ? artifacts.filter(artifact => artifact.id > previousArtifact.id)
     : artifacts
 
-  if (artifactsToMerge.length === 0) {
+  if (mergedArtifact && artifactsToMerge.length === 0) {
     if (inputs.deleteMerged && artifacts.length > 0) {
-      await Promise.all(
-        artifacts.map(artifact => deleteArtifact(artifact.name))
-      )
+      await deleteArtifacts(sourceArtifacts)
+    }
+    if (recoveryArtifacts.length > 0) {
+      await deleteArtifacts(recoveryArtifacts)
     }
     core.info(`Artifact '${inputs.name}' has already been merged`)
     return
@@ -78,17 +119,32 @@ export async function run(): Promise<void> {
   const tmpDir = await mkdtemp('merge-artifact')
 
   core.info(`Preparing to download the following artifacts:`)
-  if (mergedArtifact) {
+  if (previousArtifact) {
     core.info(
-      `- ${mergedArtifact.name} (ID: ${mergedArtifact.id}, Size: ${mergedArtifact.size})`
+      `- ${previousArtifact.name} (ID: ${previousArtifact.id}, Size: ${previousArtifact.size})`
     )
   }
   artifactsToMerge.forEach(artifact => {
     core.info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`)
   })
 
-  if (mergedArtifact) {
-    await artifactClient.downloadArtifact(mergedArtifact.id, {path: tmpDir})
+  if (previousArtifact) {
+    await artifactClient.downloadArtifact(previousArtifact.id, {path: tmpDir})
+  }
+
+  if (mergedArtifact && artifactsToMerge.length > 0) {
+    const previousSearchResult = await findFilesToUpload(
+      tmpDir,
+      inputs.includeHiddenFiles
+    )
+    await deleteArtifacts(recoveryArtifacts)
+    await uploadArtifact(
+      recoveryArtifactName,
+      previousSearchResult.filesToUpload,
+      previousSearchResult.rootDirectory,
+      options
+    )
+    recoveryUploaded = true
   }
 
   const downloadPromises = artifactsToMerge.map(artifact =>
@@ -104,22 +160,13 @@ export async function run(): Promise<void> {
     await Promise.all(chunk)
   }
 
-  const options: UploadArtifactOptions = {}
-  if (inputs.retentionDays) {
-    options.retentionDays = inputs.retentionDays
-  }
-
-  if (typeof inputs.compressionLevel !== 'undefined') {
-    options.compressionLevel = inputs.compressionLevel
-  }
-
   const searchResult = await findFilesToUpload(
     tmpDir,
     inputs.includeHiddenFiles
   )
 
-  if (mergedArtifact) {
-    await deleteArtifact(mergedArtifact.name)
+  if (mergedArtifacts.length > 0) {
+    await deleteArtifacts(mergedArtifacts)
   }
 
   await uploadArtifact(
@@ -130,12 +177,17 @@ export async function run(): Promise<void> {
   )
 
   core.info(
-    `The ${artifactsToMerge.length + (mergedArtifact ? 1 : 0)} artifact(s) have been successfully merged!`
+    `The ${artifactsToMerge.length + (previousArtifact ? 1 : 0)} artifact(s) have been successfully merged!`
   )
 
   if (inputs.deleteMerged) {
-    await Promise.all(artifacts.map(artifact => deleteArtifact(artifact.name)))
-    core.info(`The ${artifacts.length} artifact(s) have been deleted`)
+    await deleteArtifacts(sourceArtifacts)
+    core.info(`The ${sourceArtifacts.length} artifact(s) have been deleted`)
+  }
+  if (recoveryUploaded) {
+    await deleteArtifact(recoveryArtifactName)
+  } else if (recoveryArtifacts.length > 0) {
+    await deleteArtifacts(recoveryArtifacts)
   }
 
   try {
