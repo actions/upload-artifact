@@ -88,7 +88,13 @@ const fixtures = {
       size: 100,
       createdAt: new Date('2024-01-01T00:00:00Z')
     }
-  ]
+  ],
+  mergedArtifact: {
+    name: 'my-merged-artifact',
+    id: 10,
+    size: 300,
+    createdAt: new Date('2024-01-02T00:00:00Z')
+  }
 }
 
 const mockInputs = (
@@ -216,5 +222,103 @@ describe('merge', () => {
     for (const a of fixtures.artifacts) {
       expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(a.name)
     }
+  })
+
+  test('succeeds when a merge was already completed', async () => {
+    jest
+      .spyOn(artifact.default, 'listArtifacts')
+      .mockResolvedValue({artifacts: [fixtures.mergedArtifact]})
+
+    await run()
+
+    expect(artifact.default.uploadArtifact).not.toHaveBeenCalled()
+    expect(artifact.default.downloadArtifact).not.toHaveBeenCalled()
+    expect(artifact.default.deleteArtifact).not.toHaveBeenCalled()
+  })
+
+  test('deletes stale inputs without uploading an existing merge', async () => {
+    mockInputs({
+      [Inputs.DeleteMerged]: true
+    })
+    jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
+      artifacts: [...fixtures.artifacts, fixtures.mergedArtifact]
+    })
+
+    await run()
+
+    expect(artifact.default.uploadArtifact).not.toHaveBeenCalled()
+    for (const a of fixtures.artifacts) {
+      expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(a.name)
+    }
+  })
+
+  test('replaces an existing merge when inputs are newer', async () => {
+    const newArtifact = {...fixtures.artifacts[0], id: 11}
+    jest.spyOn(artifact.default, 'listArtifacts').mockResolvedValue({
+      artifacts: [newArtifact, fixtures.artifacts[1], fixtures.mergedArtifact]
+    })
+    jest
+      .spyOn(artifact.default, 'deleteArtifact')
+      .mockResolvedValue({id: fixtures.mergedArtifact.id})
+
+    await run()
+
+    expect(artifact.default.downloadArtifact).toHaveBeenCalledWith(
+      fixtures.mergedArtifact.id,
+      {path: fixtures.tmpDirectory}
+    )
+    expect(artifact.default.downloadArtifact).toHaveBeenCalledWith(
+      newArtifact.id,
+      {
+        path: fixtures.tmpDirectory
+      }
+    )
+    expect(artifact.default.downloadArtifact).not.toHaveBeenCalledWith(
+      fixtures.artifacts[1].id,
+      expect.anything()
+    )
+    expect(artifact.default.deleteArtifact).toHaveBeenCalledWith(
+      fixtures.mergedArtifact.name
+    )
+    expect(artifact.default.uploadArtifact).toHaveBeenCalled()
+    expect(
+      (
+        artifact.default.deleteArtifact as jest.MockedFunction<
+          typeof artifact.default.deleteArtifact
+        >
+      ).mock.invocationCallOrder[0]
+    ).toBeLessThan(
+      (
+        artifact.default.uploadArtifact as jest.MockedFunction<
+          typeof artifact.default.uploadArtifact
+        >
+      ).mock.invocationCallOrder[0]
+    )
+  })
+
+  test('ignores missing artifacts while deleting merged inputs', async () => {
+    mockInputs({
+      [Inputs.DeleteMerged]: true
+    })
+    jest
+      .spyOn(artifact.default, 'deleteArtifact')
+      .mockRejectedValue(
+        new Error(
+          'Failed to DeleteArtifact: Received non-retryable error: Failed request: (404) Not Found'
+        )
+      )
+
+    await expect(run()).resolves.toBeUndefined()
+  })
+
+  test('fails on unexpected errors while deleting merged inputs', async () => {
+    mockInputs({
+      [Inputs.DeleteMerged]: true
+    })
+    jest
+      .spyOn(artifact.default, 'deleteArtifact')
+      .mockRejectedValue(new Error('Service unavailable'))
+
+    await expect(run()).rejects.toThrow('Service unavailable')
   })
 })

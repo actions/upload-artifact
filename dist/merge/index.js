@@ -133020,23 +133020,58 @@ const chunk = (arr, n) => arr.reduce((acc, cur, i) => {
     acc[index] = [...(acc[index] || []), cur];
     return acc;
 }, []);
+function isArtifactNotFoundError(error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+    return (error instanceof ArtifactNotFoundError ||
+        message.includes('(404)') ||
+        message.includes('artifact does not exist') ||
+        message.includes('artifact not found'));
+}
+async function deleteArtifact(artifactName) {
+    try {
+        await lib_artifact.deleteArtifact(artifactName);
+    }
+    catch (error) {
+        if (!isArtifactNotFoundError(error)) {
+            throw error;
+        }
+        info(`Artifact '${artifactName}' has already been deleted`);
+    }
+}
 async function run() {
     const inputs = getInputs();
-    const tmpDir = await (0,promises_namespaceObject.mkdtemp)('merge-artifact');
     const listArtifactResponse = await lib_artifact.listArtifacts({
         latest: true
     });
     const matcher = new Minimatch(inputs.pattern);
-    const artifacts = listArtifactResponse.artifacts.filter(artifact => matcher.match(artifact.name));
+    const artifacts = listArtifactResponse.artifacts.filter(artifact => artifact.name !== inputs.name && matcher.match(artifact.name));
+    const mergedArtifact = listArtifactResponse.artifacts.find(artifact => artifact.name === inputs.name);
     core_debug(`Filtered from ${listArtifactResponse.artifacts.length} to ${artifacts.length} artifacts`);
-    if (artifacts.length === 0) {
+    if (!mergedArtifact && artifacts.length === 0) {
         throw new Error(`No artifacts found matching pattern '${inputs.pattern}'`);
     }
+    const artifactsToMerge = mergedArtifact
+        ? artifacts.filter(artifact => artifact.id > mergedArtifact.id)
+        : artifacts;
+    if (artifactsToMerge.length === 0) {
+        if (inputs.deleteMerged && artifacts.length > 0) {
+            await Promise.all(artifacts.map(artifact => deleteArtifact(artifact.name)));
+        }
+        info(`Artifact '${inputs.name}' has already been merged`);
+        return;
+    }
+    const tmpDir = await (0,promises_namespaceObject.mkdtemp)('merge-artifact');
     info(`Preparing to download the following artifacts:`);
-    artifacts.forEach(artifact => {
+    if (mergedArtifact) {
+        info(`- ${mergedArtifact.name} (ID: ${mergedArtifact.id}, Size: ${mergedArtifact.size})`);
+    }
+    artifactsToMerge.forEach(artifact => {
         info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`);
     });
-    const downloadPromises = artifacts.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
+    if (mergedArtifact) {
+        await lib_artifact.downloadArtifact(mergedArtifact.id, { path: tmpDir });
+    }
+    const downloadPromises = artifactsToMerge.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
         path: inputs.separateDirectories
             ? external_path_.join(tmpDir, artifact.name)
             : tmpDir
@@ -133053,11 +133088,13 @@ async function run() {
         options.compressionLevel = inputs.compressionLevel;
     }
     const searchResult = await findFilesToUpload(tmpDir, inputs.includeHiddenFiles);
+    if (mergedArtifact) {
+        await deleteArtifact(mergedArtifact.name);
+    }
     await upload_artifact_uploadArtifact(inputs.name, searchResult.filesToUpload, searchResult.rootDirectory, options);
-    info(`The ${artifacts.length} artifact(s) have been successfully merged!`);
+    info(`The ${artifactsToMerge.length + (mergedArtifact ? 1 : 0)} artifact(s) have been successfully merged!`);
     if (inputs.deleteMerged) {
-        const deletePromises = artifacts.map(artifact => lib_artifact.deleteArtifact(artifact.name));
-        await Promise.all(deletePromises);
+        await Promise.all(artifacts.map(artifact => deleteArtifact(artifact.name)));
         info(`The ${artifacts.length} artifact(s) have been deleted`);
     }
     try {
