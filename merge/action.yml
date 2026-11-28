@@ -12,7 +12,8 @@ inputs:
   separate-directories:
     description: 'When multiple artifacts are matched, this changes the behavior of how they are merged in the archive.
       If true, the matched artifacts will be extracted into individual named directories within the specified path.
-      If false, the matched artifacts will combined in the same directory.'
+      If false, the matched artifacts will be extracted into the same directory in ascending artifact ID order.
+      If multiple artifacts contain the same file path, the one with the highest ID wins.'
     default: 'false'
   retention-days:
     description: >
