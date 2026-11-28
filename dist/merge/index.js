@@ -133036,14 +133036,18 @@ async function run() {
     artifacts.forEach(artifact => {
         info(`- ${artifact.name} (ID: ${artifact.id}, Size: ${artifact.size})`);
     });
-    const downloadPromises = artifacts.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
-        path: inputs.separateDirectories
-            ? external_path_.join(tmpDir, artifact.name)
-            : tmpDir
-    }));
-    const chunkedPromises = chunk(downloadPromises, PARALLEL_DOWNLOADS);
-    for (const chunk of chunkedPromises) {
-        await Promise.all(chunk);
+    if (inputs.separateDirectories) {
+        for (const batch of chunk(artifacts, PARALLEL_DOWNLOADS)) {
+            await Promise.all(batch.map(artifact => lib_artifact.downloadArtifact(artifact.id, {
+                path: external_path_.join(tmpDir, artifact.name)
+            })));
+        }
+    }
+    else {
+        // Shared paths must be written by one extractor at a time.
+        for (const artifact of [...artifacts].sort((a, b) => a.id - b.id)) {
+            await lib_artifact.downloadArtifact(artifact.id, { path: tmpDir });
+        }
     }
     const options = {};
     if (inputs.retentionDays) {

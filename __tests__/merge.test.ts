@@ -1,4 +1,5 @@
 import {jest, describe, test, expect, beforeEach} from '@jest/globals'
+import * as path from 'path'
 
 // Mock @actions/github before importing modules that use it
 jest.unstable_mockModule('@actions/github', () => ({
@@ -165,6 +166,52 @@ describe('merge', () => {
       fixtures.tmpDirectory,
       {compressionLevel: 6}
     )
+  })
+
+  test('finishes extracting each artifact before starting the next in a shared directory', async () => {
+    const downloadOrder: string[] = []
+    jest
+      .spyOn(artifact.default, 'listArtifacts')
+      .mockResolvedValue({artifacts: [...fixtures.artifacts].reverse()})
+    jest
+      .spyOn(artifact.default, 'downloadArtifact')
+      .mockImplementation(async id => {
+        downloadOrder.push(`start ${id}`)
+        await Promise.resolve()
+        downloadOrder.push(`finish ${id}`)
+        return {downloadPath: fixtures.tmpDirectory}
+      })
+
+    await run()
+
+    expect(downloadOrder).toEqual(
+      fixtures.artifacts.flatMap(({id}) => [`start ${id}`, `finish ${id}`])
+    )
+  })
+
+  test('still extracts in parallel when every artifact has its own directory', async () => {
+    mockInputs({[Inputs.SeparateDirectories]: true})
+    const downloadOrder: string[] = []
+    jest
+      .spyOn(artifact.default, 'downloadArtifact')
+      .mockImplementation(async (id, options) => {
+        downloadOrder.push(`start ${id}`)
+        await Promise.resolve()
+        downloadOrder.push(`finish ${id}`)
+        return {downloadPath: options?.path ?? fixtures.tmpDirectory}
+      })
+
+    await run()
+
+    expect(downloadOrder).toEqual([
+      ...fixtures.artifacts.map(({id}) => `start ${id}`),
+      ...fixtures.artifacts.map(({id}) => `finish ${id}`)
+    ])
+    for (const {id, name} of fixtures.artifacts) {
+      expect(artifact.default.downloadArtifact).toHaveBeenCalledWith(id, {
+        path: path.join(fixtures.tmpDirectory, name)
+      })
+    }
   })
 
   test('fails if no artifacts found', async () => {
